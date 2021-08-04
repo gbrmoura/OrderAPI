@@ -24,7 +24,7 @@ namespace OrderAPI.Models {
         public String Email { get; set; }
 
         [Required(ErrorMessage = "A senha deve ser preenchida!")]
-        [MinLength(6, ErrorMessage = "A senha deve possuir no minimo 5 dígitos!")]
+        [MinLength(5, ErrorMessage = "A senha deve possuir no minimo 5 dígitos!")]
         public String Senha { get; set; }
         public Guid Token { get; set; }
         public EPrevilegios NivelAcesso { get; set; }

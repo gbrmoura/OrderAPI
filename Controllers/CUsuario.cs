@@ -17,7 +17,12 @@ namespace OrderAPI.Controllers {
 
     [Route("api/usuario/")]
     public class CUsuario : ControllerBase, IControllerBase<MUsuario> {
-        public object SystemUtil { get; private set; }
+
+        private DBService _context = new DBService();
+
+        public CUsuario(DBService context) {
+            _context = context;
+        }
 
         [HttpPost("registrar/visitante/")]
         public ActionResult<HttpResponse> RegistrarVisitante([FromBody] MUsuario dados) {
@@ -33,31 +38,34 @@ namespace OrderAPI.Controllers {
             }
 
             try {
-                using (DBService db = new DBService()) {
-                    MUsuario usuario = db.Usuario.Single(field => field.Email == dados.Email);
 
-                    if (usuario == null) {
-                        httpMessage.Message = "Email ja cadastrado!";
-                        return StatusCode(httpMessage.Code, httpMessage);
-                    }
+                // TODO: 
+                List<MUsuario> usuarios = _context.Usuario
+                    .Where(field => field.Email.Contains(dados.Email.Trim()))
+                    .ToList();
 
-                    MUsuario usuarioDB = new MUsuario() {
-                        Nome = usuario.Nome,
-                        Sobrenome = usuario.Sobrenome,
-                        Email = usuario.Email,
-                        Senha = usuario.Senha
-                    };
-
-                    // TODO: preencher os dados do usuairo
-
-                    // TODO: cadastrar usuario
-
-                    // TODO: retornar
-
-                    httpMessage.Code = (int)EHttpResponse.OK;
-                    httpMessage.Message = "Visitante cadastrado com sucesso!";
+                if (usuarios.Count >= 1) {
+                    httpMessage.Message = "Email ja cadastrado!";
                     return StatusCode(httpMessage.Code, httpMessage);
                 }
+
+                MUsuario usuarioDB = new MUsuario() {
+                    Nome = dados.Nome.Trim(),
+                    Sobrenome = dados.Sobrenome.Trim(),
+                    Email = dados.Email.Trim(),
+                    Senha = PasswordService.EncryptPassword(dados.Senha),
+                    NivelAcesso = EPrevilegios.Visitante,
+                    Status = EStatusRegistro.Ativo,
+                    DataCadastro = DateTime.Now
+                };
+
+                _context.Usuario.Add(usuarioDB);
+                _context.SaveChanges();
+
+                httpMessage.Code = (int)EHttpResponse.OK;
+                httpMessage.Message = "Visitante cadastrado com sucesso!";
+                return StatusCode(httpMessage.Code, httpMessage);
+                
             } catch (Exception E) {
                 httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
                 httpMessage.Message = "Erro interno do servidor!";
