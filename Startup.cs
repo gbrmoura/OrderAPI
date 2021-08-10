@@ -16,7 +16,7 @@ namespace OrderAPI {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            services.AddDbContext<DBService>(ops => ops.UseMySQL(new DBConfig().ConnectionString()));
+            services.AddDbContext<DBService>(ops => ops.UseMySQL(DBConfig.ConnectionString()));
             services.AddControllers();
             
         }
@@ -26,6 +26,7 @@ namespace OrderAPI {
             //app.UseHttpsRedirection();
             app.UseRouting();
             app.UseAuthorization();
+            app.UseCors();
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
             });

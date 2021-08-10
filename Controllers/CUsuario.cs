@@ -25,7 +25,8 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("registrar/visitante/")]
-        public ActionResult<HttpResponse> RegistrarVisitante([FromBody] MUsuario dados) {
+        public Task<ActionResult<HttpResponse>> RegistrarVisitante([FromBody] MUsuario dados) {
+            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/registrar/visitante' used");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada!"
@@ -34,19 +35,18 @@ namespace OrderAPI.Controllers {
             if (!ModelState.IsValid) {
                 httpMessage.Message = SystemUtils.Log(ETitleLog.SYSTEM, "Parametros Ausentes!");
                 httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(httpMessage.Code, httpMessage);
+                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
             }
 
             try {
 
-                // TODO: 
                 List<MUsuario> usuarios = _context.Usuario
                     .Where(field => field.Email.Contains(dados.Email.Trim()))
                     .ToList();
 
                 if (usuarios.Count >= 1) {
                     httpMessage.Message = "Email ja cadastrado!";
-                    return StatusCode(httpMessage.Code, httpMessage);
+                    return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
                 }
 
                 MUsuario usuarioDB = new MUsuario() {
@@ -64,18 +64,19 @@ namespace OrderAPI.Controllers {
 
                 httpMessage.Code = (int)EHttpResponse.OK;
                 httpMessage.Message = "Visitante cadastrado com sucesso!";
-                return StatusCode(httpMessage.Code, httpMessage);
+                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
                 
             } catch (Exception E) {
                 httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
                 httpMessage.Message = "Erro interno do servidor!";
                 httpMessage.Error = E.Message;
-                return StatusCode(httpMessage.Code, httpMessage);
+                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
             }
         }
 
         [HttpPost("registrar/comunidade/")]
-        public ActionResult<HttpResponse> RegistrarComunidade([FromBody] MUsuario dados) {
+        public Task<ActionResult<HttpResponse>> RegistrarComunidade([FromBody] MUsuario dados) {
+            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/registrar/comunidade' used");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada!"
@@ -84,29 +85,29 @@ namespace OrderAPI.Controllers {
             if (!ModelState.IsValid) {
                 httpMessage.Message = SystemUtils.Log(ETitleLog.SYSTEM, "Parametros Ausentes!");
                 httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(httpMessage.Code, httpMessage);
+                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
             }
 
-            return StatusCode(httpMessage.Code, httpMessage);
+            return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
         }
 
-        public ActionResult<HttpResponse> Registrar([FromBody] MUsuario dados) {
+        public Task<ActionResult<HttpResponse>> Registrar([FromBody] MUsuario dados) {
             throw new NotImplementedException();
         }
 
-        public ActionResult<HttpResponse> Alterar([FromBody] MUsuario daods) {
+        public Task<ActionResult<HttpResponse>> Alterar([FromBody] MUsuario daods) {
             throw new NotImplementedException();
         }
 
-        public ActionResult<HttpResponse> Deletar([FromBody] int codigo) {
+        public Task<ActionResult<HttpResponse>> Deletar([FromBody] int codigo) {
             throw new NotImplementedException();
         }
 
-        public ActionResult<HttpResponse> Consultar([FromBody] int codigo) {
+        public Task<ActionResult<HttpResponse>> Consultar([FromBody] int codigo) {
             throw new NotImplementedException();
         }
 
-        public ActionResult<IEnumerable<MUsuario>> ConsultarTodos() {
+        public Task<ActionResult<HttpResponse>> ConsultarTodos() {
             throw new NotImplementedException();
         }
     }

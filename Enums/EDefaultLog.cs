@@ -8,4 +8,12 @@ namespace OrderAPI.Enums {
         DATABASE,
         SYSTEM
     }
+
+    public enum EHTTPLog {
+        GET,
+        POST, 
+        PUT,
+        DELETE
+    }
+
 }

@@ -7,10 +7,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace OrderAPI.Interfaces {
     interface IControllerBase<T> {
-        public ActionResult<HttpResponse> Registrar([FromBody] T dados);
-        public ActionResult<HttpResponse> Alterar([FromBody] T daods);
-        public ActionResult<HttpResponse> Deletar([FromBody] int codigo);
-        public ActionResult<HttpResponse> Consultar([FromBody] int codigo);
-        public ActionResult<IEnumerable<T>> ConsultarTodos();
+        public Task<ActionResult<HttpResponse>> Registrar([FromBody] T dados);
+        public Task<ActionResult<HttpResponse>> Alterar([FromBody] T daods);
+        public Task<ActionResult<HttpResponse>> Deletar([FromBody] int codigo);
+        public Task<ActionResult<HttpResponse>> Consultar([FromBody] int codigo);
+        public Task<ActionResult<HttpResponse>> ConsultarTodos();
     }
 }

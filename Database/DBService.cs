@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using OrderAPI.Configs;
+using OrderAPI.Enums;
 using OrderAPI.Models;
 using OrderAPI.Utils;
 using System;
@@ -9,13 +10,9 @@ namespace OrderAPI.Database {
 
         public DBService() { }
 
-        public DBService(DbContextOptions<DBService> options) : base(options) {
+        public DBService(DbContextOptions<DBService> options) 
+            : base(options) {
         
-        }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            DBConfig config = new DBConfig();
-            String connection = SystemUtils.Log(config.ConnectionString());
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

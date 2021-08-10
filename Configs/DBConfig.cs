@@ -11,6 +11,7 @@ namespace OrderAPI.Configs {
         private String user = "root";
         private String password = "";
         private String database = "cantina";
+        private String sslMode = "none";
 
         public String Server {
             get { return server; }
@@ -37,13 +38,19 @@ namespace OrderAPI.Configs {
             set { database = value; }
         }
 
-        public String ConnectionString() {
-            return $"server={this.Server}; " +
-                $"port={this.Port}; " +
-                $"user={this.User}; " +
-                $"password={this.Password}; " +
-                $"database={this.Database}; " +
-                $"SslMode=none";
+        public String SslMode {
+            get { return sslMode; }
+            set { sslMode = value; }
+        }
+
+        public static String ConnectionString() {
+            DBConfig config = new DBConfig();
+            return $"server={config.Server}; " +
+                $"port={config.Port}; " +
+                $"user={config.User}; " +
+                $"password={config.Password}; " +
+                $"database={config.Database}; " +
+                $"SslMode={config.SslMode}";
         }
 
     }
