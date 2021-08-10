@@ -8,7 +8,7 @@ using OrderAPI.Database;
 
 namespace OrderAPI.Migrations
 {
-    [DbContext(typeof(DBService))]
+    [DbContext(typeof(DBContext))]
     [Migration("20210803133950_CriandoTabelas")]
     partial class CriandoTabelas
     {

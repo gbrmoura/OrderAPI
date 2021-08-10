@@ -6,11 +6,11 @@ using OrderAPI.Utils;
 using System;
 
 namespace OrderAPI.Database {
-    public class DBService : DbContext {
+    public class DBContext : DbContext {
 
-        public DBService() { }
+        public DBContext() { }
 
-        public DBService(DbContextOptions<DBService> options) 
+        public DBContext(DbContextOptions<DBContext> options) 
             : base(options) {
         
         }

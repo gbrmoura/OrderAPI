@@ -12,20 +12,24 @@ using OrderAPI.Enums;
 using OrderAPI.Services;
 using OrderAPI.Utils;
 using OrderAPI.Database;
+using OrderAPI.Data.DTO;
+using AutoMapper;
 
 namespace OrderAPI.Controllers {
 
     [Route("api/usuario/")]
     public class CUsuario : ControllerBase, IControllerBase<MUsuario> {
 
-        private DBService _context = new DBService();
+        private DBContext _context;
+        private IMapper _mapper;
 
-        public CUsuario(DBService context) {
+        public CUsuario(DBContext context, IMapper mapper) {
             _context = context;
+            _mapper = mapper;
         }
 
         [HttpPost("registrar/visitante/")]
-        public Task<ActionResult<HttpResponse>> RegistrarVisitante([FromBody] MUsuario dados) {
+        public ActionResult<HttpResponse> RegistrarVisitante([FromBody] DTOCriarUsuario dados) {
             SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/registrar/visitante' used");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -33,82 +37,119 @@ namespace OrderAPI.Controllers {
             };
 
             if (!ModelState.IsValid) {
-                httpMessage.Message = SystemUtils.Log(ETitleLog.SYSTEM, "Parametros Ausentes!");
+                httpMessage.Message = "Parametros Ausentes!";
                 httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
+                return StatusCode(httpMessage.Code, httpMessage);
             }
 
             try {
 
-                List<MUsuario> usuarios = _context.Usuario
-                    .Where(field => field.Email.Contains(dados.Email.Trim()))
-                    .ToList();
+                MUsuario usuario = _context.Usuario.
+                    FirstOrDefault(user => user.Email.Equals(dados.Email));
 
-                if (usuarios.Count >= 1) {
+                if (usuario != null) {
                     httpMessage.Message = "Email ja cadastrado!";
-                    return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
+                    return StatusCode(httpMessage.Code, httpMessage);
                 }
 
-                MUsuario usuarioDB = new MUsuario() {
-                    Nome = dados.Nome.Trim(),
-                    Sobrenome = dados.Sobrenome.Trim(),
-                    Email = dados.Email.Trim(),
-                    Senha = PasswordService.EncryptPassword(dados.Senha),
-                    NivelAcesso = EPrevilegios.Visitante,
-                    Status = EStatusRegistro.Ativo,
-                    DataCadastro = DateTime.Now
-                };
-
+                MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
+                usuarioDB.Senha = PasswordService.EncryptPassword(dados.Senha);
+                usuarioDB.NivelAcesso = EPrevilegios.Visitante;
+                usuarioDB.Status = EStatusRegistro.Ativo;
+                usuarioDB.DataCadastro = DateTime.Now;
+                
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();
 
                 httpMessage.Code = (int)EHttpResponse.OK;
                 httpMessage.Message = "Visitante cadastrado com sucesso!";
-                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
+                return StatusCode(httpMessage.Code, httpMessage);
                 
             } catch (Exception E) {
                 httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
                 httpMessage.Message = "Erro interno do servidor!";
                 httpMessage.Error = E.Message;
-                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
+                return StatusCode(httpMessage.Code, httpMessage);
             }
         }
+        public ActionResult<HttpResponse> Registrar([FromBody] MUsuario dados) {
+            throw new NotImplementedException();
+        }
 
-        [HttpPost("registrar/comunidade/")]
-        public Task<ActionResult<HttpResponse>> RegistrarComunidade([FromBody] MUsuario dados) {
-            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/registrar/comunidade' used");
+        public ActionResult<HttpResponse> Alterar([FromBody] MUsuario daods) {
+            throw new NotImplementedException();
+        }
+        public ActionResult<HttpResponse> Deletar(int codigo) {
+            throw new NotImplementedException();
+        }
+
+        [HttpGet("consultar/{codigo}")]
+        public ActionResult<HttpResponse> Consultar(int codigo) {
+            SystemUtils.Log(EHTTPLog.GET, "route 'api/usuario/consultar/' used");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Rota não autorizada!"
+                Message = "Todos usuario consultados."
             };
 
-            if (!ModelState.IsValid) {
-                httpMessage.Message = SystemUtils.Log(ETitleLog.SYSTEM, "Parametros Ausentes!");
-                httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
+            try {
+
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault(user => user.Codigo == codigo);
+
+                if (usuario == null) {
+                    httpMessage.Code = (int)EHttpResponse.NOT_FOUND;
+                    httpMessage.Message = $"Usuario de codigo {codigo}, não encontrado.";
+                }
+
+                DTOConsultarUsuario dtoUsuario = _mapper.Map<DTOConsultarUsuario>(usuario);
+
+                httpMessage.Code = (int)EHttpResponse.OK;
+                httpMessage.Message = "Usuario encontrado.";
+                httpMessage.Response = dtoUsuario;
+                return StatusCode(httpMessage.Code, httpMessage);
+
+            } catch (Exception E) {
+                httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                httpMessage.Message = "Erro interno do servidor.";
+                httpMessage.Error = E.Message;
+                return StatusCode(httpMessage.Code, httpMessage);
             }
-
-            return Task.FromResult<ActionResult<HttpResponse>>(StatusCode(httpMessage.Code, httpMessage));
         }
 
-        public Task<ActionResult<HttpResponse>> Registrar([FromBody] MUsuario dados) {
-            throw new NotImplementedException();
-        }
+        [HttpGet("consultar/")]
+        public ActionResult<HttpResponse> ConsultarTodos() {
+            SystemUtils.Log(EHTTPLog.GET, "route 'api/usuario/consultar/{codigo}' used");
+            HttpResponse httpMessage = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Todos usuario consultados"
+            };
 
-        public Task<ActionResult<HttpResponse>> Alterar([FromBody] MUsuario daods) {
-            throw new NotImplementedException();
-        }
+            try {
+                
+                List<MUsuario> usuarios = _context.Usuario.ToList();
 
-        public Task<ActionResult<HttpResponse>> Deletar([FromBody] int codigo) {
-            throw new NotImplementedException();
-        }
+                if (usuarios.Count <= 0) {
+                    httpMessage.Code = (int)EHttpResponse.NOT_FOUND;
+                    httpMessage.Message = "Usuario não encontrados";
+                    return StatusCode(httpMessage.Code, httpMessage);
+                }
 
-        public Task<ActionResult<HttpResponse>> Consultar([FromBody] int codigo) {
-            throw new NotImplementedException();
-        }
+                List<DTOConsultarUsuario> dtoUsuarios = new List<DTOConsultarUsuario>();
+                usuarios.ForEach(usuario => {
+                    dtoUsuarios.Add(_mapper.Map<DTOConsultarUsuario>(usuario));
+                });
 
-        public Task<ActionResult<HttpResponse>> ConsultarTodos() {
-            throw new NotImplementedException();
+                httpMessage.Code = (int)EHttpResponse.OK;
+                httpMessage.Message = "Usuario encontrados";
+                httpMessage.Response = dtoUsuarios;
+                return StatusCode(httpMessage.Code, httpMessage);
+
+            } catch (Exception E) {
+                httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                httpMessage.Message = "Erro interno do servidor";
+                httpMessage.Error = E.Message;
+                return StatusCode(httpMessage.Code, httpMessage);
+            }
         }
     }
 }

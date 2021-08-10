@@ -1,15 +1,11 @@
-﻿using OrderAPI.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderAPI.Models {
-    public class MUsuario {
-        [Key]
-        public int Codigo { get; set; }
-
+namespace OrderAPI.Data.DTO {
+    public class DTOCriarUsuario {
         [Required(ErrorMessage = "O nome deve ser preenchido!")]
         [MaxLength(80, ErrorMessage = "O limite de Caractéres do Nome foi atingido")]
         public String Nome { get; set; }
@@ -26,9 +22,5 @@ namespace OrderAPI.Models {
         [Required(ErrorMessage = "A senha deve ser preenchida!")]
         [MinLength(5, ErrorMessage = "A senha deve possuir no minimo 5 dígitos!")]
         public String Senha { get; set; }
-        public Guid Token { get; set; }
-        public EPrevilegios NivelAcesso { get; set; }
-        public DateTime DataCadastro { get; set; }
-        public EStatusRegistro Status { get; set; }
     }
 }

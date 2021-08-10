@@ -7,7 +7,7 @@ using OrderAPI.Database;
 
 namespace OrderAPI.Migrations
 {
-    [DbContext(typeof(DBService))]
+    [DbContext(typeof(DBContext))]
     partial class DBServiceModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

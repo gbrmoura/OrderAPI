@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using OrderAPI.Configs;
 using OrderAPI.Database;
+using System;
 
 namespace OrderAPI {
     public class Startup {
@@ -16,9 +17,9 @@ namespace OrderAPI {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
-            services.AddDbContext<DBService>(ops => ops.UseMySQL(DBConfig.ConnectionString()));
+            services.AddDbContext<DBContext>(ops => ops.UseMySQL(DBConfig.ConnectionString()));
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddControllers();
-            
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
