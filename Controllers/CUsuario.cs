@@ -54,9 +54,6 @@ namespace OrderAPI.Controllers {
 
                 MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
                 usuarioDB.Senha = PasswordService.EncryptPassword(dados.Senha);
-                usuarioDB.NivelAcesso = EPrevilegios.Visitante;
-                usuarioDB.Status = EStatusRegistro.Ativo;
-                usuarioDB.DataCadastro = DateTime.Now;
                 
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();

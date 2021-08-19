@@ -1,34 +1,33 @@
-﻿using OrderAPI.Enums;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace OrderAPI.Models {
     public class MUsuario {
         [Key]
         public int Codigo { get; set; }
 
-        [Required(ErrorMessage = "O nome deve ser preenchido!")]
-        [MaxLength(80, ErrorMessage = "O limite de Caractéres do Nome foi atingido")]
-        public String Nome { get; set; }
+        [Required(ErrorMessage = "Nome deve ser informado.")]
+        [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
+        public string Nome { get; set; }
 
-        [Required(ErrorMessage = "O sobrenome deve ser preenchido!")]
-        [MaxLength(110, ErrorMessage = "O limite de Caractéres do Sobrenome foi atingido")]
-        public String Sobrenome { get; set; }
+        [Required(ErrorMessage = "Sobrenome deve ser informado.")]
+        [MaxLength(145, ErrorMessage = "O limite de 145 caractéres foi atingido.")]
+        public string Sobrenome { get; set; }
 
-        [Required(ErrorMessage = "O email deve ser preenchido!")]
-        [EmailAddress(ErrorMessage = "Endereço de E-mail inválido")]
-        [MaxLength(245, ErrorMessage = "O limite de Caractéres do email foi atingido")]
-        public String Email { get; set; }
+        [MaxLength(14, ErrorMessage = "O limite de 14 caractéres foi atigido.")]
+        public string Prontuario { get; set; }
 
-        [Required(ErrorMessage = "A senha deve ser preenchida!")]
-        [MinLength(5, ErrorMessage = "A senha deve possuir no minimo 5 dígitos!")]
-        public String Senha { get; set; }
-        public Guid Token { get; set; }
-        public EPrevilegios NivelAcesso { get; set; }
-        public DateTime DataCadastro { get; set; }
-        public EStatusRegistro Status { get; set; }
+        [Required(ErrorMessage = "Senha deve ser informada.")]
+        [MinLength(5, ErrorMessage = "O limite minimo de 5 caracéres não foi atigido.")]
+        public string Senha { get; set; }
+
+        [Required(ErrorMessage = "E-Mail deve ser informado.")]
+        [EmailAddress(ErrorMessage = "E-Mail inválido.")]
+        [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
+        public string Email { get; set; }
+
+        public virtual MUsuarioEndereco Endereco { get; set; }
+        public virtual ICollection<MUsuarioTelefone> Telefones { get; set; }
+
     }
 }
