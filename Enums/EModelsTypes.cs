@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderAPI.Enums {
-    public enum EPrevilegios {
-        Comunidade,
-        Visitante,
-        Cantina
+    public enum EPrevilegio {
+        MASTER, 
+        GERENTE,
+        PADRAO
     }
-    public enum EStatusRegistro {
-        Ativo,
-        Deletado
+
+    public enum EStatus {
+        UNDEFINED
     }
 }

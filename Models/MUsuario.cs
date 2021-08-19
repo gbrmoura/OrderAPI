@@ -26,8 +26,7 @@ namespace OrderAPI.Models {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
 
-        public virtual MUsuarioEndereco Endereco { get; set; }
-        public virtual ICollection<MUsuarioTelefone> Telefones { get; set; }
+       // TODO: Colocar as chaves estrangeiras
 
     }
 }
