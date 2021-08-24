@@ -16,7 +16,7 @@ namespace OrderAPI.Database {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {
-            //function to configure database
+            // TODO: Configura banco de dados!
         }
 
         public DbSet<MUsuario> Usuario { get; set; }

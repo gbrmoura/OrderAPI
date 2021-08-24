@@ -14,6 +14,7 @@ using OrderAPI.Utils;
 using OrderAPI.Database;
 using OrderAPI.Data.DTO;
 using AutoMapper;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderAPI.Controllers {
 
@@ -44,8 +45,8 @@ namespace OrderAPI.Controllers {
 
             try {
 
-                MUsuario usuario = _context.Usuario.
-                    FirstOrDefault(user => user.Email.Equals(dados.Email));
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault(user => user.Email.Equals(dados.Email));
 
                 if (usuario != null) {
                     httpMessage.Message = "Email ja cadastrado!";

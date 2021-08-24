@@ -19,8 +19,5 @@ namespace OrderAPI.Data.DTO {
         [EmailAddress(ErrorMessage = "Endereço de E-mail inválido")]
         [MaxLength(245, ErrorMessage = "O limite de Caractéres do email foi atingido")]
         public String Email { get; set; }
-        public EPrevilegios NivelAcesso { get; set; }
-        public DateTime DataCadastro { get; set; }
-        public EStatusRegistro Status { get; set; }
     }
 }

@@ -26,7 +26,8 @@ namespace OrderAPI.Models {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
 
-       // TODO: Colocar as chaves estrangeiras
+        public MUsuarioEndereco Endereco { get; set; }
 
+        public List<MUsuarioTelefone> Telefones { get; set; }
     }
 }
