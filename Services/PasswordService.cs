@@ -1,9 +1,8 @@
 ﻿using System;
 
 namespace OrderAPI.Services {
-    public class PasswordService {
 
-        private PasswordService() { }
+    public static class PasswordService {
 
         public static String EncryptPassword(String password) {
             return BCrypt.Net.BCrypt.HashPassword(password);

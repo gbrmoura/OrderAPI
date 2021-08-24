@@ -28,24 +28,23 @@ namespace OrderAPI.Controllers {
 
         [HttpPost("registrar/")]
         public ActionResult<HttpResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest dados) {
-            SystemUtils.Log(EHTTPLog.POST, "route used 'api/usuario/registrar/' ");
-            HttpResponse httpMessage = new HttpResponse() {
+            HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada!"
             };
 
             if (!ModelState.IsValid) {
-                httpMessage.Message = "Parametros Ausentes!";
-                httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Message = "Parametros Ausentes!";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
             }
 
             try {
                 MUsuario usuario = _context.Usuario.FirstOrDefault(user => user.Email.Equals(dados.Email));
 
                 if (usuario != null) {
-                    httpMessage.Message = "Email ja cadastrado!";
-                    return StatusCode(httpMessage.Code, httpMessage);
+                    response.Message = "Email ja cadastrado!";
+                    return StatusCode(response.Code, response);
                 }
 
                 MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
@@ -54,34 +53,43 @@ namespace OrderAPI.Controllers {
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();
 
-                httpMessage.Code = (int)EHttpResponse.OK;
-                httpMessage.Message = "Usuario cadastrado com sucesso!";
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Usuario cadastrado com sucesso!";
+                return StatusCode(response.Code, response);
                 
             } catch (Exception E) {
-                httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                httpMessage.Message = "Erro interno do servidor!";
-                httpMessage.Error = E.Message;
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
             }
         }
 
         [HttpPost("login/")]
         public ActionResult<HttpResponse> Login([FromBody] LoginRequest dados) {
-            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/login' used");
-            HttpResponse httpMessage = new HttpResponse() {
+            HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada!"
             };
 
             if (!ModelState.IsValid) {
-                httpMessage.Message = "Parametros Ausentes!";
-                httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Message = "Parametros Ausentes!";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
             }
 
-            // TODO: Fazer login
-            throw new NotImplementedException();
+            try {
+
+                // TODO: Fazer login
+
+                return StatusCode(response.Code, response);
+            
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
 
         public ActionResult<HttpResponse> Registrar([FromBody] MUsuario dados) {
@@ -97,7 +105,6 @@ namespace OrderAPI.Controllers {
 
         [HttpGet("consultar/{codigo}")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
-            SystemUtils.Log(EHTTPLog.GET, "route 'api/usuario/consultar/' used");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Todos usuario consultados."

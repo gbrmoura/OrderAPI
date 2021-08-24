@@ -6,9 +6,8 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderAPI.Services {
-    public class ModelStateService {
-        
-        public ModelStateService() { }
+
+    public static class ModelStateService {
 
         public static List<HttpError> ErrorConverter(ModelStateDictionary modelState) {
             if (modelState.ErrorCount <= 0) {
