@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 using OrderAPI.Interfaces;
 using OrderAPI.Models;
@@ -27,6 +28,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("registrar/")]
+        [AllowAnonymous]
         public ActionResult<HttpResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -66,27 +68,46 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("login/")]
+        [AllowAnonymous]
         public ActionResult<HttpResponse> Login([FromBody] LoginRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Rota não autorizada!"
+                Message = "Rota não autorizada"
             };
 
             if (!ModelState.IsValid) {
-                response.Message = "Parametros Ausentes!";
+                response.Message = "Parametros Ausentes";
                 response.Error = ModelStateService.ErrorConverter(ModelState);
                 return StatusCode(response.Code, response);
             }
 
             try {
+                MUsuario usuario = _context.Usuario.FirstOrDefault(user => user.Email.Equals(dados.Email));
 
-                // TODO: Fazer login
+                if (usuario == null) {
+                    response.Message = "Usuario não encontrado";
+                    return StatusCode(response.Code, response);
+                }
+
+                if (!PasswordService.VerifyPassword(dados.Senha, usuario.Senha)) {
+                    response.Message = "Senhas não conferem";
+                    return StatusCode(response.Code, response);
+                }
+
+                string token = TokenService.GenerateToken(usuario);
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Logado com sucesso";
+                response.Response = new {
+                    email = usuario.Email,
+                    token = token
+                };
 
                 return StatusCode(response.Code, response);
-            
+
             } catch (Exception E) {
                 response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                response.Message = "Erro interno do servidor!";
+                response.Message = "Erro interno do servidor";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
             }
@@ -104,6 +125,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/{codigo}")]
+        [Authorize]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -136,6 +158,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/")]
+        [Authorize]
         public ActionResult<HttpResponse> ConsultarTodos() {
             SystemUtils.Log(EHTTPLog.GET, "route 'api/usuario/consultar/{codigo}' used");
             HttpResponse httpMessage = new HttpResponse() {
