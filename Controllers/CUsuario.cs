@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
-using OrderAPI;
 using OrderAPI.Interfaces;
 using OrderAPI.Models;
 using OrderAPI.Enums;
 using OrderAPI.Services;
 using OrderAPI.Utils;
 using OrderAPI.Database;
-using OrderAPI.Data.DTO;
-using AutoMapper;
-using Microsoft.EntityFrameworkCore;
+using OrderAPI.Data.Request;
+using OrderAPI.Data.Response;
 
 namespace OrderAPI.Controllers {
 
@@ -29,9 +26,9 @@ namespace OrderAPI.Controllers {
             _mapper = mapper;
         }
 
-        [HttpPost("registrar/visitante/")]
-        public ActionResult<HttpResponse> RegistrarVisitante([FromBody] DTOCriarUsuario dados) {
-            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/registrar/visitante' used");
+        [HttpPost("registrar/")]
+        public ActionResult<HttpResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest dados) {
+            SystemUtils.Log(EHTTPLog.POST, "route used 'api/usuario/registrar/' ");
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada!"
@@ -44,9 +41,7 @@ namespace OrderAPI.Controllers {
             }
 
             try {
-
-                MUsuario usuario = _context.Usuario
-                    .FirstOrDefault(user => user.Email.Equals(dados.Email));
+                MUsuario usuario = _context.Usuario.FirstOrDefault(user => user.Email.Equals(dados.Email));
 
                 if (usuario != null) {
                     httpMessage.Message = "Email ja cadastrado!";
@@ -60,7 +55,7 @@ namespace OrderAPI.Controllers {
                 _context.SaveChanges();
 
                 httpMessage.Code = (int)EHttpResponse.OK;
-                httpMessage.Message = "Visitante cadastrado com sucesso!";
+                httpMessage.Message = "Usuario cadastrado com sucesso!";
                 return StatusCode(httpMessage.Code, httpMessage);
                 
             } catch (Exception E) {
@@ -70,6 +65,25 @@ namespace OrderAPI.Controllers {
                 return StatusCode(httpMessage.Code, httpMessage);
             }
         }
+
+        [HttpPost("login/")]
+        public ActionResult<HttpResponse> Login([FromBody] LoginRequest dados) {
+            SystemUtils.Log(EHTTPLog.POST, "route 'api/usuario/login' used");
+            HttpResponse httpMessage = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada!"
+            };
+
+            if (!ModelState.IsValid) {
+                httpMessage.Message = "Parametros Ausentes!";
+                httpMessage.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(httpMessage.Code, httpMessage);
+            }
+
+            // TODO: Fazer login
+            throw new NotImplementedException();
+        }
+
         public ActionResult<HttpResponse> Registrar([FromBody] MUsuario dados) {
             throw new NotImplementedException();
         }
@@ -99,7 +113,7 @@ namespace OrderAPI.Controllers {
                     httpMessage.Message = $"Usuario de codigo {codigo}, não encontrado.";
                 }
 
-                DTOConsultarUsuario dtoUsuario = _mapper.Map<DTOConsultarUsuario>(usuario);
+                ConsultarUsuarioResponse dtoUsuario = _mapper.Map<ConsultarUsuarioResponse>(usuario);
 
                 httpMessage.Code = (int)EHttpResponse.OK;
                 httpMessage.Message = "Usuario encontrado.";
@@ -132,9 +146,9 @@ namespace OrderAPI.Controllers {
                     return StatusCode(httpMessage.Code, httpMessage);
                 }
 
-                List<DTOConsultarUsuario> dtoUsuarios = new List<DTOConsultarUsuario>();
+                List<ConsultarUsuarioResponse> dtoUsuarios = new List<ConsultarUsuarioResponse>();
                 usuarios.ForEach(usuario => {
-                    dtoUsuarios.Add(_mapper.Map<DTOConsultarUsuario>(usuario));
+                    dtoUsuarios.Add(_mapper.Map<ConsultarUsuarioResponse>(usuario));
                 });
 
                 httpMessage.Code = (int)EHttpResponse.OK;

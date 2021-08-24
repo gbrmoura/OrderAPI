@@ -195,9 +195,6 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
 
-                    b.Property<int?>("EnderecoCodigo")
-                        .HasColumnType("int");
-
                     b.Property<string>("Nome")
                         .IsRequired()
                         .HasMaxLength(115)
@@ -218,73 +215,7 @@ namespace OrderAPI.Migrations
 
                     b.HasKey("Codigo");
 
-                    b.HasIndex("EnderecoCodigo");
-
                     b.ToTable("Usuario");
-                });
-
-            modelBuilder.Entity("OrderAPI.Models.MUsuarioEndereco", b =>
-                {
-                    b.Property<int>("Codigo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Bairro")
-                        .IsRequired()
-                        .HasMaxLength(145)
-                        .HasColumnType("varchar(145)");
-
-                    b.Property<string>("CEP")
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.Property<string>("Cidade")
-                        .IsRequired()
-                        .HasMaxLength(115)
-                        .HasColumnType("varchar(115)");
-
-                    b.Property<string>("Estado")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<string>("Logradouro")
-                        .IsRequired()
-                        .HasMaxLength(115)
-                        .HasColumnType("varchar(115)");
-
-                    b.Property<int>("Numero")
-                        .HasColumnType("int");
-
-                    b.HasKey("Codigo");
-
-                    b.ToTable("UsuarioEndereco");
-                });
-
-            modelBuilder.Entity("OrderAPI.Models.MUsuarioTelefone", b =>
-                {
-                    b.Property<int>("Codigo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("DDD")
-                        .IsRequired()
-                        .HasMaxLength(2)
-                        .HasColumnType("varchar(2)");
-
-                    b.Property<int?>("MUsuarioCodigo")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Telefone")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("varchar(45)");
-
-                    b.HasKey("Codigo");
-
-                    b.HasIndex("MUsuarioCodigo");
-
-                    b.ToTable("UsuarioTelefone");
                 });
 
             modelBuilder.Entity("OrderAPI.Models.MPedido", b =>
@@ -320,22 +251,6 @@ namespace OrderAPI.Migrations
                     b.Navigation("Categoria");
                 });
 
-            modelBuilder.Entity("OrderAPI.Models.MUsuario", b =>
-                {
-                    b.HasOne("OrderAPI.Models.MUsuarioEndereco", "Endereco")
-                        .WithMany()
-                        .HasForeignKey("EnderecoCodigo");
-
-                    b.Navigation("Endereco");
-                });
-
-            modelBuilder.Entity("OrderAPI.Models.MUsuarioTelefone", b =>
-                {
-                    b.HasOne("OrderAPI.Models.MUsuario", null)
-                        .WithMany("Telefones")
-                        .HasForeignKey("MUsuarioCodigo");
-                });
-
             modelBuilder.Entity("OrderAPI.Models.MCategoria", b =>
                 {
                     b.Navigation("Produtos");
@@ -344,11 +259,6 @@ namespace OrderAPI.Migrations
             modelBuilder.Entity("OrderAPI.Models.MPedido", b =>
                 {
                     b.Navigation("Items");
-                });
-
-            modelBuilder.Entity("OrderAPI.Models.MUsuario", b =>
-                {
-                    b.Navigation("Telefones");
                 });
 #pragma warning restore 612, 618
         }

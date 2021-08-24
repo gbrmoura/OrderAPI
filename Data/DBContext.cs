@@ -20,8 +20,6 @@ namespace OrderAPI.Database {
         }
 
         public DbSet<MUsuario> Usuario { get; set; }
-        public DbSet<MUsuarioEndereco> UsuarioEndereco { get; set; }
-        public DbSet<MUsuarioTelefone> UsuarioTelefone { get; set; }
         public DbSet<MFuncionario> Funcionario { get; set; }
         public DbSet<MCategoria> Categoria { get; set; }
         public DbSet<MPedido> Pedido { get; set; }

@@ -66,21 +66,20 @@ namespace OrderAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "UsuarioEndereco",
+                name: "Usuario",
                 columns: table => new
                 {
                     Codigo = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    CEP = table.Column<string>(type: "varchar(8)", maxLength: 8, nullable: true),
-                    Logradouro = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
-                    Numero = table.Column<int>(type: "int", nullable: false),
-                    Bairro = table.Column<string>(type: "varchar(145)", maxLength: 145, nullable: false),
-                    Cidade = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
-                    Estado = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false)
+                    Nome = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
+                    Sobrenome = table.Column<string>(type: "varchar(145)", maxLength: 145, nullable: false),
+                    Prontuario = table.Column<string>(type: "varchar(14)", maxLength: 14, nullable: true),
+                    Senha = table.Column<string>(type: "text", nullable: false),
+                    Email = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_UsuarioEndereco", x => x.Codigo);
+                    table.PrimaryKey("PK_Usuario", x => x.Codigo);
                 });
 
             migrationBuilder.CreateTable(
@@ -129,30 +128,6 @@ namespace OrderAPI.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Usuario",
-                columns: table => new
-                {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
-                    Sobrenome = table.Column<string>(type: "varchar(145)", maxLength: 145, nullable: false),
-                    Prontuario = table.Column<string>(type: "varchar(14)", maxLength: 14, nullable: true),
-                    Senha = table.Column<string>(type: "text", nullable: false),
-                    Email = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: false),
-                    EnderecoCodigo = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Usuario", x => x.Codigo);
-                    table.ForeignKey(
-                        name: "FK_Usuario_UsuarioEndereco_EnderecoCodigo",
-                        column: x => x.EnderecoCodigo,
-                        principalTable: "UsuarioEndereco",
-                        principalColumn: "Codigo",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "PedidoItem",
                 columns: table => new
                 {
@@ -180,27 +155,6 @@ namespace OrderAPI.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
-            migrationBuilder.CreateTable(
-                name: "UsuarioTelefone",
-                columns: table => new
-                {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    DDD = table.Column<string>(type: "varchar(2)", maxLength: 2, nullable: false),
-                    Telefone = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    MUsuarioCodigo = table.Column<int>(type: "int", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_UsuarioTelefone", x => x.Codigo);
-                    table.ForeignKey(
-                        name: "FK_UsuarioTelefone_Usuario_MUsuarioCodigo",
-                        column: x => x.MUsuarioCodigo,
-                        principalTable: "Usuario",
-                        principalColumn: "Codigo",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
             migrationBuilder.CreateIndex(
                 name: "IX_Pedido_MetodoPagamentoCodigo",
                 table: "Pedido",
@@ -220,16 +174,6 @@ namespace OrderAPI.Migrations
                 name: "IX_Produto_CategoriaCodigo",
                 table: "Produto",
                 column: "CategoriaCodigo");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Usuario_EnderecoCodigo",
-                table: "Usuario",
-                column: "EnderecoCodigo");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_UsuarioTelefone_MUsuarioCodigo",
-                table: "UsuarioTelefone",
-                column: "MUsuarioCodigo");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -244,7 +188,7 @@ namespace OrderAPI.Migrations
                 name: "PedidoItem");
 
             migrationBuilder.DropTable(
-                name: "UsuarioTelefone");
+                name: "Usuario");
 
             migrationBuilder.DropTable(
                 name: "Pedido");
@@ -253,16 +197,10 @@ namespace OrderAPI.Migrations
                 name: "Produto");
 
             migrationBuilder.DropTable(
-                name: "Usuario");
-
-            migrationBuilder.DropTable(
                 name: "MetodoPagamento");
 
             migrationBuilder.DropTable(
                 name: "Categoria");
-
-            migrationBuilder.DropTable(
-                name: "UsuarioEndereco");
         }
     }
 }

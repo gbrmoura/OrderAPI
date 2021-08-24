@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace OrderAPI.Models {
+
     public class MCategoria {
         [Key]
         public int Codigo { get; set; }

@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderAPI.Models {
-    public class MUsuario {
-        [Key]
-        public int Codigo { get; set; }
+namespace OrderAPI.Data.Response {
 
+    public class ConsultarUsuarioResponse {
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
         public string Nome { get; set; }
@@ -26,4 +25,5 @@ namespace OrderAPI.Models {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
     }
+
 }
