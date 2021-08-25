@@ -31,5 +31,22 @@ namespace OrderAPI.Services {
             return tokenHandler.WriteToken(token);
         }
 
+        public static string GenerateToken(MFuncionario dados) {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(TokenConfigs.Secret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor {
+                Subject = new ClaimsIdentity(new Claim[] {
+                    new Claim(ClaimTypes.Name, dados.Login.ToString()),
+                    new Claim(ClaimTypes.Role, dados.Previlegio.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(2),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+
+            return tokenHandler.WriteToken(token);
+        }
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace OrderAPI.Data.Request {
 
-    public class LoginRequest {
+    public class LoginUsuarioRequest {
 
         [Required(ErrorMessage = "E-Mail deve ser informado.")]
         [EmailAddress(ErrorMessage = "E-Mail inválido.")]

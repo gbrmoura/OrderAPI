@@ -1,73 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-
-using OrderAPI.Models;
+using OrderAPI.Database;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using OrderAPI.Data.Request;
 using OrderAPI.Enums;
 using OrderAPI.Services;
-using OrderAPI.Database;
-using OrderAPI.Data.Request;
+using OrderAPI.Models;
 using OrderAPI.Data.Response;
 
 namespace OrderAPI.Controllers {
 
-    [Route("api/usuario/")]
-    public class CUsuario : ControllerBase {
+    [Route("api/funcionario/")]
+    public class CFuncionario : ControllerBase {
 
         private DBContext _context;
         private IMapper _mapper;
 
-        public CUsuario(DBContext context, IMapper mapper) {
+        public CFuncionario(DBContext context, IMapper mapper) {
             _context = context;
             _mapper = mapper;
         }
 
         [HttpPost("registrar/")]
-        [AllowAnonymous]
-        public ActionResult<HttpResponse> Registrar([FromBody] CriarUsuarioRequest dados) {
-            HttpResponse response = new HttpResponse() {
-                Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Rota não autorizada!"
-            };
-
-            if (!ModelState.IsValid) {
-                response.Message = "Parametros Ausentes!";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
-            }
-
-            try {
-                MUsuario usuario = _context.Usuario.FirstOrDefault(user => user.Email.Equals(dados.Email));
-
-                if (usuario != null) {
-                    response.Message = "Email ja cadastrado!";
-                    return StatusCode(response.Code, response);
-                }
-
-                MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
-                usuarioDB.Senha = PasswordService.EncryptPassword(dados.Senha);
-                
-                _context.Usuario.Add(usuarioDB);
-                _context.SaveChanges();
-
-                response.Code = (int)EHttpResponse.OK;
-                response.Message = "Usuario cadastrado com sucesso!";
-                return StatusCode(response.Code, response);
-                
-            } catch (Exception E) {
-                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
-            }
-        }
-
-        [HttpPost("login/")]
-        [AllowAnonymous]
-        public ActionResult<HttpResponse> Login([FromBody] LoginUsuarioRequest dados) {
+        // [Authorize(Roles = "MASTER, GERENTE")]
+        public ActionResult<HttpResponse> Registrar([FromBody] CriarFuncionarioRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada"
@@ -80,24 +40,67 @@ namespace OrderAPI.Controllers {
             }
 
             try {
-                MUsuario usuario = _context.Usuario.FirstOrDefault(user => user.Email.Equals(dados.Email));
+                MFuncionario funcionario = _context.Funcionario
+                    .FirstOrDefault(func => func.Login.Equals(dados.Login)); 
 
-                if (usuario == null) {
-                    response.Message = "Usuario não encontrado";
+                if (funcionario != null) {
+                    response.Message = "Funcionario já cadastrado";
                     return StatusCode(response.Code, response);
                 }
 
-                if (!PasswordService.VerifyPassword(dados.Senha, usuario.Senha)) {
+                MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
+                dbFuncionario.Senha = PasswordService.EncryptPassword(dados.Senha);
+
+                _context.Funcionario.Add(dbFuncionario);
+                _context.SaveChanges();
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Funcionario cadastrado com sucesso";
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
+        [HttpPost("login/")]
+        [AllowAnonymous]
+        public ActionResult<HttpResponse> Login([FromBody] LoginFuncionarioRequest dados) {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada"
+            };
+
+            if (!ModelState.IsValid) {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try {
+                MFuncionario funcionario = _context.Funcionario
+                    .FirstOrDefault(func => func.Login.Equals(dados.Login));
+
+                if (funcionario == null) {
+                    response.Message = "Funcionario não encontrado";
+                    return StatusCode(response.Code, response);
+                }
+
+                if (!PasswordService.VerifyPassword(dados.Senha, funcionario.Senha)) {
                     response.Message = "Senhas não conferem";
                     return StatusCode(response.Code, response);
                 }
 
-                string token = TokenService.GenerateToken(usuario);
+                string token = TokenService.GenerateToken(funcionario);
 
                 response.Code = (int)EHttpResponse.OK;
                 response.Message = "Logado com sucesso";
                 response.Response = new {
-                    email = usuario.Email,
+                    nome =funcionario.Nome,
+                    email = funcionario.Login,
                     token = token
                 };
 
@@ -105,7 +108,7 @@ namespace OrderAPI.Controllers {
 
             } catch (Exception E) {
                 response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                response.Message = "Erro interno do servidor";
+                response.Message = "Erro interno do servidor!";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
             }
@@ -121,19 +124,19 @@ namespace OrderAPI.Controllers {
 
             try {
 
-                MUsuario usuario = _context.Usuario
+                MFuncionario funcionario = _context.Funcionario
                     .FirstOrDefault(user => user.Codigo == codigo);
 
-                if (usuario == null) {
+                if (funcionario == null) {
                     httpMessage.Code = (int)EHttpResponse.NOT_FOUND;
-                    httpMessage.Message = $"Usuario de codigo {codigo}, não encontrado.";
+                    httpMessage.Message = $"Funcionario de codigo {codigo}, não encontrado.";
                 }
 
-                ConsultarUsuarioResponse dtoUsuario = _mapper.Map<ConsultarUsuarioResponse>(usuario);
+                ConsultarFuncionarioResponse dbFuncionario = _mapper.Map<ConsultarFuncionarioResponse>(funcionario);
 
                 httpMessage.Code = (int)EHttpResponse.OK;
-                httpMessage.Message = "Usuario encontrado.";
-                httpMessage.Response = dtoUsuario;
+                httpMessage.Message = "Funcionario encontrado.";
+                httpMessage.Response = dbFuncionario;
                 return StatusCode(httpMessage.Code, httpMessage);
 
             } catch (Exception E) {
