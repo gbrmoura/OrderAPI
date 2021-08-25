@@ -4,15 +4,15 @@ namespace OrderAPI.Services {
 
     public static class PasswordService {
 
-        public static String EncryptPassword(String password) {
+        public static string EncryptPassword(string password) {
             return BCrypt.Net.BCrypt.HashPassword(password);
         } 
 
-        public static bool VerifyPassword(String password, String verifyPassword) {
-            return BCrypt.Net.BCrypt.Verify(password, verifyPassword);
+        public static bool VerifyPassword(string password, string hashPassword) {
+            return BCrypt.Net.BCrypt.Verify(password, hashPassword);
         }
 
-        public static Boolean ComparePassword(String password, string confirmPassword) {
+        public static bool ComparePassword(string password, string confirmPassword) {
             return password.Trim().Equals(confirmPassword.Trim());
         }
 

@@ -92,7 +92,7 @@ namespace OrderAPI.Controllers {
                 if (!PasswordService.VerifyPassword(dados.Senha, funcionario.Senha)) {
                     response.Message = "Senhas não conferem";
                     return StatusCode(response.Code, response);
-                }
+                } 
 
                 string token = TokenService.GenerateToken(funcionario);
 
@@ -115,7 +115,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/{codigo}")]
-        [Authorize]
+        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
