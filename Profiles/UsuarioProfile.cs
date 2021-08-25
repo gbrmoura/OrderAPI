@@ -9,8 +9,8 @@ namespace OrderAPI.Profiles {
 
         public UsuarioProfile() {
             CreateMap<CriarUsuarioRequest, MUsuario>();
-            CreateMap<LoginFuncionarioRequest, MUsuario>();
-            CreateMap<MUsuario, ConsultarFuncionarioResponse>();
+            CreateMap<LoginUsuarioRequest, MUsuario>();
+            CreateMap<MUsuario, ConsultarUsuarioResponse>();
         }
     
     }

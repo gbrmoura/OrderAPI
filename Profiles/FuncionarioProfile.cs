@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using OrderAPI.Data.Request;
+using OrderAPI.Data.Response;
 using OrderAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -12,6 +13,8 @@ namespace OrderAPI.Profiles {
 
         public FuncionarioProfile() {
             CreateMap<CriarFuncionarioRequest, MFuncionario>();
+            CreateMap<LoginFuncionarioRequest, MFuncionario>();
+            CreateMap<MFuncionario, ConsultarUsuarioResponse>();
         }
     }
 }
