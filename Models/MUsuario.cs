@@ -25,5 +25,7 @@ namespace OrderAPI.Models {
         [EmailAddress(ErrorMessage = "E-Mail inválido.")]
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
+
+        public string token { get; set; }
     }
 }

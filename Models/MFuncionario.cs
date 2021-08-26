@@ -26,5 +26,7 @@ namespace OrderAPI.Models {
         [Required(ErrorMessage = "Previlégio deve ser informado.")]
         public EPrevilegio Previlegio { get; set; }
 
+        public string token { get; set; }
+
     }
 }
