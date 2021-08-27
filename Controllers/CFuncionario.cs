@@ -94,14 +94,15 @@ namespace OrderAPI.Controllers {
                     return StatusCode(response.Code, response);
                 } 
 
-                string token = TokenService.GenerateToken(funcionario);
+                funcionario.Token = TokenService.GenerateToken(funcionario); 
+                _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;
                 response.Message = "Logado com sucesso";
                 response.Response = new {
                     nome = funcionario.Nome,
                     email = funcionario.Login,
-                    token = token
+                    token = funcionario.Token
                 };
 
                 return StatusCode(response.Code, response);
