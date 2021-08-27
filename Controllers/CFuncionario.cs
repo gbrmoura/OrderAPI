@@ -49,7 +49,7 @@ namespace OrderAPI.Controllers {
                 }
 
                 MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
-                dbFuncionario.Senha = PasswordService.EncryptPassword(dados.Senha);
+                dbFuncionario.Senha = PasswordService.EncryptPassword(dbFuncionario.Senha);
 
                 _context.Funcionario.Add(dbFuncionario);
                 _context.SaveChanges();
@@ -99,7 +99,7 @@ namespace OrderAPI.Controllers {
                 response.Code = (int)EHttpResponse.OK;
                 response.Message = "Logado com sucesso";
                 response.Response = new {
-                    nome =funcionario.Nome,
+                    nome = funcionario.Nome,
                     email = funcionario.Login,
                     token = token
                 };

@@ -49,7 +49,7 @@ namespace OrderAPI.Controllers {
                 }
 
                 MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
-                usuarioDB.Senha = PasswordService.EncryptPassword(dados.Senha);
+                usuarioDB.Senha = PasswordService.EncryptPassword(usuarioDB.Senha);
                 
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();
@@ -129,11 +129,6 @@ namespace OrderAPI.Controllers {
                 if (usuario == null) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = $"Usuario de codigo {codigo}, não encontrado.";
-                    return StatusCode(response.Code, response);
-                }
-
-                if (!usuario.Token.Equals("")) {
-                    response.Message = "Token de acesso não autenticado.";
                     return StatusCode(response.Code, response);
                 }
 
