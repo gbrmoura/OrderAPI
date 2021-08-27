@@ -11,6 +11,7 @@ using OrderAPI.Services;
 using OrderAPI.Database;
 using OrderAPI.Data.Request;
 using OrderAPI.Data.Response;
+using Microsoft.AspNetCore.Http;
 
 namespace OrderAPI.Controllers {
 
@@ -91,14 +92,15 @@ namespace OrderAPI.Controllers {
                     response.Message = "Senhas não conferem";
                     return StatusCode(response.Code, response);
                 }
-
-                string token = TokenService.GenerateToken(usuario);
+                    
+                usuario.Token = TokenService.GenerateToken(usuario);
+                _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;
                 response.Message = "Logado com sucesso";
                 response.Response = new {
                     email = usuario.Email,
-                    token = token
+                    token = usuario.Token
                 };
 
                 return StatusCode(response.Code, response);
@@ -114,7 +116,7 @@ namespace OrderAPI.Controllers {
         [HttpGet("consultar/{codigo}")]
         [Authorize]
         public ActionResult<HttpResponse> Consultar(int codigo) {
-            HttpResponse httpMessage = new HttpResponse() {
+            HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Todos usuario consultados."
             };
@@ -125,22 +127,28 @@ namespace OrderAPI.Controllers {
                     .FirstOrDefault(user => user.Codigo == codigo);
 
                 if (usuario == null) {
-                    httpMessage.Code = (int)EHttpResponse.NOT_FOUND;
-                    httpMessage.Message = $"Usuario de codigo {codigo}, não encontrado.";
+                    response.Code = (int)EHttpResponse.NOT_FOUND;
+                    response.Message = $"Usuario de codigo {codigo}, não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                if (!usuario.Token.Equals("")) {
+                    response.Message = "Token de acesso não autenticado.";
+                    return StatusCode(response.Code, response);
                 }
 
                 ConsultarUsuarioResponse dtoUsuario = _mapper.Map<ConsultarUsuarioResponse>(usuario);
 
-                httpMessage.Code = (int)EHttpResponse.OK;
-                httpMessage.Message = "Usuario encontrado.";
-                httpMessage.Response = dtoUsuario;
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Usuario encontrado.";
+                response.Response = dtoUsuario;
+                return StatusCode(response.Code, response);
 
             } catch (Exception E) {
-                httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                httpMessage.Message = "Erro interno do servidor.";
-                httpMessage.Error = E.Message;
-                return StatusCode(httpMessage.Code, httpMessage);
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
             }
         }
     }

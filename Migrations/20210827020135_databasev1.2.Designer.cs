@@ -9,8 +9,8 @@ using OrderAPI.Database;
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210826193710_updatev1")]
-    partial class updatev1
+    [Migration("20210827020135_databasev1.2")]
+    partial class databasev12
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -81,7 +81,7 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("varchar(40)");
 
-                    b.Property<string>("token")
+                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.HasKey("Codigo");
@@ -218,7 +218,7 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(145)
                         .HasColumnType("varchar(145)");
 
-                    b.Property<string>("token")
+                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.HasKey("Codigo");

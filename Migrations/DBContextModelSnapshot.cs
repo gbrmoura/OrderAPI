@@ -79,7 +79,7 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(40)
                         .HasColumnType("varchar(40)");
 
-                    b.Property<string>("token")
+                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.HasKey("Codigo");
@@ -216,7 +216,7 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(145)
                         .HasColumnType("varchar(145)");
 
-                    b.Property<string>("token")
+                    b.Property<string>("Token")
                         .HasColumnType("text");
 
                     b.HasKey("Codigo");

@@ -20,7 +20,8 @@ namespace OrderAPI.Services {
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new Claim[] {
                     new Claim(ClaimTypes.Email, dados.Email.ToString()),
-                    new Claim(ClaimTypes.Name, dados.Nome.ToString())
+                    new Claim(ClaimTypes.Actor, dados.Codigo.ToString()),
+                    new Claim(ClaimTypes.Name, dados.Nome.ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddHours(2),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -37,6 +38,7 @@ namespace OrderAPI.Services {
 
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new Claim[] {
+                    new Claim(ClaimTypes.Actor, dados.Codigo.ToString()),
                     new Claim(ClaimTypes.Name, dados.Login.ToString()),
                     new Claim(ClaimTypes.Role, dados.Previlegio.ToString())
                 }),
