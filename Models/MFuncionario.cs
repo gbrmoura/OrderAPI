@@ -20,7 +20,6 @@ namespace OrderAPI.Models {
 
         [Required(ErrorMessage = "Senha deve ser informada.")]
         [MinLength(5, ErrorMessage = "O limite minimo de 5 caractéres não foi atigido.")]
-        [MaxLength(40, ErrorMessage = "O limite de 40 caractéres foi atingido.")]
         public string Senha { get; set; }
 
         [Required(ErrorMessage = "Previlégio deve ser informado.")]
