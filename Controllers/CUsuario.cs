@@ -92,7 +92,10 @@ namespace OrderAPI.Controllers {
                     response.Message = "Senhas não conferem";
                     return StatusCode(response.Code, response);
                 }
-                    
+
+                // TODO: Utilizar o SigInManager
+                // TODO: Utilizar o UserManager
+
                 usuario.Token = TokenService.GenerateToken(usuario);
                 _context.SaveChanges();
 

@@ -46,8 +46,10 @@ namespace OrderAPI {
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
             //app.UseHttpsRedirection();
             app.UseRouting();
+            
             app.UseAuthentication();
             app.UseAuthorization();
+            
             app.UseCors(ops => {
                 ops.AllowAnyOrigin();
                 ops.AllowAnyMethod();
