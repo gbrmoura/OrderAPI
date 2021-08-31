@@ -40,7 +40,6 @@ namespace OrderAPI {
                     ValidateAudience = false
                 };
             });
-            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
