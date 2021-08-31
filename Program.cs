@@ -20,13 +20,15 @@ namespace OrderAPI {
                 .CreateLogger();
 
             try {
-                Log.Information("Starting the server...");
+                Log.Information("Application starting...");
                 CreateHostBuilder(args).Build().Run();
             } catch (Exception e) {
-                Log.Fatal(e, "Fatal error occurred");
+                Log.Error(e, "server error");
             } finally {
                 Log.CloseAndFlush();
             }
+
+            CreateHostBuilder(args).Build().Run();
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
