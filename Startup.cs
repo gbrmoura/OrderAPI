@@ -1,3 +1,4 @@
+using System.Threading;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -26,6 +27,16 @@ namespace OrderAPI {
             services.AddControllers();
             services.AddOptions();
 
+            services.AddSwaggerGen(ops => {
+                ops.SwaggerDoc("v1", 
+                    new Microsoft.OpenApi.Models.OpenApiInfo {
+                        Title = "Swagger Demo API",
+                        Description = "Demo API for showing Swagger",
+                        Version = "v1"
+                    }
+                );
+            });
+
             var key = Encoding.ASCII.GetBytes(TokenConfigs.Secret);
             services.AddAuthentication(ops => {
                 ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -40,12 +51,12 @@ namespace OrderAPI {
                     ValidateAudience = false
                 };
             });
+
+            
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
-            //app.UseHttpsRedirection();
             app.UseRouting();
-            
             app.UseAuthentication();
             app.UseAuthorization();
             
@@ -54,8 +65,14 @@ namespace OrderAPI {
                 ops.AllowAnyMethod();
                 ops.AllowAnyHeader();
             });
+
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllers();
+            });
+            
+            app.UseSwagger();
+            app.UseSwaggerUI(ops => {
+                ops.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
             });
         }
     }
