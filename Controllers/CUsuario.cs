@@ -95,9 +95,6 @@ namespace OrderAPI.Controllers {
                     return StatusCode(response.Code, response);
                 }
 
-                // TODO: Utilizar o SigInManager
-                // TODO: Utilizar o UserManager
-
                 usuario.Token = _jwtService.GenerateToken(usuario);
                 _context.SaveChanges();
 
