@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using OrderAPI.Configs;
 using OrderAPI.Database;
 using System;
 using System.Text;
@@ -14,14 +13,14 @@ using System.Text;
 namespace OrderAPI {
     public class Startup {
 
-        private IConfiguration _config { get; }
+        private IConfiguration _configuration { get; }
         
         public Startup(IConfiguration configuration) {
-            _config = configuration;
+            _configuration = configuration;
         }
 
         public void ConfigureServices(IServiceCollection services) {
-            services.AddDbContext<DBContext>(ops => ops.UseMySQL(_config.GetConnectionString("MySQLConnection")));
+            services.AddDbContext<DBContext>(ops => ops.UseMySQL(_configuration.GetConnectionString("MySQLConnection")));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
             services.AddControllers();
@@ -37,7 +36,7 @@ namespace OrderAPI {
                 );
             });
 
-            var key = Encoding.ASCII.GetBytes(TokenConfigs.Secret);
+            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value);
             services.AddAuthentication(ops => {
                 ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;

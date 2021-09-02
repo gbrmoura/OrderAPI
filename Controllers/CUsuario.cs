@@ -20,10 +20,12 @@ namespace OrderAPI.Controllers {
 
         private DBContext _context;
         private IMapper _mapper;
+        private TokenService _jwtService;
 
-        public CUsuario(DBContext context, IMapper mapper) {
+        public CUsuario(DBContext context, IMapper mapper, TokenService jwtService) {
             _context = context;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
 
         [HttpPost("registrar/")]
@@ -96,7 +98,7 @@ namespace OrderAPI.Controllers {
                 // TODO: Utilizar o SigInManager
                 // TODO: Utilizar o UserManager
 
-                usuario.Token = TokenService.GenerateToken(usuario);
+                usuario.Token = _jwtService.GenerateToken(usuario);
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;

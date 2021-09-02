@@ -1,11 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using OrderAPI.Configs;
-using OrderAPI.Enums;
 using OrderAPI.Models;
-using OrderAPI.Utils;
-using System;
 
-namespace OrderAPI.Database {
+namespace OrderAPI.Database
+{
     public class DBContext : DbContext {
 
         public DBContext() { }

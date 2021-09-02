@@ -19,10 +19,12 @@ namespace OrderAPI.Controllers {
 
         private DBContext _context;
         private IMapper _mapper;
+        private TokenService _jwtService;
 
-        public CFuncionario(DBContext context, IMapper mapper) {
+        public CFuncionario(DBContext context, IMapper mapper, TokenService jwtService) {
             _context = context;
             _mapper = mapper;
+            _jwtService = jwtService;
         }
 
         [HttpPost("registrar/")]
@@ -94,7 +96,7 @@ namespace OrderAPI.Controllers {
                     return StatusCode(response.Code, response);
                 } 
 
-                funcionario.Token = TokenService.GenerateToken(funcionario); 
+                funcionario.Token = _jwtService.GenerateToken(funcionario); 
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;

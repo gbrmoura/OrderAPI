@@ -1,21 +1,25 @@
 ﻿using OrderAPI.Models;
 using System;
 using System.Text;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Threading.Tasks;
-using OrderAPI.Configs;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 
-namespace OrderAPI.Services {
+namespace OrderAPI.Services
+{
 
-    public static class TokenService {
+    public class TokenService {
 
-        public static string GenerateToken(MUsuario dados) {
+        private readonly IConfiguration _configuration;
+
+        public TokenService(IConfiguration configuration) {
+            _configuration = configuration;
+        }
+
+        public string GenerateToken(MUsuario dados) {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(TokenConfigs.Secret);
+            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value);
 
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new Claim[] {
@@ -32,9 +36,9 @@ namespace OrderAPI.Services {
             return tokenHandler.WriteToken(token);
         }
 
-        public static string GenerateToken(MFuncionario dados) {
+        public string GenerateToken(MFuncionario dados) {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(TokenConfigs.Secret);
+            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value);
 
             var tokenDescriptor = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new Claim[] {
