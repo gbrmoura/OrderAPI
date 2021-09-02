@@ -22,9 +22,9 @@ namespace OrderAPI.Controllers {
         private TokenService _jwtService;
 
         public CFuncionario(DBContext context, IMapper mapper, TokenService jwtService) {
-            _context = context;
-            _mapper = mapper;
-            _jwtService = jwtService;
+            this._context = context;
+            this._mapper = mapper;
+            this._jwtService = jwtService;
         }
 
         [HttpPost("registrar/")]

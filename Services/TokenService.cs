@@ -11,7 +11,7 @@ namespace OrderAPI.Services
 
     public class TokenService {
 
-        private readonly IConfiguration _configuration;
+        private IConfiguration _configuration { get; }
 
         public TokenService(IConfiguration configuration) {
             _configuration = configuration;
@@ -19,6 +19,8 @@ namespace OrderAPI.Services
 
         public string GenerateToken(MUsuario dados) {
             var tokenHandler = new JwtSecurityTokenHandler();
+            Console.WriteLine("Passou por aqui");
+
             var key = Encoding.ASCII.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value);
 
             var tokenDescriptor = new SecurityTokenDescriptor {

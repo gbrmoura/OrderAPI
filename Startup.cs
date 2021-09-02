@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using OrderAPI.Database;
 using System;
 using System.Text;
+using OrderAPI.Services;
 
 namespace OrderAPI {
     public class Startup {
@@ -20,6 +21,7 @@ namespace OrderAPI {
         }
 
         public void ConfigureServices(IServiceCollection services) {
+            services.AddScoped<TokenService>(); 
             services.AddDbContext<DBContext>(ops => ops.UseMySQL(_configuration.GetConnectionString("MySQLConnection")));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
@@ -49,9 +51,7 @@ namespace OrderAPI {
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-            });
-
-            
+            });     
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
