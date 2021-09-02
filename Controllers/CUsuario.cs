@@ -12,16 +12,15 @@ using OrderAPI.Database;
 using OrderAPI.Data.Request;
 using OrderAPI.Data.Response;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.Controllers {
 
     [Route("api/usuario/")]
     public class CUsuario : ControllerBase {
-
         private DBContext _context;
         private IMapper _mapper;
         private TokenService _jwtService;
-
         public CUsuario(DBContext context, IMapper mapper, TokenService jwtService) {
             this._context = context;
             this._mapper = mapper;
