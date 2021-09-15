@@ -42,7 +42,7 @@ namespace OrderAPI.Controllers {
             }
 
             try {
-                MMetodoPagamento MetodoPagamento = _context.MetodoPagamento.FirstOrDefault(pagto => pagto.Equals(dados.Nome));
+                MMetodoPagamento MetodoPagamento = _context.MetodoPagamento.FirstOrDefault(pagto => pagto.Nome.Equals(dados.Nome));
 
                 if (MetodoPagamento != null) {
                     response.Message = "Método de Pagamento já cadastrado!";
