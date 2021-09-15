@@ -108,7 +108,6 @@ namespace orderapi.Controllers
             }
         }
 
-        // TODO: Deletar
         [HttpGet("deletar/{codigo}")]
         [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
         public ActionResult<HttpResponse> Deletar(int codigo) {
@@ -158,12 +157,13 @@ namespace orderapi.Controllers
                 if (categoria == null) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = $"Categoria de codigo {codigo}, não encontrada.";
+                    return StatusCode(response.Code, response);
                 }
 
                 ConsultarCategoriaResponse categoriaDB = _mapper.Map<ConsultarCategoriaResponse>(categoria);
 
                 response.Code = (int)EHttpResponse.OK;
-                response.Message = "Categoria encontrado.";
+                response.Message = "Categoria encontrada.";
                 response.Response = categoriaDB;
                 return StatusCode(response.Code, response);
 
@@ -185,11 +185,13 @@ namespace orderapi.Controllers
 
             try {
 
+                // TODO: listar categorias que estar ativas
                 List<MCategoria> categoria = _context.Categoria.ToList();
 
-                if (categoria.Count > 0) {
+                if (categoria.Count <= -1) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = "Nenhuma categoria encontrada";
+                    return StatusCode(response.Code, response);
                 }
 
                 List<ConsultarCategoriaResponse> categoriaDB = _mapper.Map<List<ConsultarCategoriaResponse>>(categoria);
