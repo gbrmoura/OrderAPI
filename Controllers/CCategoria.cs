@@ -45,7 +45,7 @@ namespace orderapi.Controllers
             try {
                 
                 MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((categoria) => categoria.Titulo.Equals(dados.Titulo));
+                    .FirstOrDefault((categoria) => categoria.Titulo.Equals(dados.Titulo) && categoria.Status == true);
 
                 if (categoria != null) {
                     response.Message = "Categoria ja cadastrada";
@@ -53,6 +53,7 @@ namespace orderapi.Controllers
                 }
 
                 MCategoria categoriaDB = _mapper.Map<MCategoria>(dados);
+                categoriaDB.Status = true;
 
                 _context.Categoria.Add(categoriaDB);
                 _context.SaveChanges();
@@ -184,11 +185,11 @@ namespace orderapi.Controllers
             };
 
             try {
+                List<MCategoria> categoria = _context.Categoria
+                    .Where((categoria) => categoria.Status == true)
+                    .ToList();
 
-                // TODO: listar categorias que estar ativas
-                List<MCategoria> categoria = _context.Categoria.ToList();
-
-                if (categoria.Count <= -1) {
+                if (categoria.Count <= 0) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = "Nenhuma categoria encontrada";
                     return StatusCode(response.Code, response);
