@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace OrderAPI.Models {
-
-    public class MCategoria {
+namespace OrderAPI.Data.Request {
+    public class AlterarCategoriaRequest {
         [Key]
+        [Required(ErrorMessage = "Codigo deve ser informado.")]
         public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]
@@ -16,8 +12,5 @@ namespace OrderAPI.Models {
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
-
-        public Boolean Status { get; set; }
-        public List<MProduto> Produtos { get; set; }
     }
 }
