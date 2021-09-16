@@ -12,11 +12,9 @@ using OrderAPI.Enums;
 using OrderAPI.Models;
 using OrderAPI.Services;
 
-namespace orderapi.Controllers
-{   
+namespace orderapi.Controllers {   
     [Route("api/categoria/")]
-    public class CCategoria : ControllerBase
-    {
+    public class CCategoria : ControllerBase {
 
         private DBContext _context;
 
