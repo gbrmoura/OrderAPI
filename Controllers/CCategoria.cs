@@ -4,15 +4,15 @@ using System.Linq;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OrderAPI;
-using OrderAPI.Data.Request;
-using OrderAPI.Data.Response;
 using OrderAPI.Database;
 using OrderAPI.Enums;
 using OrderAPI.Models;
 using OrderAPI.Services;
+using OrderAPI.Data.Request;
+using OrderAPI.Data.Response;
 
-namespace orderapi.Controllers {   
+
+namespace OrderAPI.Controllers { 
     [Route("api/categoria/")]
     public class CCategoria : ControllerBase {
 
