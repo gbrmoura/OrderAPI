@@ -157,6 +157,40 @@ namespace OrderAPI.Controllers {
             }
         }
 
+        [HttpGet("consultar/{codigo}")]
+        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        public ActionResult<HttpResponse> Consultar(int codigo) {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada."
+            };  
+
+            try {
+
+                MProduto produto = _context.Produto
+                    .FirstOrDefault((element) => element.Codigo == codigo);
+
+                if (produto == null) {
+                    response.Code = (int)EHttpResponse.NOT_FOUND;
+                    response.Message = $"Produto de codigo {codigo} não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                ConsultarProdutoResponse produtoResp = _mapper.Map<ConsultarProdutoResponse>(produto);
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Produto encontrado.";
+                response.Response = produtoResp;
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            } 
+        }
+
         [HttpGet("todos/")]
         [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
         public ActionResult<HttpResponse> Todos() {
