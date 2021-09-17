@@ -12,7 +12,7 @@ using OrderAPI.Data.Request;
 using OrderAPI.Data.Response;
 using OrderAPI;
 
-namespace orderapi.Controllers {
+namespace OrderAPI.Controllers {
     
     [Route("api/produto/")]
     public class CProduto : ControllerBase {
