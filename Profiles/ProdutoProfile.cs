@@ -5,12 +5,12 @@ using OrderAPI.Models;
 
 
 namespace OrderAPI.Profiles {
-    public class ProdutoProfile {
-        public class CategoriaProfile : Profile {
+    
+    public class ProdutoProfile : Profile {
 
-        public CategoriaProfile() {
-            CreateMap<MProduto, CriarProdutoRequest>();
+        public ProdutoProfile() {
+            CreateMap<MProduto, CriarProdutoRequest>();   
         }
-    }
+
     }
 }
