@@ -88,6 +88,7 @@ namespace OrderAPI.Controllers {
                     .FirstOrDefault((categoria) => categoria.Codigo == dados.Codigo);
 
                 if (categoria == null) {
+                    response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = "Categoria não encontrada.";
                     return StatusCode(response.Code, response);
                 }
@@ -196,7 +197,7 @@ namespace OrderAPI.Controllers {
                 List<ConsultarCategoriaResponse> categoriaDB = _mapper.Map<List<ConsultarCategoriaResponse>>(categoria);
 
                 response.Code = (int)EHttpResponse.OK;
-                response.Message = "Categoria encontrado.";
+                response.Message = "Categoria(s) encontrada(s).";
                 response.Response = categoriaDB;
                 return StatusCode(response.Code, response);
 
