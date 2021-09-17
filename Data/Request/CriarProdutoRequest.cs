@@ -1,4 +1,3 @@
-using OrderAPI.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Request {
@@ -13,7 +12,6 @@ namespace OrderAPI.Data.Request {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-
-        public int Categoria { get; set; }
+        public int CategoriaCodigo { get; set; }
     }
 }

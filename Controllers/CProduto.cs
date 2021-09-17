@@ -1,16 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using OrderAPI.Database;
-using OrderAPI.Enums;
-using OrderAPI.Models;
-using OrderAPI.Services;
+using System;
+using System.Linq;
 using OrderAPI.Data.Request;
-using OrderAPI.Data.Response;
-using OrderAPI;
+using OrderAPI.Enums;
+using OrderAPI.Services;
+using OrderAPI.Models;
 
 namespace OrderAPI.Controllers {
     
@@ -26,7 +23,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("registrar")]
-        [Authorize(Roles = "")]
+        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
         public ActionResult<HttpResponse> Registrar([FromBody] CriarProdutoRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -42,7 +39,7 @@ namespace OrderAPI.Controllers {
             try {
                 
                 MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((element) => element.Codigo == dados.Categoria);
+                    .FirstOrDefault((element) => element.Codigo == dados.CategoriaCodigo);
 
                 if (categoria == null) {
                     response.Message = "Categoria não encontrada";
@@ -59,6 +56,7 @@ namespace OrderAPI.Controllers {
 
                 MProduto produtoDB = _mapper.Map<MProduto>(dados);
                 produtoDB.Status = true;
+                produtoDB.Categoria = categoria;
 
                 _context.Produto.Add(produtoDB);
                 _context.SaveChanges();

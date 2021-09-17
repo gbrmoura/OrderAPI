@@ -18,6 +18,7 @@ namespace OrderAPI.Models {
         public string Descricao { get; set; }
 
         public Boolean Status { get; set; }
+        
         public List<MProduto> Produtos { get; set; }
     }
 }

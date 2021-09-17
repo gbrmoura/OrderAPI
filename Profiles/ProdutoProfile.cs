@@ -9,7 +9,7 @@ namespace OrderAPI.Profiles {
     public class ProdutoProfile : Profile {
 
         public ProdutoProfile() {
-            CreateMap<MProduto, CriarProdutoRequest>();   
+            CreateMap<CriarProdutoRequest, MProduto>();   
         }
 
     }
