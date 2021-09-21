@@ -13,6 +13,8 @@ namespace OrderAPI.Profiles {
 
         public MetodoPagtoProfile() {
             CreateMap<CriarMetodoPagtoRequest, MMetodoPagamento>();
+            CreateMap<AlterarMetodoPagtoRequest, MMetodoPagamento>();
+            CreateMap<MMetodoPagamento, ConsultarMetodoPagtoResponse>();
         }
     }
 }
