@@ -27,17 +27,64 @@ namespace OrderAPI.Controllers {
             this._jwtService = jwtService;
         }
 
+        [HttpPost("primeiroRegistro/")]
+        [AllowAnonymous]
+        public ActionResult<HttpResponse> PrimeiroRegistro([FromBody] CriarFuncionarioMasterRequest dados) {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada."
+            };    
+
+            if (!ModelState.IsValid) {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try {
+                List<MFuncionario> funcionarios = _context.Funcionario
+                    .ToList();
+
+                if (funcionarios.Count > -1) {
+                    response.Message = "Já existe usuario cadastrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
+                dbFuncionario.Senha = PasswordService.EncryptPassword(dbFuncionario.Senha);
+                dbFuncionario.Previlegio = EPrevilegio.MASTER;
+
+                _context.Funcionario.Add(dbFuncionario);
+                _context.SaveChanges();
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Funcionario cadastrado com sucesso.";
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
         [HttpPost("registrar/")]
-        // [Authorize(Roles = "MASTER, GERENTE")]
+        [Authorize(Roles = "MASTER")]
         public ActionResult<HttpResponse> Registrar([FromBody] CriarFuncionarioRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Rota não autorizada"
+                Message = "Rota não autorizada."
             };
 
             if (!ModelState.IsValid) {
-                response.Message = "Parametros Ausentes";
+                response.Message = "Parametros Ausentes.";
                 response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            if (dados.Previlegio == EPrevilegio.MASTER) {
+                response.Message = "Privilégio invalido";
                 return StatusCode(response.Code, response);
             }
 
@@ -46,7 +93,7 @@ namespace OrderAPI.Controllers {
                     .FirstOrDefault(func => func.Login.Equals(dados.Login)); 
 
                 if (funcionario != null) {
-                    response.Message = "Funcionario já cadastrado";
+                    response.Message = "Funcionario já cadastrado.";
                     return StatusCode(response.Code, response);
                 }
 
@@ -57,12 +104,12 @@ namespace OrderAPI.Controllers {
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;
-                response.Message = "Funcionario cadastrado com sucesso";
+                response.Message = "Funcionario cadastrado com sucesso.";
                 return StatusCode(response.Code, response);
 
             } catch (Exception E) {
                 response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
-                response.Message = "Erro interno do servidor!";
+                response.Message = "Erro interno do servidor.";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
             }
