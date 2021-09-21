@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
 
-namespace OrderAPI.Models {
-    public class MProduto {
+namespace OrderAPI.Data.Response {
+    public class ConsultarProdutoResponse {
         [Key]
         public int Codigo { get; set; }
 
@@ -21,7 +17,5 @@ namespace OrderAPI.Models {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-        public Boolean Status { get; set; }
-        public MCategoria Categoria { get; set; }
     }
 }
