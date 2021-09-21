@@ -165,5 +165,37 @@ namespace OrderAPI.Controllers {
                 return StatusCode(response.Code, response);
             }
         }
+
+        [HttpGet("todos/")]
+        [Authorize(Roles = "MASTER, GERENTE")]
+        public ActionResult<HttpResponse> Todos() {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada"
+            };
+
+            try {
+                List<MMetodoPagamento> metodoPagto = _context.MetodoPagamento.Where((pagto) => pagto.Status == true).ToList();
+
+                if (metodoPagto.Count <= 0) {
+                    response.Code = (int)EHttpResponse.NOT_FOUND;
+                    response.Message = "Nenhum Método de Pagto encontrado";
+                    return StatusCode(response.Code, response);
+                }
+
+                List<ConsultarMetodoPagtoResponse> metodoPagtoDB = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodoPagto);
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Método de Pagto encontrado(s).";
+                response.Response = metodoPagtoDB;
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
     }
 }
