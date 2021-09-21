@@ -176,7 +176,7 @@ namespace OrderAPI.Controllers
 
         if (metodoPagto == null)
         {
-          response.Message = "Método de Pagto não encontrada.";
+          response.Message = "Método de Pagto não encontrado.";
           return StatusCode(response.Code, response);
         }
 
@@ -221,7 +221,7 @@ namespace OrderAPI.Controllers
         List<ConsultarMetodoPagtoResponse> metodoPagtoDB = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodoPagto);
 
         response.Code = (int)EHttpResponse.OK;
-        response.Message = "Método de Pagto encontrado(s).";
+        response.Message = "Método(s) de Pagto encontrado(s).";
         response.Response = metodoPagtoDB;
         return StatusCode(response.Code, response);
 
