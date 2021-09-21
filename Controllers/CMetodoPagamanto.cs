@@ -65,5 +65,36 @@ namespace OrderAPI.Controllers {
                 return StatusCode(response.Code, response);
             }
         } 
+
+        [HttpGet("consultar/{codigo}")]
+        [Authorize(Roles = "MASTER, GERENTE")]
+        public ActionResult<HttpResponse> Consultar(int codigo) {
+            HttpResponse httpMessage = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Todos usuarios consultados."
+            };
+
+            try {
+                MMetodoPagamento metodoPagto = _context.MetodoPagamento.FirstOrDefault(pagto => pagto.Codigo == codigo);
+
+                if (metodoPagto == null) {
+                    httpMessage.Code = (int)EHttpResponse.NOT_FOUND;
+                    httpMessage.Message = $"Método de Pagto. de código {codigo}, não encontrado.";
+                }
+
+                ConsultarMetodoPagtoResponse dbPagto = _mapper.Map<ConsultarMetodoPagtoResponse>(metodoPagto);
+
+                httpMessage.Code = (int)EHttpResponse.OK;
+                httpMessage.Message = "Método de Pagto. encontrado.";
+                httpMessage.Response = dbPagto;
+                return StatusCode(httpMessage.Code, httpMessage);
+
+            } catch (Exception E) {
+                httpMessage.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                httpMessage.Message = "Erro interno do servidor.";
+                httpMessage.Error = E.Message;
+                return StatusCode(httpMessage.Code, httpMessage);
+            }
+        }
     }
 }
