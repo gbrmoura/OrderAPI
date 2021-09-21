@@ -20,7 +20,6 @@ namespace OrderAPI.Controllers
 
         private DBContext _context;
         private IMapper _mapper;
-        private TokenService _jwtService;
 
         public CMetodoPagamento(DBContext context, IMapper mapper) {
             this._context = context;
