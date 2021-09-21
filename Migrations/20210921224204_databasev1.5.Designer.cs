@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderAPI.Database;
 
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20210921224204_databasev1.5")]
+    partial class databasev15
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -26,9 +28,6 @@ namespace OrderAPI.Migrations
                     b.Property<string>("Descricao")
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -176,9 +175,6 @@ namespace OrderAPI.Migrations
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
