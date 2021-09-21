@@ -71,7 +71,7 @@ namespace OrderAPI.Controllers {
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Todos usuarios consultados."
+                Message = "Rota não autorizada!"
             };
 
             try {
@@ -94,6 +94,44 @@ namespace OrderAPI.Controllers {
                 httpMessage.Message = "Erro interno do servidor.";
                 httpMessage.Error = E.Message;
                 return StatusCode(httpMessage.Code, httpMessage);
+            }
+        }
+
+        [HttpPost("alterar/")]
+        [Authorize(Roles = "MASTER, GERENTE")]
+        public ActionResult<HttpResponse> Alterar([FromBody] AlterarMetodoPagtoRequest dados) {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada!"
+            };
+
+            if (!ModelState.IsValid) {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }   
+
+            try {   
+                MMetodoPagamento metodoPagto = _context.MetodoPagamento.FirstOrDefault((pagto) => pagto.Codigo == dados.Codigo);
+
+                if (pagto == null) {
+                    response.Code = (int)EHttpResponse.NOT_FOUND;
+                    response.Message = "Método Pagto não encontrada.";
+                    return StatusCode(response.Code, response);
+                }
+
+                categoria = _mapper.Map<MMetodoPagamento>(dados);
+                _context.SaveChanges(); 
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Método Pagto alterado com sucesso";
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
             }
         }
     }
