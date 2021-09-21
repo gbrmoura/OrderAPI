@@ -165,7 +165,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/{codigo}")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse httpMessage = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,

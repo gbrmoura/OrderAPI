@@ -115,11 +115,11 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/{codigo}")]
-        [Authorize]
+        [Authorize("USUARIO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
-                Message = "Todos usuario consultados."
+                Message = "Rota não autorizada"
             };
 
             try {

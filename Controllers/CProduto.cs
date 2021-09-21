@@ -25,7 +25,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("registrar/")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Registrar([FromBody] CriarProdutoRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -76,7 +76,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpPost("alterar/")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Alterar([FromBody] AlterarProdutoRequest dados) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -125,7 +125,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("deletar/{codigo}")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Deletar(int codigo) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -158,7 +158,7 @@ namespace OrderAPI.Controllers {
         }
 
         [HttpGet("consultar/{codigo}")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
@@ -191,9 +191,9 @@ namespace OrderAPI.Controllers {
             } 
         }
 
-        [HttpGet("todos/")]
-        [Authorize(Roles = "MASTER, GERENTE, PADRAO")]
-        public ActionResult<HttpResponse> Todos() {
+        [HttpGet("listar/")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
+        public ActionResult<HttpResponse> Listar() {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada."

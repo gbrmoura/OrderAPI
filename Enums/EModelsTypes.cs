@@ -7,7 +7,7 @@ namespace OrderAPI.Enums {
     public enum EPrevilegio {
         MASTER, 
         GERENTE,
-        PADRAO
+        FUNCIONARIO
     }
 
     public enum EStatus {

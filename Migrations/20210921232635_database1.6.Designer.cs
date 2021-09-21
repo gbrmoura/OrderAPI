@@ -9,8 +9,8 @@ using OrderAPI.Database;
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210921224204_databasev1.5")]
-    partial class databasev15
+    [Migration("20210921232635_database1.6")]
+    partial class database16
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,6 +28,9 @@ namespace OrderAPI.Migrations
                     b.Property<string>("Descricao")
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -175,6 +178,9 @@ namespace OrderAPI.Migrations
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
