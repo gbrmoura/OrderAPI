@@ -114,17 +114,48 @@ namespace OrderAPI.Controllers {
             try {   
                 MMetodoPagamento metodoPagto = _context.MetodoPagamento.FirstOrDefault((pagto) => pagto.Codigo == dados.Codigo);
 
-                if (pagto == null) {
+                if (metodoPagto == null) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
                     response.Message = "Método Pagto não encontrada.";
                     return StatusCode(response.Code, response);
                 }
 
-                categoria = _mapper.Map<MMetodoPagamento>(dados);
+                metodoPagto = _mapper.Map<MMetodoPagamento>(dados);
                 _context.SaveChanges(); 
 
                 response.Code = (int)EHttpResponse.OK;
                 response.Message = "Método Pagto alterado com sucesso";
+                return StatusCode(response.Code, response);
+
+            } catch (Exception E) {
+                response.Code = (int)EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
+        [HttpGet("deletar/{codigo}")]
+        [Authorize(Roles = "MASTER, GERENTE")]
+        public ActionResult<HttpResponse> Deletar(int codigo) {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada"
+            };
+
+            try {    
+                MMetodoPagamento metodoPagto = _context.MetodoPagamento.FirstOrDefault((pagto) => pagto.Codigo == codigo);
+
+                if (metodoPagto == null) {
+                    response.Message = "Método de Pagto não encontrada.";
+                    return StatusCode(response.Code, response);
+                }
+
+                metodoPagto.Status = false;
+                _context.SaveChanges();
+
+                response.Code = (int)EHttpResponse.OK;
+                response.Message = "Método de Pagto deletada com sucesso";
                 return StatusCode(response.Code, response);
 
             } catch (Exception E) {
