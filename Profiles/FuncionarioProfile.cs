@@ -15,7 +15,7 @@ namespace OrderAPI.Profiles {
             CreateMap<CriarFuncionarioMasterRequest, MFuncionario>();
             CreateMap<CriarFuncionarioRequest, MFuncionario>();
             CreateMap<LoginFuncionarioRequest, MFuncionario>();
-            CreateMap<MFuncionario, ConsultarUsuarioResponse>();
+            CreateMap<MFuncionario, ConsultarFuncionarioResponse>();
         }
     }
 }

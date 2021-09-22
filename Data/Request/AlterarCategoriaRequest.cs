@@ -4,6 +4,7 @@ namespace OrderAPI.Data.Request {
     public class AlterarCategoriaRequest {
         [Key]
         [Required(ErrorMessage = "Codigo deve ser informado.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo não deve ser menor que zero.")]
         public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]

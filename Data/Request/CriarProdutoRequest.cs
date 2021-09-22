@@ -12,6 +12,9 @@ namespace OrderAPI.Data.Request {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
+        
+        [Required( ErrorMessage = "Codigo de Categoria deve ser informado.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo de Categoria deve ser maior que zero.")]
         public int CategoriaCodigo { get; set; }
     }
 }

@@ -43,9 +43,10 @@ namespace OrderAPI.Controllers {
 
             try {
                 List<MFuncionario> funcionarios = _context.Funcionario
+                    .Where((element) => element.Status == true)
                     .ToList();
 
-                if (funcionarios.Count > -1) {
+                if (funcionarios.Count  > 0) {
                     response.Message = "Já existe usuario cadastrado.";
                     return StatusCode(response.Code, response);
                 }
@@ -53,6 +54,7 @@ namespace OrderAPI.Controllers {
                 MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
                 dbFuncionario.Senha = PasswordService.EncryptPassword(dbFuncionario.Senha);
                 dbFuncionario.Previlegio = EPrevilegio.MASTER;
+                dbFuncionario.Status = true;
 
                 _context.Funcionario.Add(dbFuncionario);
                 _context.SaveChanges();
@@ -84,23 +86,23 @@ namespace OrderAPI.Controllers {
             }
 
             if (dados.Previlegio == EPrevilegio.MASTER) {
-                response.Message = "Privilégio invalido";
+                response.Message = "Previlegio deve estar entre Gerente e Funcionario.";
                 return StatusCode(response.Code, response);
             }
 
             try {
-                MFuncionario funcionario = _context.Funcionario
-                    .FirstOrDefault(func => func.Login.Equals(dados.Login)); 
+                MFuncionario value = _context.Funcionario
+                    .FirstOrDefault((element) => element.Login.Equals(dados.Login) && element.Status == true);
 
-                if (funcionario != null) {
+                if (value != null) {
                     response.Message = "Funcionario já cadastrado.";
                     return StatusCode(response.Code, response);
                 }
 
-                MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
-                dbFuncionario.Senha = PasswordService.EncryptPassword(dbFuncionario.Senha);
+                MFuncionario funcionario = _mapper.Map<MFuncionario>(dados);
+                funcionario.Senha = PasswordService.EncryptPassword(funcionario.Senha);
 
-                _context.Funcionario.Add(dbFuncionario);
+                _context.Funcionario.Add(funcionario);
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;
