@@ -37,7 +37,7 @@ namespace OrderAPI.Controllers {
             try {
 
 
-                var categorias = _context.Categoria
+                List<MCategoria> categorias = _context.Categoria
                     .Where((element) => element.Status == true)
                     .Include((element) => element.Produtos)
                     .ToList();
