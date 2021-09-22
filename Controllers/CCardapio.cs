@@ -10,11 +10,11 @@ using OrderAPI.Models;
 using OrderAPI.Services;
 using OrderAPI.Data.Request;
 using OrderAPI.Data.Response;
-
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderAPI.Controllers {
 
-    [Route("api/cardapio")]
+    [Route("api/cardapio/")]
     public class CCardapio : ControllerBase {
 
         private DBContext _context;
@@ -26,17 +26,34 @@ namespace OrderAPI.Controllers {
             this._mapper = mapper;
         }
 
-        [HttpPost("/")]
+        [HttpGet]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<HttpResponse> Cardapio() {
-            
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada"
             };
 
+            try {
 
-            return StatusCode(response.Code, response);
+
+                var categorias = _context.Categoria
+                    .Where((element) => element.Status == true)
+                    .Include((element) => element.Produtos)
+                    .ToList();
+
+                response.Code = (int) EHttpResponse.OK;
+                response.Message = "";
+                response.Response = categorias;
+
+                return StatusCode(response.Code, response);
+            } catch(Exception E) {
+                response.Code = (int) EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor.";
+                response.Error  = E.Message;
+
+                return StatusCode(response.Code, response);
+            }
         }
 
     }
