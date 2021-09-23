@@ -9,7 +9,7 @@ using OrderAPI.Database;
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210923185712_databasev1.9")]
+    [Migration("20210923200538_databasev1.9")]
     partial class databasev19
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -122,7 +122,7 @@ namespace OrderAPI.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("MetodoPagamentoCodigo")
+                    b.Property<int>("MetodoPagamentoCodigo")
                         .HasColumnType("int");
 
                     b.Property<string>("Observacao")
@@ -248,7 +248,9 @@ namespace OrderAPI.Migrations
                 {
                     b.HasOne("OrderAPI.Models.MMetodoPagamento", "MetodoPagamento")
                         .WithMany()
-                        .HasForeignKey("MetodoPagamentoCodigo");
+                        .HasForeignKey("MetodoPagamentoCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MetodoPagamento");
                 });

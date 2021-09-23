@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Models {
     public class MProduto {
@@ -26,6 +25,9 @@ namespace OrderAPI.Models {
             get { return _status; }
             set { _status = value; }
         }
+
+        [ForeignKey("CategoriaCodigo")]
+        public int CategoriaCodigo { get; set; }
         public MCategoria Categoria { get; set; }
     }
 }
