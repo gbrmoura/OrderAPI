@@ -17,7 +17,11 @@ namespace OrderAPI.Models {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
 
-        public Boolean Status { get; set; }
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
         
         public List<MProduto> Produtos { get; set; }
     }
