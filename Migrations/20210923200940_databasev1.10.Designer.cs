@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderAPI.Database;
 
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    partial class DBContextModelSnapshot : ModelSnapshot
+    [Migration("20210923200940_databasev1.10")]
+    partial class databasev110
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -174,7 +176,7 @@ namespace OrderAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("CategoriaCodigo")
+                    b.Property<int?>("CategoriaCodigo")
                         .HasColumnType("int");
 
                     b.Property<string>("Descricao")
@@ -276,9 +278,7 @@ namespace OrderAPI.Migrations
                 {
                     b.HasOne("OrderAPI.Models.MCategoria", "Categoria")
                         .WithMany("Produtos")
-                        .HasForeignKey("CategoriaCodigo")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("CategoriaCodigo");
 
                     b.Navigation("Categoria");
                 });

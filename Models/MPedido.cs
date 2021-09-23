@@ -1,9 +1,7 @@
-﻿using OrderAPI.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Models {
     public class MPedido {
@@ -19,6 +17,9 @@ namespace OrderAPI.Models {
         public string Observacao { get; set; }
 
         public List<MPedidoItem> Items { get; set; }
+        
+        [ForeignKey("MetodoPagamento")]
+        public int MetodoPagamentoCodigo { get; set; }
 
         public MMetodoPagamento MetodoPagamento { get; set; }
 
