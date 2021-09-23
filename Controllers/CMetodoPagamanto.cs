@@ -121,7 +121,7 @@ namespace OrderAPI.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                metodoPagto = _mapper.Map<MMetodoPagamento>(dados);
+                _mapper.Map(dados, metodoPagto);
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;

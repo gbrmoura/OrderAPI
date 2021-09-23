@@ -48,7 +48,6 @@ namespace OrderAPI.Controllers {
                 }
 
                 MCategoria categoriaDB = _mapper.Map<MCategoria>(dados);
-                categoriaDB.Status = true;
 
                 _context.Categoria.Add(categoriaDB);
                 _context.SaveChanges();
@@ -90,7 +89,7 @@ namespace OrderAPI.Controllers {
                     return StatusCode(response.Code, response);
                 }
 
-                categoria = _mapper.Map<MCategoria>(dados);
+                _mapper.Map(dados, categoria);
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;

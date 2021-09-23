@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using OrderAPI.Database;
 using System;
 using System.Linq;
@@ -92,7 +93,9 @@ namespace OrderAPI.Controllers {
             try {
                 
                 MProduto produto = _context.Produto
+                    .Include((element) => element.Categoria)
                     .FirstOrDefault((element) => element.Codigo == dados.Codigo && element.Status == true);
+                    
 
                 if (produto == null) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
@@ -108,7 +111,7 @@ namespace OrderAPI.Controllers {
                     return StatusCode(response.Code, response);
                 }
 
-                produto = _mapper.Map<MProduto>(dados);
+                _mapper.Map(dados, categoria);
                 produto.Categoria = categoria;
                 _context.SaveChanges();
 

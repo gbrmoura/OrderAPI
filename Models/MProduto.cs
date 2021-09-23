@@ -21,7 +21,11 @@ namespace OrderAPI.Models {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-        public Boolean Status { get; set; }
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
         public MCategoria Categoria { get; set; }
     }
 }

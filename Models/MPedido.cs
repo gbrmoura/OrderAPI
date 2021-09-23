@@ -14,7 +14,6 @@ namespace OrderAPI.Models {
         public DateTime Data { get; set; }
 
         [Required(ErrorMessage = "Status deve ser informado.")]
-        public EStatus Status { get; set; }
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Observacao { get; set; }
@@ -22,5 +21,11 @@ namespace OrderAPI.Models {
         public List<MPedidoItem> Items { get; set; }
 
         public MMetodoPagamento MetodoPagamento { get; set; }
+
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
     }
 }
