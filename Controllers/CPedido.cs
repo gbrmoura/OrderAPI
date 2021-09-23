@@ -16,7 +16,6 @@ namespace OrderAPI.Controllers {
     [Route("api/pedido/")]
     public class CPedido: ControllerBase {
         private DBContext _context;
-
         private IMapper _mapper;
 
         public CPedido(DBContext context, IMapper mapper) {
@@ -42,7 +41,6 @@ namespace OrderAPI.Controllers {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada"
             };
-
 
             return StatusCode(response.Code, response);
         } 
