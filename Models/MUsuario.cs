@@ -27,5 +27,11 @@ namespace OrderAPI.Models {
         public string Email { get; set; }
 
         public string Token { get; set; }
+
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
     }
 }

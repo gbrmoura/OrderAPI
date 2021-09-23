@@ -54,7 +54,7 @@ namespace OrderAPI.Controllers
                 _context.Add(pagtoDB);
                 _context.SaveChanges();
 
-                response.Code = (int)EHttpResponse.OK;
+                response.Code = (int)EHttpResponse.CREATED;
                 response.Message = "Método de Pagamento cadastrado com sucesso!";
                 return StatusCode(response.Code, response);
 
@@ -121,7 +121,7 @@ namespace OrderAPI.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                metodoPagto = _mapper.Map<MMetodoPagamento>(dados);
+                _mapper.Map(dados, metodoPagto);
                 _context.SaveChanges();
 
                 response.Code = (int)EHttpResponse.OK;

@@ -27,9 +27,11 @@ namespace OrderAPI.Models {
 
         public string Token { get; set; }
 
-        public Boolean Status { get; set; }
-        
-        
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
 
     }
 }

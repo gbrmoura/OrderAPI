@@ -18,5 +18,11 @@ namespace OrderAPI.Models {
         public MProduto Produto { get; set; }
 
         public MPedido Pedido { get; set; }
+
+        private bool _status = true;
+        public bool Status {
+            get { return _status; }
+            set { _status = value; }
+        }
     }
 }
