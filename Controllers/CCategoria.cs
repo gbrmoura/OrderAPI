@@ -11,13 +11,10 @@ using OrderAPI.Services;
 using OrderAPI.Data.Request;
 using OrderAPI.Data.Response;
 
-
 namespace OrderAPI.Controllers { 
     [Route("api/categoria/")]
     public class CCategoria : ControllerBase {
-
         private DBContext _context;
-
         private IMapper _mapper;
 
         public CCategoria(DBContext context, IMapper mapper) {
@@ -56,7 +53,7 @@ namespace OrderAPI.Controllers {
                 _context.Categoria.Add(categoriaDB);
                 _context.SaveChanges();
 
-                response.Code = (int)EHttpResponse.OK;
+                response.Code = (int)EHttpResponse.CREATED;
                 response.Message = "Categoria cadastrada com sucesso";
                 return StatusCode(response.Code, response);
 
