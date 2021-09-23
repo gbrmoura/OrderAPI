@@ -63,7 +63,7 @@ namespace OrderAPI.Controllers {
                 _context.Produto.Add(produtoDB);
                 _context.SaveChanges();
 
-                response.Code = (int)EHttpResponse.OK;
+                response.Code = (int)EHttpResponse.CREATED;
                 response.Message = "Produto cadastrado com sucesso.";
                 return StatusCode(response.Code, response);
 

@@ -55,7 +55,7 @@ namespace OrderAPI.Controllers {
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();
 
-                response.Code = (int)EHttpResponse.OK;
+                response.Code = (int)EHttpResponse.CREATED;
                 response.Message = "Usuario cadastrado com sucesso!";
                 return StatusCode(response.Code, response);
                 
