@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Models {
     public class MPedidoItem {
@@ -15,8 +14,14 @@ namespace OrderAPI.Models {
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
 
-        public MProduto Produto { get; set; }
+        [ForeignKey("Produto")]
+        public int ProdutoCodigo { get; set; }
 
+        public MProduto Produto { get; set; }
+        
+        [ForeignKey("Pedido")]
+        public int PedidoCodigo { get; set; }
+        
         public MPedido Pedido { get; set; }
 
         private bool _status = true;
