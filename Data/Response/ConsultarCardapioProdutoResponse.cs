@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OrderAPI.Models;
 
 namespace OrderAPI.Data.Response {
     public class ConsultarCardapioProdutoResponse {
@@ -18,8 +19,8 @@ namespace OrderAPI.Data.Response {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-        
-        [ForeignKey("CategoriaCodigo")]
-        public int CategoriaCodigo { get; set; }
+
+        public ConsultarCategoriaResponse Categoria { get; set; }
+    
     }
 }

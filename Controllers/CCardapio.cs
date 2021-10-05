@@ -26,9 +26,9 @@ namespace OrderAPI.Controllers {
             this._mapper = mapper;
         }
 
-        [HttpGet("completo/")]
+        [HttpGet("categoria/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<HttpResponse> CardapioCompleto() {
+        public ActionResult<HttpResponse> Categoria() {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada"
@@ -36,13 +36,40 @@ namespace OrderAPI.Controllers {
 
             try {
 
-
-                List<MCategoria> categorias = _context.Categoria
+                List<MCategoria> values = _context.Categoria
                     .Where((element) => element.Status == true)
                     .Include((element) => element.Produtos)
                     .ToList();
 
-                
+                if (values.Count <= 0) {
+                    response.Code = (int) EHttpResponse.NOT_FOUND;
+                    response.Message = "Nenhum registro encontrado.";
+
+                    return StatusCode(response.Code, response);
+                }
+
+                List<ConsultarCardapioCategoriaResponse> categorias = new List<ConsultarCardapioCategoriaResponse>();
+                values.ForEach((element) => {
+                    var categoria = new ConsultarCardapioCategoriaResponse() {
+                        Codigo = element.Codigo,
+                        Descricao = element.Descricao,
+                        Titulo = element.Titulo,
+                    };
+                    
+                    categoria.Produtos = new List<ConsultarProdutoResponse>();
+                    element.Produtos.ForEach((e) => {
+                        var produto = new ConsultarProdutoResponse()  {
+                            Codigo = e.Codigo,
+                            Titulo = e.Titulo,
+                            Descricao = e.Descricao,
+                            Quantidade = e.Quantidade,
+                            Valor = e.Valor
+                        };
+                        categoria.Produtos.Add(produto);
+                    });
+
+                    categorias.Add(categoria);
+                });
 
                 response.Code = (int) EHttpResponse.OK;
                 response.Message = "";
@@ -70,13 +97,31 @@ namespace OrderAPI.Controllers {
 
                 List<MProduto> values = _context.Produto
                     .Where((element) => element.Status == true)
+                    .Include((element) => element.Categoria)
                     .ToList();
 
-                List<ConsultarCardapioProdutoResponse> produto = _mapper.Map<List<ConsultarCardapioProdutoResponse>>(values);
+                if (values.Count <= 0) {
+                    response.Code = (int) EHttpResponse.NOT_FOUND;
+                    response.Message = "Nenhum registro encontrado.";
+
+                    return StatusCode(response.Code, response);
+                }
+
+                List<ConsultarCardapioProdutoResponse> produtos = new List<ConsultarCardapioProdutoResponse>();
+                values.ForEach((element) => {
+                    var produto = new ConsultarCardapioProdutoResponse();
+                    produto.Codigo = element.Codigo;
+                    produto.Titulo = element.Titulo;
+                    produto.Descricao = element.Descricao;
+                    produto.Quantidade = element.Quantidade;;
+                    produto.Valor = element.Valor;
+                    produto.Categoria = _mapper.Map<ConsultarCategoriaResponse>(element.Categoria);
+                    produtos.Add(produto);
+                });
 
                 response.Code = (int) EHttpResponse.OK;
                 response.Message = "";
-                response.Response = produto;
+                response.Response = produtos;
 
                 return StatusCode(response.Code, response);
             } catch(Exception E) {

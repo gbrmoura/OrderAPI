@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using OrderAPI.Models;
 
 namespace OrderAPI.Data.Response {
-    public class ConsultarCardapioResponse {
+    public class ConsultarCardapioCategoriaResponse {
         [Key]
         public int Codigo { get; set; }
 
@@ -16,6 +15,7 @@ namespace OrderAPI.Data.Response {
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
-        public List<MProduto> Produtos { get; set; }
+        
+        public List<ConsultarProdutoResponse> Produtos { get; set; }
     }
 }

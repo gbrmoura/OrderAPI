@@ -175,7 +175,9 @@ namespace OrderAPI.Controllers
             };
 
             try {
-                List<MMetodoPagamento> metodoPagto = _context.MetodoPagamento.Where((pagto) => pagto.Status == true).ToList();
+                List<MMetodoPagamento> metodoPagto = _context.MetodoPagamento
+                    .Where((pagto) => pagto.Status == true)
+                    .ToList();
 
                 if (metodoPagto.Count <= 0) {
                     response.Code = (int)EHttpResponse.NOT_FOUND;
