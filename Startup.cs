@@ -10,6 +10,9 @@ using OrderAPI.Database;
 using System;
 using System.Text;
 using OrderAPI.Services;
+using Newtonsoft;
+using Newtonsoft.Json;
+using System.Text.Json.Serialization;
 
 namespace OrderAPI {
     public class Startup {
@@ -28,6 +31,8 @@ namespace OrderAPI {
             services.AddControllers();
             services.AddOptions();
 
+            // services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
+            
             services.AddSwaggerGen(ops => {
                 ops.SwaggerDoc("v1", 
                     new Microsoft.OpenApi.Models.OpenApiInfo {
@@ -51,7 +56,7 @@ namespace OrderAPI {
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-            });     
+            });   
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {

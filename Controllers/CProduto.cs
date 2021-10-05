@@ -160,7 +160,7 @@ namespace OrderAPI.Controllers {
             }
         }
 
-        [HttpGet("consultar/{codigo}")]
+        [HttpGet("consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse response = new HttpResponse() {

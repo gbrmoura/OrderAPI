@@ -9,8 +9,8 @@ using OrderAPI.Database;
 namespace OrderAPI.Migrations
 {
     [DbContext(typeof(DBContext))]
-    [Migration("20210915170216_databasev1.4")]
-    partial class databasev14
+    [Migration("20211005124248_databasev0.0.1")]
+    partial class databasev001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -83,6 +83,9 @@ namespace OrderAPI.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Token")
                         .HasColumnType("text");
 
@@ -102,6 +105,9 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(45)
                         .HasColumnType("varchar(45)");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
                     b.HasKey("Codigo");
 
                     b.ToTable("MetodoPagamento");
@@ -116,15 +122,16 @@ namespace OrderAPI.Migrations
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime");
 
-                    b.Property<int?>("MetodoPagamentoCodigo")
+                    b.Property<int>("MetodoPagamentoCodigo")
                         .HasColumnType("int");
 
                     b.Property<string>("Observacao")
+                        .IsRequired()
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
 
                     b.HasKey("Codigo");
 
@@ -139,14 +146,17 @@ namespace OrderAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("PedidoCodigo")
+                    b.Property<int>("PedidoCodigo")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ProdutoCodigo")
+                    b.Property<int>("ProdutoCodigo")
                         .HasColumnType("int");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<float>("Valor")
                         .HasColumnType("float");
@@ -166,7 +176,7 @@ namespace OrderAPI.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoriaCodigo")
+                    b.Property<int>("CategoriaCodigo")
                         .HasColumnType("int");
 
                     b.Property<string>("Descricao")
@@ -175,6 +185,9 @@ namespace OrderAPI.Migrations
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -220,6 +233,9 @@ namespace OrderAPI.Migrations
                         .HasMaxLength(145)
                         .HasColumnType("varchar(145)");
 
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)");
+
                     b.Property<string>("Token")
                         .HasColumnType("text");
 
@@ -232,7 +248,9 @@ namespace OrderAPI.Migrations
                 {
                     b.HasOne("OrderAPI.Models.MMetodoPagamento", "MetodoPagamento")
                         .WithMany()
-                        .HasForeignKey("MetodoPagamentoCodigo");
+                        .HasForeignKey("MetodoPagamentoCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("MetodoPagamento");
                 });
@@ -241,11 +259,15 @@ namespace OrderAPI.Migrations
                 {
                     b.HasOne("OrderAPI.Models.MPedido", "Pedido")
                         .WithMany("Items")
-                        .HasForeignKey("PedidoCodigo");
+                        .HasForeignKey("PedidoCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("OrderAPI.Models.MProduto", "Produto")
                         .WithMany()
-                        .HasForeignKey("ProdutoCodigo");
+                        .HasForeignKey("ProdutoCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Pedido");
 
@@ -256,7 +278,9 @@ namespace OrderAPI.Migrations
                 {
                     b.HasOne("OrderAPI.Models.MCategoria", "Categoria")
                         .WithMany("Produtos")
-                        .HasForeignKey("CategoriaCodigo");
+                        .HasForeignKey("CategoriaCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Categoria");
                 });

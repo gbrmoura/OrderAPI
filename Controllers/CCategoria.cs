@@ -52,8 +52,12 @@ namespace OrderAPI.Controllers {
                 _context.Categoria.Add(categoriaDB);
                 _context.SaveChanges();
 
+                ConsultarCategoriaResponse data = _mapper.Map<ConsultarCategoriaResponse>(categoriaDB);
+
                 response.Code = (int)EHttpResponse.CREATED;
                 response.Message = "Categoria cadastrada com sucesso";
+                response.Response = data;
+
                 return StatusCode(response.Code, response);
 
             } catch (Exception E) {
@@ -137,7 +141,7 @@ namespace OrderAPI.Controllers {
             }
         }
 
-        [HttpGet("consultar/{codigo}")]
+        [HttpGet("consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<HttpResponse> Consultar(int codigo) {
             HttpResponse response = new HttpResponse() {
