@@ -69,7 +69,7 @@ namespace OrderAPI.Controllers {
             try {
 
                 List<MProduto> values = _context.Produto
-                    .Where((element) => element.Status == true && element.Valor > 0)
+                    .Where((element) => element.Status == true)
                     .ToList();
 
                 List<ConsultarCardapioProdutoResponse> produto = _mapper.Map<List<ConsultarCardapioProdutoResponse>>(values);
