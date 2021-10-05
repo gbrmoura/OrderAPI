@@ -26,9 +26,9 @@ namespace OrderAPI.Controllers {
             this._mapper = mapper;
         }
 
-        [HttpGet]
+        [HttpGet("completo/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<HttpResponse> Cardapio() {
+        public ActionResult<HttpResponse> CardapioCompleto() {
             HttpResponse response = new HttpResponse() {
                 Code = (int)EHttpResponse.UNAUTHORIZED,
                 Message = "Rota não autorizada"
@@ -41,6 +41,8 @@ namespace OrderAPI.Controllers {
                     .Where((element) => element.Status == true)
                     .Include((element) => element.Produtos)
                     .ToList();
+
+                
 
                 response.Code = (int) EHttpResponse.OK;
                 response.Message = "";
@@ -56,5 +58,34 @@ namespace OrderAPI.Controllers {
             }
         }
 
+        [HttpGet("produtos/")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
+        public ActionResult<HttpResponse> Produtos() {
+            HttpResponse response = new HttpResponse() {
+                Code = (int)EHttpResponse.UNAUTHORIZED,
+                Message = "Rota não autorizada"
+            };
+
+            try {
+
+                List<MProduto> values = _context.Produto
+                    .Where((element) => element.Status == true && element.Valor > 0)
+                    .ToList();
+
+                List<ConsultarCardapioProdutoResponse> produto = _mapper.Map<List<ConsultarCardapioProdutoResponse>>(values);
+
+                response.Code = (int) EHttpResponse.OK;
+                response.Message = "";
+                response.Response = produto;
+
+                return StatusCode(response.Code, response);
+            } catch(Exception E) {
+                response.Code = (int) EHttpResponse.INTERNAL_SERVER_ERROR;
+                response.Message = "Erro interno do servidor.";
+                response.Error  = E.Message;
+
+                return StatusCode(response.Code, response);
+            }
+        }
     }
 }
