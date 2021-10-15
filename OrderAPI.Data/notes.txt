@@ -1,0 +1,7 @@
+cd Data
+
+-Add migration
+dotnet ef --startup-project ../OrderAPI.API migrations add ****
+
+-Update Database
+dotnet ef --startup-project ../OrderAPI.API database update
