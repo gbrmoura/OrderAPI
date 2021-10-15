@@ -34,7 +34,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("PrimeiroRegistro/")]
         [AllowAnonymous]
-        public ActionResult<DefaultResponse> PrimeiroRegistro([FromBody] CriarFuncionarioMasterRequest dados)
+        public ActionResult<DefaultResponse> PrimeiroRegistro([FromBody] CriarFuncionarioMasterRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -61,7 +61,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(dados);
+                MFuncionario dbFuncionario = _mapper.Map<MFuncionario>(body);
                 dbFuncionario.Senha = PasswordService.EncryptPassword(dbFuncionario.Senha);
                 dbFuncionario.Previlegio = PrevilegioEnum.MASTER;
                 dbFuncionario.Status = true;
@@ -85,7 +85,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("RegistrarFuncionario/")]
         [Authorize(Roles = "MASTER")]
-        public ActionResult<DefaultResponse> RegistrarFuncionario([FromBody] CriarFuncionarioRequest dados)
+        public ActionResult<DefaultResponse> RegistrarFuncionario([FromBody] CriarFuncionarioRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -103,7 +103,7 @@ namespace OrderAPI.API.Controllers
             try
             {
                 MFuncionario value = _context.Funcionario
-                    .FirstOrDefault((element) => element.Login.Equals(dados.Login) && element.Status == true);
+                    .FirstOrDefault((element) => element.Login.Equals(body.Login) && element.Status == true);
 
                 if (value != null)
                 {
@@ -111,7 +111,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MFuncionario funcionario = _mapper.Map<MFuncionario>(dados);
+                MFuncionario funcionario = _mapper.Map<MFuncionario>(body);
                 funcionario.Senha = PasswordService.EncryptPassword(funcionario.Senha);
 
                 _context.Funcionario.Add(funcionario);
@@ -133,7 +133,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("RegistrarUsuario/")]
         [AllowAnonymous]
-        public ActionResult<DefaultResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest dados)
+        public ActionResult<DefaultResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -151,7 +151,7 @@ namespace OrderAPI.API.Controllers
             try
             {
                 MUsuario usuario = _context.Usuario
-                    .FirstOrDefault(user => user.Email.Equals(dados.Email));
+                    .FirstOrDefault(user => user.Email.Equals(body.Email));
 
                 if (usuario != null)
                 {
@@ -159,7 +159,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MUsuario usuarioDB = _mapper.Map<MUsuario>(dados);
+                MUsuario usuarioDB = _mapper.Map<MUsuario>(body);
                 usuarioDB.Senha = PasswordService.EncryptPassword(usuarioDB.Senha);
 
                 _context.Usuario.Add(usuarioDB);
@@ -181,7 +181,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("Login/")]
         [AllowAnonymous]
-        public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest dados)
+        public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -199,9 +199,9 @@ namespace OrderAPI.API.Controllers
             try
             {
 
-                if (dados.Tipo == LoginEnum.USUARIO)
+                if (body.Tipo == LoginEnum.USUARIO)
                 {
-                    MUsuario usuario = _context.Usuario.FirstOrDefault(e => e.Email.Equals(dados.Login));
+                    MUsuario usuario = _context.Usuario.FirstOrDefault(e => e.Email.Equals(body.Login));
 
                     if (usuario == null)
                     {
@@ -209,7 +209,7 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(response.Code, response);
                     }
 
-                    if (!PasswordService.VerifyPassword(dados.Senha, usuario.Senha))
+                    if (!PasswordService.VerifyPassword(body.Senha, usuario.Senha))
                     {
                         response.Message = "Senhas não conferem.";
                         return StatusCode(response.Code, response);
@@ -232,9 +232,9 @@ namespace OrderAPI.API.Controllers
 
                     return StatusCode(response.Code, response);
                 }
-                else if (dados.Tipo == LoginEnum.FUNCIONARIO)
+                else if (body.Tipo == LoginEnum.FUNCIONARIO)
                 {
-                    MFuncionario funcionario = _context.Funcionario.FirstOrDefault(e => e.Login.Equals(dados.Login));
+                    MFuncionario funcionario = _context.Funcionario.FirstOrDefault(e => e.Login.Equals(body.Login));
 
                     if (funcionario == null)
                     {
@@ -242,7 +242,7 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(response.Code, response);
                     }
 
-                    if (!PasswordService.VerifyPassword(dados.Senha, funcionario.Senha))
+                    if (!PasswordService.VerifyPassword(body.Senha, funcionario.Senha))
                     {
                         response.Message = "Senhas não conferem.";
                         return StatusCode(response.Code, response);
