@@ -40,6 +40,8 @@ bld/
 
 # Visual Studio Code auto generated files
 .vscode/
+OrderAPI.API/.vscode/
+OrderAPI.Data/.vscode/
 
 # Visual Studio 2017 auto generated files
 Generated\ Files/
