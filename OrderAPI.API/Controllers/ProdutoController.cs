@@ -232,6 +232,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 List<MProduto> produtos = _context.Produto
+                    .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
@@ -243,9 +244,19 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
+                var count = _context.MetodoPagamento
+                    .Where(e => e.Status == true)
+                    .Count();
+
+                ListarResponse list = new ListarResponse 
+                {
+                    NumeroRegistros = count,
+                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(produtos)
+                };
+
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Produtos encontrado(s).";
-                response.Response = _mapper.Map<List<ConsultarProdutoResponse>>(produtos);
+                response.Response = list;
                 return StatusCode(response.Code, response);
             } 
             catch (Exception E) 

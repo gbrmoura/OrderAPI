@@ -207,6 +207,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 List<MMetodoPagamento> metodos = _context.MetodoPagamento
+                    .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
@@ -218,9 +219,19 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
+                var count = _context.MetodoPagamento
+                    .Where(e => e.Status == true)
+                    .Count();
+
+                ListarResponse list = new ListarResponse 
+                {
+                    NumeroRegistros = count,
+                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(metodos)
+                };
+
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Metodo pagamento encontrado(s).";
-                response.Response = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodos);
+                response.Response = list;
                 return StatusCode(response.Code, response);
             } 
             catch (Exception E) 
