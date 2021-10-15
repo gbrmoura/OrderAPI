@@ -15,8 +15,8 @@ using OrderAPI.API.Helpers;
 
 namespace OrderAPI.API.Controllers
 {
-    [Route("api/[controller]")]
-    public class AutorizacaoController : ControllerBase
+    [Route("api/[controller]/")]
+    public class AutenticacaoController : ControllerBase
     {
 
         private OrderAPIContext _context;
@@ -25,14 +25,14 @@ namespace OrderAPI.API.Controllers
 
         private TokenService _jwtService;
 
-        public AutorizacaoController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        public AutenticacaoController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
         {
             this._context = context;
             this._mapper = mapper;
             this._jwtService = jwtService;
         }
 
-        [HttpPost("/primeiroRegistro")]
+        [HttpPost("PrimeiroRegistro/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> PrimeiroRegistro([FromBody] CriarFuncionarioMasterRequest dados)
         {
@@ -83,7 +83,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("/registrarFuncionario")]
+        [HttpPost("RegistrarFuncionario/")]
         [Authorize(Roles = "MASTER")]
         public ActionResult<DefaultResponse> RegistrarFuncionario([FromBody] CriarFuncionarioRequest dados)
         {
@@ -131,7 +131,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("/registrarUsuario")]
+        [HttpPost("RegistrarUsuario/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest dados)
         {
@@ -179,7 +179,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("/login")]
+        [HttpPost("Login/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest dados)
         {
