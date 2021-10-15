@@ -121,7 +121,6 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        // TODO: Deletar
         [HttpGet("Deletar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
@@ -159,7 +158,6 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        // TODO: Consultar
         [HttpGet("Consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
@@ -196,12 +194,42 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        // TODO: Listar
         [HttpGet("Listar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Listar([FromQuery] ListarRequest query) 
         {
-            return NotFound();
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+
+            try 
+            {
+                List<MMetodoPagamento> metodos = _context.MetodoPagamento
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .ToList();
+
+                if (metodos.Count <= 0) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Nenhum metododo de pagamento encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Metodo pagamento encontrado(s).";
+                response.Response = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodos);
+                return StatusCode(response.Code, response);
+            } 
+            catch (Exception E) 
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
 
     }
