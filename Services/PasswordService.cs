@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace OrderAPI.Services {
+namespace OrderAPI.API.Services {
 
     public static class PasswordService {
 

@@ -1,4 +1,3 @@
-using System.Threading;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -6,15 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using OrderAPI.Database;
+using OrderAPI.API.Services;
+using OrderAPI.Data;
 using System;
 using System.Text;
-using OrderAPI.Services;
-using Newtonsoft;
-using Newtonsoft.Json;
-using System.Text.Json.Serialization;
 
-namespace OrderAPI {
+namespace OrderAPI.API {
+
     public class Startup {
 
         private IConfiguration _configuration { get; }
@@ -24,15 +21,17 @@ namespace OrderAPI {
         }
 
         public void ConfigureServices(IServiceCollection services) {
-            services.AddScoped<TokenService>(); 
-            services.AddDbContext<DBContext>(ops => ops.UseMySQL(_configuration.GetConnectionString("MySQLConnection")));
+            string connectionString = _configuration.GetConnectionString("MySQLConnection");
+            services.AddDbContextPool<OrderAPIContext>(
+                ops => ops.UseMySQL(connectionString)
+            );
+
+            services.AddScoped<TokenService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
             services.AddControllers();
             services.AddOptions();
-
-            // services.AddControllers().AddJsonOptions(opt => opt.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.Preserve);
-            
+           
             services.AddSwaggerGen(ops => {
                 ops.SwaggerDoc("v1", 
                     new Microsoft.OpenApi.Models.OpenApiInfo {

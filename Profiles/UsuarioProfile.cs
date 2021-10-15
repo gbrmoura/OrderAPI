@@ -1,15 +1,14 @@
 ﻿using AutoMapper;
-using OrderAPI.Models;
-using OrderAPI.Data.Request;
-using OrderAPI.Data.Response;
+using OrderAPI.API.HTTP.Request;
+using OrderAPI.API.HTTP.Response;
+using OrderAPI.Data.Models;
 
-namespace OrderAPI.Profiles {
+namespace OrderAPI.API.Profiles {
 
     public class UsuarioProfile : Profile {
 
         public UsuarioProfile() {
             CreateMap<CriarUsuarioRequest, MUsuario>();
-            CreateMap<LoginUsuarioRequest, MUsuario>();
             CreateMap<MUsuario, ConsultarUsuarioResponse>();
         }
     

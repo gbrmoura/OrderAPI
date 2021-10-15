@@ -1,20 +1,15 @@
 ﻿using AutoMapper;
-using OrderAPI.Data.Request;
-using OrderAPI.Data.Response;
-using OrderAPI.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using OrderAPI.API.HTTP.Request;
+using OrderAPI.API.HTTP.Response;
+using OrderAPI.Data.Models;
 
-namespace OrderAPI.Profiles {
+namespace OrderAPI.API.Profiles {
 
     public class FuncionarioProfile : Profile {
 
         public FuncionarioProfile() {
             CreateMap<CriarFuncionarioMasterRequest, MFuncionario>();
             CreateMap<CriarFuncionarioRequest, MFuncionario>();
-            CreateMap<LoginFuncionarioRequest, MFuncionario>();
             CreateMap<MFuncionario, ConsultarFuncionarioResponse>();
         }
     }

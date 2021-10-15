@@ -1,10 +1,9 @@
 using AutoMapper;
-using OrderAPI.Data.Request;
-using OrderAPI.Data.Response;
-using OrderAPI.Models;
+using OrderAPI.API.HTTP.Request;
+using OrderAPI.API.HTTP.Response;
+using OrderAPI.Data.Models;
 
-
-namespace OrderAPI.Profiles {
+namespace OrderAPI.API.Profiles {
     
     public class ProdutoProfile : Profile {
 
