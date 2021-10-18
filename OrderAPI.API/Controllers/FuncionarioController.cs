@@ -141,17 +141,11 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("Logout/")]
-        [Authorize]
-        public ActionResult<DefaultResponse> Logout()
-        {
-            DefaultResponse response = new DefaultResponse()
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
-            };
-            
-            return NotFound(); // TODO: Fazer metodo de logout
-        }
+        // [HttpPost("Logout/")]
+        // [Authorize]
+        // public ActionResult<DefaultResponse> Logout()
+        // {
+        //     return NotFound(); // TODO: Fazer metodo de logout
+        // }
     }
 }

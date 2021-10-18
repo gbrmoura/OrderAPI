@@ -143,28 +143,11 @@ namespace OrderAPI.API.Controllers
             }
         }    
 
-        [HttpPost("Logout/")]
-        [Authorize]
-        public ActionResult<DefaultResponse> Logout()
-        {
-            
-            // _logger.LogInformation($"Nome: { User.Identity.Name }");
-            // _logger.LogInformation($"Type: { User.Identity.AuthenticationType }");
-            // _logger.LogInformation($"Auth: { User.Identity.IsAuthenticated }");
-
-            // foreach (var claim in User.Claims)
-            // {
-            //     _logger.LogInformation($"Type: { claim.Type } - Value: { claim.Value }");  
-            // }
-            DefaultResponse response = new DefaultResponse()
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
-            };
-
-
-
-            return NotFound(); // TODO: Fazer metodo de logout
-        }
+        // [HttpPost("Logout/")]
+        // [Authorize]
+        // public ActionResult<DefaultResponse> Logout()
+        // {
+        //     return NotFound(); // TODO: Fazer metodo de logout
+        // }
     }
 }
