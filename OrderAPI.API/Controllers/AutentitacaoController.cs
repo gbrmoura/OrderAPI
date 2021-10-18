@@ -12,6 +12,7 @@ using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
 using OrderAPI.API.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace OrderAPI.API.Controllers
 {
@@ -25,11 +26,14 @@ namespace OrderAPI.API.Controllers
 
         private TokenService _jwtService;
 
-        public AutenticacaoController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        private ILogger<AutenticacaoController> _logger;
+
+        public AutenticacaoController(OrderAPIContext context, IMapper mapper, TokenService jwtService, ILogger<AutenticacaoController> logger)
         {
-            this._context = context;
-            this._mapper = mapper;
-            this._jwtService = jwtService;
+            _context = context;
+            _mapper = mapper;
+            _jwtService = jwtService;
+            _logger = logger;
         }
 
         [HttpPost("PrimeiroRegistro/")]
@@ -83,7 +87,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("RegistrarFuncionario/")]
+        [HttpPost("Funcionario/Registrar/")]
         [Authorize(Roles = "MASTER")]
         public ActionResult<DefaultResponse> RegistrarFuncionario([FromBody] CriarFuncionarioRequest body)
         {
@@ -131,7 +135,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("RegistrarUsuario/")]
+        [HttpPost("Usuario/Registrar/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> RegistrarUsuario([FromBody] CriarUsuarioRequest body)
         {
@@ -179,9 +183,9 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("Login/")]
+        [HttpPost("Usuario/Login/")]
         [AllowAnonymous]
-        public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest body)
+        public ActionResult<DefaultResponse> UsuarioLogin([FromBody] LoginUsuarioRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -198,74 +202,35 @@ namespace OrderAPI.API.Controllers
 
             try
             {
+                MUsuario usuario = _context.Usuario.FirstOrDefault(e => e.Email.Equals(body.Login));
 
-                if (body.Tipo == LoginEnum.USUARIO)
+                if (usuario == null)
                 {
-                    MUsuario usuario = _context.Usuario.FirstOrDefault(e => e.Email.Equals(body.Login));
-
-                    if (usuario == null)
-                    {
-                        response.Message = "Usuario não encontrado.";
-                        return StatusCode(response.Code, response);
-                    }
-
-                    if (!PasswordService.VerifyPassword(body.Senha, usuario.Senha))
-                    {
-                        response.Message = "Senhas não conferem.";
-                        return StatusCode(response.Code, response);
-                    }
-
-                    usuario.Token = _jwtService.GenerateToken(usuario);
-                    _context.SaveChanges();
-
-                    response.Code = StatusCodes.Status200OK;
-                    response.Message = "Logado com sucesso.";
-                    response.Response = new
-                    {
-                        Codigo = usuario.Codigo,
-                        Nome = usuario.Nome,
-                        Sobrenome = usuario.Sobrenome,
-                        Prontuario = usuario.Prontuario,
-                        Email = usuario.Email,
-                        Token = usuario.Token
-                    };
-
-                    return StatusCode(response.Code, response);
-                }
-                else if (body.Tipo == LoginEnum.FUNCIONARIO)
-                {
-                    MFuncionario funcionario = _context.Funcionario.FirstOrDefault(e => e.Login.Equals(body.Login));
-
-                    if (funcionario == null)
-                    {
-                        response.Message = "Funcionario não encontrado.";
-                        return StatusCode(response.Code, response);
-                    }
-
-                    if (!PasswordService.VerifyPassword(body.Senha, funcionario.Senha))
-                    {
-                        response.Message = "Senhas não conferem.";
-                        return StatusCode(response.Code, response);
-                    }
-
-                    funcionario.Token = _jwtService.GenerateToken(funcionario);
-                    _context.SaveChanges();
-
-                    response.Code = StatusCodes.Status200OK;
-                    response.Message = "Logado com sucesso.";
-                    response.Response = new
-                    {
-                        Codigo = funcionario.Codigo,
-                        Nome = funcionario.Nome,
-                        Login = funcionario.Login,
-                        Token = funcionario.Token
-                    };
-
+                    response.Message = "Usuario não encontrado.";
                     return StatusCode(response.Code, response);
                 }
 
-                response.Code = StatusCodes.Status401Unauthorized;
-                response.Message = "Tipo de login não encontrado.";
+                if (!PasswordService.VerifyPassword(body.Senha, usuario.Senha))
+                {
+                    response.Message = "Senhas não conferem.";
+                    return StatusCode(response.Code, response);
+                }
+
+                usuario.Token = _jwtService.GenerateToken(usuario);
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Logado com sucesso.";
+                response.Response = new
+                {
+                    Codigo = usuario.Codigo,
+                    Nome = usuario.Nome,
+                    Sobrenome = usuario.Sobrenome,
+                    Prontuario = usuario.Prontuario,
+                    Email = usuario.Email,
+                    Token = usuario.Token
+                };
+
                 return StatusCode(response.Code, response);
             }
             catch (Exception E)
@@ -275,6 +240,80 @@ namespace OrderAPI.API.Controllers
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
             }
+        }    
+
+        [HttpPost("Funcionario/Login/")]
+        [AllowAnonymous]
+        public ActionResult<DefaultResponse> FuncionarioLogin([FromBody] LoginUsuarioRequest body)
+        {
+            DefaultResponse response = new DefaultResponse()
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try
+            {
+                MFuncionario funcionario = _context.Funcionario.FirstOrDefault(e => e.Login.Equals(body.Login));
+
+                if (funcionario == null)
+                {
+                    response.Message = "Funcionario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                if (!PasswordService.VerifyPassword(body.Senha, funcionario.Senha))
+                {
+                    response.Message = "Senhas não conferem.";
+                    return StatusCode(response.Code, response);
+                }
+
+                funcionario.Token = _jwtService.GenerateToken(funcionario);
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Logado com sucesso.";
+                response.Response = new
+                {
+                    Codigo = funcionario.Codigo,
+                    Nome = funcionario.Nome,
+                    Login = funcionario.Login,
+                    Token = funcionario.Token
+                };
+
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
+        [HttpPost("Logout/")]
+        [Authorize]
+        public ActionResult<DefaultResponse> Logout()
+        {
+            
+            // _logger.LogInformation($"Nome: { User.Identity.Name }");
+            // _logger.LogInformation($"Type: { User.Identity.AuthenticationType }");
+            // _logger.LogInformation($"Auth: { User.Identity.IsAuthenticated }");
+
+            // foreach (var claim in User.Claims)
+            // {
+            //     _logger.LogInformation($"Type: { claim.Type } - Value: { claim.Value }");  
+            // }
+
+            return NotFound(); // TODO: Fazer metodo de logout
         }
     }
 }
