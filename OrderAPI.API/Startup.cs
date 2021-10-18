@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using OrderAPI.API.Configurations;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
 using System;
@@ -21,12 +22,16 @@ namespace OrderAPI.API {
         }
 
         public void ConfigureServices(IServiceCollection services) {
+            AuthenticationConfig authenticationConfig = new AuthenticationConfig();
+            _configuration.Bind("Authentication", authenticationConfig);
+
             string connectionString = _configuration.GetConnectionString("MySQLConnection");
             services.AddDbContextPool<OrderAPIContext>(
                 ops => ops.UseMySQL(connectionString)
             );
 
             services.AddScoped<TokenService>();
+            services.AddSingleton(authenticationConfig);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
             services.AddControllers();
@@ -42,7 +47,7 @@ namespace OrderAPI.API {
                 );
             });
 
-            var key = Encoding.ASCII.GetBytes(_configuration.GetSection("JwtSettings:Secret").Value);
+            var key = Encoding.ASCII.GetBytes(authenticationConfig.AccessTokenSecret);
             services.AddAuthentication(ops => {
                 ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -52,8 +57,10 @@ namespace OrderAPI.API {
                 ops.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = false,
-                    ValidateAudience = false
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidIssuer = authenticationConfig.Issuer,
+                    ValidAudience = authenticationConfig.Audience
                 };
             });   
         }
