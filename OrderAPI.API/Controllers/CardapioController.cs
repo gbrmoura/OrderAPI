@@ -31,9 +31,49 @@ namespace OrderAPI.API.Controllers
         
         [HttpGet("Completo/")]
     	[Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Cardapio() 
+        public ActionResult<DefaultResponse> Cardapio([FromQuery] ListarRequest query) 
         {
-            return NotFound();
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+
+            try 
+            {
+                List<MCategoria> categorias = _context.Categoria            
+                    .Where(e => e.Status == true)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .ToList();
+
+                if (categorias.Count <= 0) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = $"Categoria(s) não encontrado(s).";
+                    return StatusCode(response.Code, response);
+                }
+
+                List<ConsultarCardapioCategoriaResponse> categoriaResponse = _mapper.Map<List<ConsultarCardapioCategoriaResponse>>(categorias);
+                categoriaResponse.ForEach((e) => {
+                    List<MProduto> produtos = _context.Produto
+                        .Where((l) => l.Status == true && l.CategoriaCodigo == e.Codigo)
+                        .ToList();
+                    e.Produtos =_mapper.Map<List<ConsultarProdutoResponse>>(produtos);
+                });
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Categoria encontrada(s)!";
+                response.Response = categoriaResponse;
+                return StatusCode(response.Code, response);
+            }   
+            catch (Exception E)   
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
 
         [HttpGet("Categorias/")]
@@ -74,7 +114,7 @@ namespace OrderAPI.API.Controllers
                 response.Message = "Erro interno do servidor.";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
-            } 
+            }
         }
 
         [HttpGet("Categoria/")]
@@ -100,7 +140,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 List<MProduto> produtos = _context.Produto                   
-                    .Where((p) => p.Status == true)
+                    .Where((p) => p.Status == true && p.CategoriaCodigo == categoria.Codigo)
                     .ToList();
 
                 ConsultarCardapioCategoriaResponse categoriaResponse = _mapper.Map<ConsultarCardapioCategoriaResponse>(categoria);
@@ -184,7 +224,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((e) => e.Codigo == codigo);
+                    .FirstOrDefault((e) => e.Codigo == produto.CategoriaCodigo);
 
                 ConsultarCardapioProdutoResponse produtoResponse = _mapper.Map<ConsultarCardapioProdutoResponse>(produto);
                 produtoResponse.Categoria = _mapper.Map<ConsultarCategoriaResponse>(categoria);
