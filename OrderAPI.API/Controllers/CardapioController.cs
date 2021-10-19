@@ -134,7 +134,5 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(response.Code, response);
             } 
         }
-
-
     }
 }
