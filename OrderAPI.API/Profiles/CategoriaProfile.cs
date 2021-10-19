@@ -11,6 +11,7 @@ namespace OrderAPI.API.Profiles {
             CreateMap<CriarCategoriaRequest, MCategoria>();
             CreateMap<AlterarCategoriaRequest, MCategoria>();
             CreateMap<MCategoria, ConsultarCategoriaResponse>();
+            CreateMap<MCategoria, ConsultarCardapioCategoriaResponse>();
         }
     }
 }

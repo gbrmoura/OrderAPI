@@ -26,14 +26,11 @@ namespace OrderAPI.API.Controllers
 
         private TokenService _jwtService;
 
-        private ILogger<AutenticacaoController> _logger;
-
-        public UsuarioController(OrderAPIContext context, IMapper mapper, TokenService jwtService, ILogger<AutenticacaoController> logger)
+        public UsuarioController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
         {
             _context = context;
             _mapper = mapper;
             _jwtService = jwtService;
-            _logger = logger;
         }
 
         [HttpPost("Registrar/")]

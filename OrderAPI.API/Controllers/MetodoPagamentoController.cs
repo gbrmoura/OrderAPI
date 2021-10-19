@@ -226,7 +226,7 @@ namespace OrderAPI.API.Controllers
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = count,
-                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(metodos)
+                    Dados = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodos)
                 };
 
                 response.Code = StatusCodes.Status200OK;
