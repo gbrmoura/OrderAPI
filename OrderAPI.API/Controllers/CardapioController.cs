@@ -95,9 +95,44 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Produto/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Produto()
+        public ActionResult<DefaultResponse> Produto([FromQuery] int codigo)
         {
-            return NotFound();
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+
+            try 
+            {
+                MProduto produto = _context.Produto            
+                    .FirstOrDefault((e) => e.Codigo == codigo);
+
+                if (produto == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = $"Produto de codigo { codigo }, não encontrada.";
+                    return StatusCode(response.Code, response);
+                }
+
+                MCategoria categoria = _context.Categoria
+                    .FirstOrDefault((e) => e.Codigo == codigo);
+
+                ConsultarCardapioProdutoResponse produtoResponse = _mapper.Map<ConsultarCardapioProdutoResponse>(produto);
+                produtoResponse.Categoria = _mapper.Map<ConsultarCategoriaResponse>(categoria);
+                
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Produto encontrado(s)!";
+                response.Response = produtoResponse;
+                return StatusCode(response.Code, response);
+            }   
+            catch (Exception E)   
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            } 
         }
 
 
