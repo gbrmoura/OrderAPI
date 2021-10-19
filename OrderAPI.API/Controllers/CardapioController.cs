@@ -38,9 +38,43 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Categorias/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Categorias ()
+        public ActionResult<DefaultResponse> Categorias ([FromQuery] ListarRequest query)
         {
-            return NotFound();
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+
+            try 
+            {
+                List<MCategoria> categorias = _context.Categoria            
+                    .Where(e => e.Status == true)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .ToList();
+
+                if (categorias.Count <= 0) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = $"Categoria(s) não encontrado(s).";
+                    return StatusCode(response.Code, response);
+                }
+
+                List<ConsultarCategoriaResponse> produtoResponse = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias);
+                
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Categoria encontrada(s)!";
+                response.Response = produtoResponse;
+                return StatusCode(response.Code, response);
+            }   
+            catch (Exception E)   
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            } 
         }
 
         [HttpGet("Categoria/")]
