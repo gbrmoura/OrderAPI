@@ -8,6 +8,7 @@ using OrderAPI.Data;
 
 namespace OrderAPI.API.Controllers
 {
+    [Route("api/[controller]/")]
     public class PedidoController : ControllerBase
     {
         private OrderAPIContext _context;

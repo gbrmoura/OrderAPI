@@ -88,7 +88,7 @@ namespace OrderAPI.API.Controllers
         }
 
         [HttpPost("AtualizarToken/")]
-        [AllowAnonymous]
+        [Authorize]
         public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body)
         {
             DefaultResponse response = new DefaultResponse()

@@ -134,7 +134,7 @@ namespace OrderAPI.API.Controllers
                     Codigo = funcionario.Codigo,
                     Nome = funcionario.Nome,
                     Login = funcionario.Login,
-                    Token = funcionario.Token,
+                    Token = token,
                     RefreshToken = refreshToken 
                 };
 
