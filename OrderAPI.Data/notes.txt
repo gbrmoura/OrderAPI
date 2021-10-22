@@ -5,3 +5,6 @@ dotnet ef --startup-project ../OrderAPI.API migrations add ****
 
 -Update Database
 dotnet ef --startup-project ../OrderAPI.API database update
+
+-Drop Database 
+dotnet ef --startup-project ../OrderAPI.API database drop

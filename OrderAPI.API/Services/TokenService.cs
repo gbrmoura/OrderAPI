@@ -6,6 +6,8 @@ using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
 using OrderAPI.Data.Models;
 using OrderAPI.API.Configurations;
+using System.Collections.Generic;
+using System.Security.Cryptography;
 
 namespace OrderAPI.API.Services
 {
@@ -35,8 +37,8 @@ namespace OrderAPI.API.Services
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Audience = _configuration.Audience,
-                Issuer = _configuration.Issuer
+                // Audience = _configuration.Audience,
+                // Issuer = _configuration.Issuer
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -59,12 +61,40 @@ namespace OrderAPI.API.Services
                 }),
                 Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                Audience = _configuration.Audience,
-                Issuer = _configuration.Issuer
+                // Audience = _configuration.Audience,
+                // Issuer = _configuration.Issuer
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateToken(IEnumerable<Claim> claims) 
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret);
+
+            var tokenDescriptor = new SecurityTokenDescriptor 
+            {
+                Subject = new ClaimsIdentity(claims),
+                Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
+                // Audience = _configuration.Audience,
+                // Issuer = _configuration.Issuer
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
+        }
+
+        public string GenerateRefreshToken() 
+        {
+            var randomNumber = new byte[32];
+            using (var rng = RandomNumberGenerator.Create()) 
+            {
+                rng.GetBytes(randomNumber);
+            };
+            return Convert.ToBase64String(randomNumber);
         }
     }
 }

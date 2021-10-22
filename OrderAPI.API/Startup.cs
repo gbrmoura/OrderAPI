@@ -57,10 +57,12 @@ namespace OrderAPI.API {
                 ops.TokenValidationParameters = new TokenValidationParameters {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidIssuer = authenticationConfig.Issuer,
-                    ValidAudience = authenticationConfig.Audience
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                    // ValidateIssuer = true,
+                    // ValidateAudience = true,
+                    // ValidIssuer = authenticationConfig.Issuer,
+                    // ValidAudience = authenticationConfig.Audience
                 };
             });   
         }
