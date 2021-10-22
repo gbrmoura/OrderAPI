@@ -87,5 +87,60 @@ namespace OrderAPI.API.Controllers
             }
         }
 
+        [HttpPost("AtualizarToken/")]
+        [AllowAnonymous]
+        public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body)
+        {
+            DefaultResponse response = new DefaultResponse()
+            {
+                Code = StatusCodes.Status403Forbidden,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try 
+            {
+
+                var principal = _jwtService.GetPrincipalFromExpiredToken(body.Token);
+                var username = principal.Identity.Name;
+                var savedRefreshToken = _jwtService.GetRefreshToken(username);
+
+                if (savedRefreshToken != body.RefreshToken)
+                {
+                    response.Message = "Refresh Token Invalido.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var newJwtToken = _jwtService.GenerateToken(principal.Claims);
+                var newRefreshToken = _jwtService.GenerateRefreshToken();
+
+                _jwtService.DeleteRefreshToken(username, body.RefreshToken);
+                _jwtService.SaveRefreshToken(username, newRefreshToken);
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Token Atualizado,";
+                response.Response = new
+                {
+                    Token = newJwtToken,
+                    RefreshToken = newRefreshToken
+                };
+
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
     }
 }

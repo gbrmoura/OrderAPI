@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
@@ -15,58 +16,11 @@ namespace OrderAPI.API.Services
     public class TokenService 
     {
         private readonly AuthenticationConfig _configuration;
+        private List<(string, string)> _refreshtokens = new();
+
         public TokenService(AuthenticationConfig configuration) 
         {
             _configuration = configuration;
-        }
-
-        public string GenerateToken(MUsuario dados) 
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            Console.WriteLine("Passou por aqui");
-
-            var key = Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret);
-
-            var tokenDescriptor = new SecurityTokenDescriptor 
-            {
-                Subject = new ClaimsIdentity(new Claim[] 
-                {
-                    new Claim(ClaimTypes.Actor, dados.Codigo.ToString()),
-                    new Claim(ClaimTypes.Name, dados.Email.ToString()),
-                    new Claim(ClaimTypes.Role, "USUARIO"),
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                // Audience = _configuration.Audience,
-                // Issuer = _configuration.Issuer
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            
-            return tokenHandler.WriteToken(token);
-        }
-
-        public string GenerateToken(MFuncionario dados) 
-        {
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret);
-
-            var tokenDescriptor = new SecurityTokenDescriptor 
-            {
-                Subject = new ClaimsIdentity(new Claim[] 
-                {
-                    new Claim(ClaimTypes.Actor, dados.Codigo.ToString()),
-                    new Claim(ClaimTypes.Name, dados.Login.ToString()),
-                    new Claim(ClaimTypes.Role, dados.Previlegio.ToString())
-                }),
-                Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                // Audience = _configuration.Audience,
-                // Issuer = _configuration.Issuer
-            };
-
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            return tokenHandler.WriteToken(token);
         }
 
         public string GenerateToken(IEnumerable<Claim> claims) 
@@ -96,5 +50,45 @@ namespace OrderAPI.API.Services
             };
             return Convert.ToBase64String(randomNumber);
         }
+
+        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token) 
+        {
+            var tokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateAudience = false,
+                ValidateIssuer = false,
+                ValidateIssuerSigningKey = true,
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret)),
+                ValidateLifetime = false
+            };
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out var securityToken);
+            if (securityToken is not JwtSecurityToken jwtSecurityToken || 
+                !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new SecurityTokenException("Invalid Token");
+            }
+
+            return principal;
+        }
+    
+        public void SaveRefreshToken(string username, string refreshToken)
+        {
+            _refreshtokens.Add(new (username, refreshToken));
+        }
+
+        public string GetRefreshToken(string username)
+        {
+            return _refreshtokens.FirstOrDefault(x => x.Item1 == username).Item2;
+        }
+
+        public void DeleteRefreshToken(string username, string refreshToken) 
+        {
+            var item = _refreshtokens.FirstOrDefault(x => x.Item1 == username && x.Item2 == refreshToken);
+            _refreshtokens.Remove(item);
+        }
+
+    
     }
 }

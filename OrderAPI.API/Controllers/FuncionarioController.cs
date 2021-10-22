@@ -13,6 +13,7 @@ using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
 using OrderAPI.API.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace OrderAPI.API.Controllers
 {
@@ -100,7 +101,8 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                MFuncionario funcionario = _context.Funcionario.FirstOrDefault(e => e.Login.Equals(body.Login));
+                MFuncionario funcionario = _context.Funcionario
+                    .FirstOrDefault(e => e.Login.Equals(body.Login));
 
                 if (funcionario == null)
                 {
@@ -114,7 +116,15 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                funcionario.Token = _jwtService.GenerateToken(funcionario);
+                var token = _jwtService.GenerateToken(new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Actor, funcionario.Codigo.ToString()),
+                    new Claim(ClaimTypes.Name, funcionario.Login),
+                    new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
+                });
+                var refreshToken = _jwtService.GenerateRefreshToken();
+
+                _jwtService.SaveRefreshToken(funcionario.Login, refreshToken);
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;
@@ -124,7 +134,8 @@ namespace OrderAPI.API.Controllers
                     Codigo = funcionario.Codigo,
                     Nome = funcionario.Nome,
                     Login = funcionario.Login,
-                    Token = funcionario.Token
+                    Token = funcionario.Token,
+                    RefreshToken = refreshToken 
                 };
 
                 return StatusCode(response.Code, response);

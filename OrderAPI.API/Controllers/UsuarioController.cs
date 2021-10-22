@@ -13,6 +13,7 @@ using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
 using OrderAPI.API.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace OrderAPI.API.Controllers
 {
@@ -114,7 +115,15 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                usuario.Token = _jwtService.GenerateToken(usuario);
+                var token = _jwtService.GenerateToken(new List<Claim>()
+                {
+                    new Claim(ClaimTypes.Actor, usuario.Codigo.ToString()),
+                    new Claim(ClaimTypes.Name, usuario.Email),
+                    new Claim(ClaimTypes.Role, "USUARIO")
+                });
+                var refreshToken = _jwtService.GenerateRefreshToken();
+
+                _jwtService.SaveRefreshToken(usuario.Email, refreshToken);
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;

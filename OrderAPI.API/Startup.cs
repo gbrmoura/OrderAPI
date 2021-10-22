@@ -30,7 +30,7 @@ namespace OrderAPI.API {
                 ops => ops.UseMySQL(connectionString)
             );
 
-            services.AddScoped<TokenService>();
+            services.AddSingleton<TokenService>();
             services.AddSingleton(authenticationConfig);
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
