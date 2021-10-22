@@ -135,7 +135,8 @@ namespace OrderAPI.API.Controllers
                     Sobrenome = usuario.Sobrenome,
                     Prontuario = usuario.Prontuario,
                     Email = usuario.Email,
-                    Token = usuario.Token
+                    Token = token,
+                    RefreshToken = refreshToken
                 };
 
                 return StatusCode(response.Code, response);
