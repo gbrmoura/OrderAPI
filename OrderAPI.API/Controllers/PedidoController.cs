@@ -6,6 +6,8 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using OrderAPI.API.HTTP;
+using OrderAPI.API.HTTP.Request;
+using OrderAPI.API.Services;
 using OrderAPI.Data;
 
 namespace OrderAPI.API.Controllers
@@ -24,13 +26,27 @@ namespace OrderAPI.API.Controllers
         }
 
         [HttpPost("Registrar/")]
-        public ActionResult<DefaultResponse> Registrar()
+        public ActionResult<DefaultResponse> Registrar([FromBody] PedidoRequest body)
         {
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada!"
+                Message = "Rota não autorizada."
             };
+
+            if (!ModelState.IsValid) 
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            if (body.Items.Count <= 0) 
+            {
+                response.Message = "Produtos são necessarios para fazer login.";
+                return StatusCode(response.Code, response);
+            }
+            
             
             return NotFound();
         }
