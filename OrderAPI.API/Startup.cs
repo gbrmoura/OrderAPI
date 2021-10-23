@@ -38,11 +38,11 @@ namespace OrderAPI.API {
             services.AddOptions();
            
             services.AddSwaggerGen(ops => {
-                ops.SwaggerDoc("v1", 
+                ops.SwaggerDoc("v0.0.1", 
                     new Microsoft.OpenApi.Models.OpenApiInfo {
                         Title = "Swagger Demo API",
                         Description = "Demo API for showing Swagger",
-                        Version = "v1"
+                        Version = "v0.0.1"
                     }
                 );
             });
@@ -78,13 +78,13 @@ namespace OrderAPI.API {
                 ops.AllowAnyHeader();
             });
 
-            app.UseEndpoints(endpoints => {
-                endpoints.MapControllers();
-            });
-            
             app.UseSwagger();
             app.UseSwaggerUI(ops => {
                 ops.SwaggerEndpoint("/swagger/v1/swagger.json", "API");
+            });
+
+            app.UseEndpoints(endpoints => {
+                endpoints.MapControllers();
             });
         }
     }

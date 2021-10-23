@@ -13,8 +13,6 @@ namespace OrderAPI.Data.Models
         [Required(ErrorMessage = "Data deve ser informada.")]
         public DateTime Data { get; set; }
 
-        [Required(ErrorMessage = "Status deve ser informado.")]
-
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Observacao { get; set; }
 

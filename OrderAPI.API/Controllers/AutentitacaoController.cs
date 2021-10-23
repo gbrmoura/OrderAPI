@@ -13,6 +13,7 @@ using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
 using OrderAPI.API.Helpers;
 using Microsoft.Extensions.Logging;
+using System.Security.Claims;
 
 namespace OrderAPI.API.Controllers
 {
@@ -140,6 +141,113 @@ namespace OrderAPI.API.Controllers
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
             }
+        }
+
+
+        [HttpPost("Login/")]
+        public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest body)
+        {
+            DefaultResponse response = new DefaultResponse()
+            {
+                Code = StatusCodes.Status403Forbidden,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try 
+            {
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault(e => e.Email.Equals(body.Login));
+
+                
+                if (usuario != null) 
+                {
+                    if (!PasswordService.VerifyPassword(body.Senha, usuario.Senha))
+                    {
+                        response.Message = "Senhas não conferem.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    var userToken = _jwtService.GenerateToken(new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.Actor, usuario.Codigo.ToString()),
+                        new Claim(ClaimTypes.Name, usuario.Email),
+                        new Claim(ClaimTypes.Role, "USUARIO")
+                    });
+                    var userRefreshToken = _jwtService.GenerateRefreshToken();
+
+                    _jwtService.SaveRefreshToken(usuario.Email, userRefreshToken);
+                    _context.SaveChanges();
+
+                    response.Code = StatusCodes.Status200OK;
+                    response.Message = "Logado com sucesso.";
+                    response.Response = new
+                    {
+                        Codigo = usuario.Codigo,
+                        Nome = usuario.Nome,
+                        Sobrenome = usuario.Sobrenome,
+                        Prontuario = usuario.Prontuario,
+                        Email = usuario.Email,
+                        Token = userToken,
+                        RefreshToken = userRefreshToken
+                    };
+                    return StatusCode(response.Code, response);
+                } 
+
+                MFuncionario funcionario = _context.Funcionario
+                    .FirstOrDefault(e => e.Login.Equals(body.Login));
+            
+                if (funcionario != null)
+                {
+                    if (!PasswordService.VerifyPassword(body.Senha, funcionario.Senha))
+                    {
+                        response.Message = "Senhas não conferem.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    var token = _jwtService.GenerateToken(new List<Claim>()
+                    {
+                        new Claim(ClaimTypes.Actor, funcionario.Codigo.ToString()),
+                        new Claim(ClaimTypes.Name, funcionario.Login),
+                        new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
+                    });
+                    var refreshToken = _jwtService.GenerateRefreshToken();
+
+                    _jwtService.SaveRefreshToken(funcionario.Login, refreshToken);
+                    _context.SaveChanges();
+
+                    response.Code = StatusCodes.Status200OK;
+                    response.Message = "Logado com sucesso.";
+                    response.Response = new
+                    {
+                        Codigo = funcionario.Codigo,
+                        Nome = funcionario.Nome,
+                        Login = funcionario.Login,
+                        Token = token,
+                        RefreshToken = refreshToken 
+                    };
+
+                    return StatusCode(response.Code, response);
+                }
+
+                response.Code = StatusCodes.Status404NotFound;
+                response.Message = "Usuario/Funcionario Não encontrado.";
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor!";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+
         }
 
     }
