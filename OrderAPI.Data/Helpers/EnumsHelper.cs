@@ -9,6 +9,8 @@
 
     public enum PedidoStatusEnum 
     {
-        ABERTO
+        ABERTO,
+        RETIRADO,
+        CANCELADO
     }
 }
