@@ -228,13 +228,9 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                var count = _context.Categoria
-                    .Where(e => e.Status == true)
-                    .Count();
-
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = count,
+                    NumeroRegistros = categorias.Count,
                     Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
                 };
 

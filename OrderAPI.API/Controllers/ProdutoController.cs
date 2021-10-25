@@ -240,13 +240,9 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                var count = _context.Produto
-                    .Where(e => e.Status == true)
-                    .Count();
-
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = count,
+                    NumeroRegistros = produtos.Count,
                     Dados = _mapper.Map<List<ConsultarProdutoResponse>>(produtos)
                 };
 
