@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OrderAPI.Data.Helpers;
 
 namespace OrderAPI.Data.Models 
 {
     public class MPedido 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Data deve ser informada.")]
         public DateTime Data { get; set; }
@@ -16,17 +17,18 @@ namespace OrderAPI.Data.Models
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Observacao { get; set; }
 
-        public List<MPedidoItem> Items { get; set; }
-        
+        [ForeignKey("Usuario")]
+        public Guid UsuarioCodigo { get; set; }
+
+        public MUsuario Usuario { get; set; }
+
         [ForeignKey("MetodoPagamento")]
-        public int MetodoPagamentoCodigo { get; set; }
+        public Guid MetodoPagamentoCodigo { get; set; }
 
         public MMetodoPagamento MetodoPagamento { get; set; }
 
-        private bool _status = true;
-        public bool Status {
-            get { return _status; }
-            set { _status = value; }
-        }
+        public List<MPedidoItem> Items { get; set; }
+
+        public PedidoStatusEnum Status { get; set; }
     }
 }

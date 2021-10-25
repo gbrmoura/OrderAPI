@@ -1,11 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
 {
     public class MControleEstoque 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Quantidade deve ser informada.")]
         public int Quantidade { get; set; }

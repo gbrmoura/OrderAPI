@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
@@ -7,7 +8,7 @@ namespace OrderAPI.Data.Models
     public class MCategoria 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 145 caractéres foi atingido.")]

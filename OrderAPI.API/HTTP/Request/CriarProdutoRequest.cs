@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.API.HTTP.Request {
@@ -16,6 +17,6 @@ namespace OrderAPI.API.HTTP.Request {
         
         [Required( ErrorMessage = "Codigo de Categoria deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Codigo de Categoria deve ser maior que zero.")]
-        public int CategoriaCodigo { get; set; }
+        public Guid CategoriaCodigo { get; set; }
     }
 }

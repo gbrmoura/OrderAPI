@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.API.HTTP.Request {
@@ -5,7 +6,7 @@ namespace OrderAPI.API.HTTP.Request {
         [Key]
         [Required(ErrorMessage = "Codigo deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Codigo não deve ser menor que zero.")]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 45 caractéres foi atigido.")]

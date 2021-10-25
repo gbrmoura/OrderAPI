@@ -7,8 +7,8 @@
         FUNCIONARIO
     }
 
-    public enum StatusEnum 
+    public enum PedidoStatusEnum 
     {
-        UNDEFINED
+        ABERTO
     }
 }

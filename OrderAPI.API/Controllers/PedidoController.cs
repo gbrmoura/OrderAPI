@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
+using OrderAPI.Data.Models;
 
 namespace OrderAPI.API.Controllers
 {
@@ -34,7 +36,7 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada."
             };
 
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 response.Message = "Parametros Ausentes.";
                 response.Error = ModelStateService.ErrorConverter(ModelState);
@@ -47,8 +49,82 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(response.Code, response);
             }
             
-            
-            return NotFound();
+            try
+            {
+                // TODO: usuario
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault((x) => x.Codigo == body.UsuarioCodigo && x.Status == true);
+
+                if (usuario == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Usuario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+
+                // TODO: metodo pagamento
+                MMetodoPagamento metodoPagamento = _context.MetodoPagamento
+                    .FirstOrDefault((x) => x.Codigo == body.MetodoPagamentoCodigo && x.Status == true);
+
+                if (metodoPagamento == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Metodo de Pagamento não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                // TODO: pedido itens
+                List<MPedidoItem> pedidoItems = new();
+                foreach (PedidoItemRequest item in body.Items)
+                {
+                    MProduto produto = _context.Produto
+                        .FirstOrDefault((x) => x.Codigo == item.ProdutoCodigo && x.Status == true);
+                    
+                    if (produto == null) 
+                    {
+                        response.Code = StatusCodes.Status404NotFound;
+                        response.Message = $"Produto de codigo { item.ProdutoCodigo } não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
+                
+                    MPedidoItem pedidoItem = new MPedidoItem()
+                    {
+                        Produto = produto,
+                        ProdutoCodigo = produto.Codigo,
+                        Quantidade = item.Quantidade,
+                        Valor = produto.Valor
+                    };
+
+                    pedidoItems.Add(pedidoItem);
+                }
+
+                MPedido pedido = new MPedido()
+                {
+                    Data = DateTime.Now,
+                    MetodoPagamento = metodoPagamento,
+                    MetodoPagamentoCodigo = metodoPagamento.Codigo,
+                    Status = Data.Helpers.PedidoStatusEnum.ABERTO,
+                    Observacao = body.Obersavacao,
+                    Usuario = usuario,
+                    UsuarioCodigo = usuario.Codigo,
+                    Items = pedidoItems
+                };
+
+                _context.Pedido.Add(pedido);
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Pedido criado com sucesso.";
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
 
 

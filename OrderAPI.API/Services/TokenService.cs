@@ -16,7 +16,7 @@ namespace OrderAPI.API.Services
     public class TokenService 
     {
         private readonly AuthenticationConfig _configuration;
-        private List<(string, string)> _refreshtokens = new();
+        private List<(Guid, string)> _refreshtokens = new();
 
         public TokenService(AuthenticationConfig configuration) 
         {
@@ -73,19 +73,19 @@ namespace OrderAPI.API.Services
             return principal;
         }
     
-        public void SaveRefreshToken(string username, string refreshToken)
+        public void SaveRefreshToken(Guid actor, string refreshToken)
         {
-            _refreshtokens.Add(new (username, refreshToken));
+            _refreshtokens.Add(new (actor, refreshToken));
         }
 
-        public string GetRefreshToken(string username)
+        public string GetRefreshToken(Guid actor)
         {
-            return _refreshtokens.FirstOrDefault(x => x.Item1 == username).Item2;
+            return _refreshtokens.FirstOrDefault(x => x.Item1 == actor).Item2;
         }
 
-        public void DeleteRefreshToken(string username, string refreshToken) 
+        public void DeleteRefreshToken(Guid actor, string refreshToken) 
         {
-            var item = _refreshtokens.FirstOrDefault(x => x.Item1 == username && x.Item2 == refreshToken);
+            var item = _refreshtokens.FirstOrDefault(x => x.Item1 == actor && x.Item2 == refreshToken);
             _refreshtokens.Remove(item);
         }
 

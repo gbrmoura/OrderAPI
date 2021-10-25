@@ -90,7 +90,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("AtualizarToken/")]
         [Authorize]
-        public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body)
+        public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body) // TODO: arrumar atualizar token
         {
             DefaultResponse response = new DefaultResponse()
             {
@@ -107,22 +107,23 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
+                var identity = _jwtService.GetPrincipalFromExpiredToken(body.Token);
+                var claims = identity.Claims;
+                var claim = claims.FirstOrDefault((x) => x.Type == ClaimTypes.Actor.ToString());
+                var value = Guid.Parse(claim.Value);
 
-                var principal = _jwtService.GetPrincipalFromExpiredToken(body.Token);
-                var username = principal.Identity.Name;
-                var savedRefreshToken = _jwtService.GetRefreshToken(username);
-
+                var savedRefreshToken = _jwtService.GetRefreshToken(value);
                 if (savedRefreshToken != body.RefreshToken)
                 {
                     response.Message = "Refresh Token Invalido.";
                     return StatusCode(response.Code, response);
                 }
 
-                var newJwtToken = _jwtService.GenerateToken(principal.Claims);
+                var newJwtToken = _jwtService.GenerateToken(claims);
                 var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-                _jwtService.DeleteRefreshToken(username, body.RefreshToken);
-                _jwtService.SaveRefreshToken(username, newRefreshToken);
+                _jwtService.DeleteRefreshToken(value, body.RefreshToken);
+                _jwtService.SaveRefreshToken(value, newRefreshToken);
 
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Token Atualizado,";
@@ -182,7 +183,7 @@ namespace OrderAPI.API.Controllers
                     });
                     var userRefreshToken = _jwtService.GenerateRefreshToken();
 
-                    _jwtService.SaveRefreshToken(usuario.Email, userRefreshToken);
+                    _jwtService.SaveRefreshToken(usuario.Codigo, userRefreshToken);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;
@@ -219,7 +220,7 @@ namespace OrderAPI.API.Controllers
                     });
                     var refreshToken = _jwtService.GenerateRefreshToken();
 
-                    _jwtService.SaveRefreshToken(funcionario.Login, refreshToken);
+                    _jwtService.SaveRefreshToken(funcionario.Codigo, refreshToken);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;

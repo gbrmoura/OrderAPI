@@ -123,7 +123,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Deletar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
+        public ActionResult<DefaultResponse> Deletar([FromQuery] Guid codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -160,11 +160,11 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
+        public ActionResult<DefaultResponse> Consultar([FromQuery] Guid codigo)
         {
             DefaultResponse httpMessage = new DefaultResponse() 
             {
-                    Code = StatusCodes.Status401Unauthorized,
+                Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada!"
             };
 

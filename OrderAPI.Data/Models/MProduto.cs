@@ -8,7 +8,7 @@ namespace OrderAPI.Data.Models
     public class MProduto 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45,  ErrorMessage = "O limite de 45 caractéres foi atingido.")]
@@ -29,7 +29,7 @@ namespace OrderAPI.Data.Models
         }
 
         [ForeignKey("CategoriaCodigo")]
-        public int CategoriaCodigo { get; set; }
+        public Guid CategoriaCodigo { get; set; }
         public MCategoria Categoria { get; set; }
     }
 }

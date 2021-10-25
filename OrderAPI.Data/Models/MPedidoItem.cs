@@ -8,7 +8,7 @@ namespace OrderAPI.Data.Models
     public class MPedidoItem 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Quantidade deve ser informada.")]
         public int Quantidade { get; set; }
@@ -17,12 +17,12 @@ namespace OrderAPI.Data.Models
         public float Valor { get; set; }
 
         [ForeignKey("Produto")]
-        public int ProdutoCodigo { get; set; }
+        public Guid ProdutoCodigo { get; set; }
 
         public MProduto Produto { get; set; }
         
         [ForeignKey("Pedido")]
-        public int PedidoCodigo { get; set; }
+        public Guid PedidoCodigo { get; set; }
         
         public MPedido Pedido { get; set; }
 

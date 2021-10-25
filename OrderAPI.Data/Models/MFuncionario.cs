@@ -1,4 +1,5 @@
 ﻿using OrderAPI.Data.Helpers;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
@@ -6,7 +7,7 @@ namespace OrderAPI.Data.Models
     public class MFuncionario 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]

@@ -1,9 +1,10 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.API.HTTP.Response {
     public class ConsultarProdutoResponse {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45,  ErrorMessage = "O limite de 45 caractéres foi atingido.")]

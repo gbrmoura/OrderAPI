@@ -9,7 +9,7 @@ namespace OrderAPI.Data.Models
     public class MMetodoPagamento 
     {
         [Key]
-        public int Codigo { get; set; }
+        public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 45 caractéres foi atigido.")]

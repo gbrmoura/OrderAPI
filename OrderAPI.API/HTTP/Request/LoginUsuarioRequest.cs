@@ -10,7 +10,7 @@ namespace OrderAPI.API.HTTP.Request {
         public string Login { get; set; }
 
         [Required(ErrorMessage = "Senha deve ser informada.")]
-        [MinLength(5, ErrorMessage = "O limite minimo de 5 caracéres não foi atigido.")]
+        [MinLength(5, ErrorMessage = "O limite minimo de 5 caractéres não foi atigido.")]
         public string Senha { get; set; }
 
     }
