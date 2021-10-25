@@ -18,5 +18,8 @@ namespace OrderAPI.API.HTTP.Response {
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
+
+        [Required(ErrorMessage = "Codigo de Categoria deve ser informado.")]
+        public Guid CategoriaCodigo { get; set; } 
     }
 }

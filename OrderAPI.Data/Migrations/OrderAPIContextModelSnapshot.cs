@@ -19,9 +19,9 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MCategoria", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(245)
@@ -42,9 +42,9 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MControleEstoque", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
@@ -60,9 +60,9 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MFuncionario", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Login")
                         .IsRequired()
@@ -94,9 +94,9 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MMetodoPagamento", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Nome")
                         .IsRequired()
@@ -113,14 +113,18 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MPedido", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<DateTime>("Data")
                         .HasColumnType("datetime");
 
-                    b.Property<int>("MetodoPagamentoCodigo")
+                    b.Property<byte[]>("MetodoPagamentoCodigo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
+
+                    b.Property<int>("Numero")
                         .HasColumnType("int");
 
                     b.Property<string>("Observacao")
@@ -130,8 +134,9 @@ namespace OrderAPI.Data.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
-                    b.Property<int>("UsuarioCodigo")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("UsuarioCodigo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.HasKey("Codigo");
 
@@ -144,15 +149,17 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MPedidoItem", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<int>("PedidoCodigo")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("PedidoCodigo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<int>("ProdutoCodigo")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("ProdutoCodigo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
@@ -174,12 +181,13 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MProduto", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
-                    b.Property<int>("CategoriaCodigo")
-                        .HasColumnType("int");
+                    b.Property<byte[]>("CategoriaCodigo")
+                        .IsRequired()
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Descricao")
                         .HasMaxLength(245)
@@ -208,9 +216,9 @@ namespace OrderAPI.Data.Migrations
 
             modelBuilder.Entity("OrderAPI.Data.Models.MUsuario", b =>
                 {
-                    b.Property<int>("Codigo")
+                    b.Property<byte[]>("Codigo")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("varbinary(16)");
 
                     b.Property<string>("Email")
                         .IsRequired()

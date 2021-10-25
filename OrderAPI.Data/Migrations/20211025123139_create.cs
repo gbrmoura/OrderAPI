@@ -1,10 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using MySql.EntityFrameworkCore.Metadata;
 
 namespace OrderAPI.Data.Migrations
 {
-    public partial class databasev01 : Migration
+    public partial class create : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,8 +11,7 @@ namespace OrderAPI.Data.Migrations
                 name: "Categoria",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Titulo = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     Descricao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
                     Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
@@ -27,8 +25,7 @@ namespace OrderAPI.Data.Migrations
                 name: "ControleEstoque",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
                     observacao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true)
                 },
@@ -41,8 +38,7 @@ namespace OrderAPI.Data.Migrations
                 name: "Funcionario",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Nome = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
                     Login = table.Column<string>(type: "varchar(50)", maxLength: 50, nullable: false),
                     Senha = table.Column<string>(type: "text", nullable: false),
@@ -59,8 +55,7 @@ namespace OrderAPI.Data.Migrations
                 name: "MetodoPagamento",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Nome = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
@@ -73,8 +68,7 @@ namespace OrderAPI.Data.Migrations
                 name: "Usuario",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Nome = table.Column<string>(type: "varchar(115)", maxLength: 115, nullable: false),
                     Sobrenome = table.Column<string>(type: "varchar(145)", maxLength: 145, nullable: false),
                     Prontuario = table.Column<string>(type: "varchar(14)", maxLength: 14, nullable: true),
@@ -92,14 +86,13 @@ namespace OrderAPI.Data.Migrations
                 name: "Produto",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Titulo = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     Descricao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
                     Valor = table.Column<float>(type: "float", nullable: false),
                     Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CategoriaCodigo = table.Column<int>(type: "int", nullable: false)
+                    CategoriaCodigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -116,12 +109,12 @@ namespace OrderAPI.Data.Migrations
                 name: "Pedido",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Data = table.Column<DateTime>(type: "datetime", nullable: false),
-                    Observacao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: false),
-                    MetodoPagamentoCodigo = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Observacao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
+                    UsuarioCodigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
+                    MetodoPagamentoCodigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -132,18 +125,23 @@ namespace OrderAPI.Data.Migrations
                         principalTable: "MetodoPagamento",
                         principalColumn: "Codigo",
                         onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Pedido_Usuario_UsuarioCodigo",
+                        column: x => x.UsuarioCodigo,
+                        principalTable: "Usuario",
+                        principalColumn: "Codigo",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
                 name: "PedidoItem",
                 columns: table => new
                 {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Codigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
                     Valor = table.Column<float>(type: "float", nullable: false),
-                    ProdutoCodigo = table.Column<int>(type: "int", nullable: false),
-                    PedidoCodigo = table.Column<int>(type: "int", nullable: false),
+                    ProdutoCodigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
+                    PedidoCodigo = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
                     Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
                 },
                 constraints: table =>
@@ -167,6 +165,11 @@ namespace OrderAPI.Data.Migrations
                 name: "IX_Pedido_MetodoPagamentoCodigo",
                 table: "Pedido",
                 column: "MetodoPagamentoCodigo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Pedido_UsuarioCodigo",
+                table: "Pedido",
+                column: "UsuarioCodigo");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PedidoItem_PedidoCodigo",
@@ -196,9 +199,6 @@ namespace OrderAPI.Data.Migrations
                 name: "PedidoItem");
 
             migrationBuilder.DropTable(
-                name: "Usuario");
-
-            migrationBuilder.DropTable(
                 name: "Pedido");
 
             migrationBuilder.DropTable(
@@ -206,6 +206,9 @@ namespace OrderAPI.Data.Migrations
 
             migrationBuilder.DropTable(
                 name: "MetodoPagamento");
+
+            migrationBuilder.DropTable(
+                name: "Usuario");
 
             migrationBuilder.DropTable(
                 name: "Categoria");

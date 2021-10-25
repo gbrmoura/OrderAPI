@@ -4,12 +4,16 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
+using OrderAPI.API.HTTP.Response;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
+using OrderAPI.Data.Helpers;
 using OrderAPI.Data.Models;
 
 namespace OrderAPI.API.Controllers
@@ -28,6 +32,7 @@ namespace OrderAPI.API.Controllers
         }
 
         [HttpPost("Registrar/")]
+        [Authorize(Roles = "USUARIO")]
         public ActionResult<DefaultResponse> Registrar([FromBody] PedidoRequest body)
         {
             DefaultResponse response = new DefaultResponse() 
@@ -51,7 +56,6 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                // TODO: usuario
                 MUsuario usuario = _context.Usuario
                     .FirstOrDefault((x) => x.Codigo == body.UsuarioCodigo && x.Status == true);
 
@@ -62,8 +66,6 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-
-                // TODO: metodo pagamento
                 MMetodoPagamento metodoPagamento = _context.MetodoPagamento
                     .FirstOrDefault((x) => x.Codigo == body.MetodoPagamentoCodigo && x.Status == true);
 
@@ -74,7 +76,6 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                // TODO: pedido itens
                 List<MPedidoItem> pedidoItems = new();
                 foreach (PedidoItemRequest item in body.Items)
                 {
@@ -93,15 +94,18 @@ namespace OrderAPI.API.Controllers
                         Produto = produto,
                         ProdutoCodigo = produto.Codigo,
                         Quantidade = item.Quantidade,
-                        Valor = produto.Valor
+                        Valor = (item.Quantidade * produto.Valor)
                     };
 
                     pedidoItems.Add(pedidoItem);
                 }
 
+                var numeroPedido = _context.Pedido.ToList().Count() + 1;
+
                 MPedido pedido = new MPedido()
                 {
                     Data = DateTime.Now,
+                    Numero = numeroPedido,
                     MetodoPagamento = metodoPagamento,
                     MetodoPagamentoCodigo = metodoPagamento.Codigo,
                     Status = Data.Helpers.PedidoStatusEnum.ABERTO,
@@ -127,6 +131,154 @@ namespace OrderAPI.API.Controllers
             }
         }
 
+        [HttpGet("Listar/")]
+        [Authorize(Roles = "USUARIO")]
+        public ActionResult<DefaultResponse> Listar(
+            [FromQuery] ListarRequest query,
+            [FromQuery] Guid usuarioCodigo,
+            [FromQuery] PedidoStatusEnum status)
+        {
+
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+            
+            try
+            {
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault((x) => x.Codigo == usuarioCodigo && x.Status == true);
+
+                if (usuario == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Usuario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                List<MPedido> pedidos = _context.Pedido
+                    .Where(e => e.UsuarioCodigo == usuarioCodigo && e.Status == status)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .OrderBy(e => e.Numero)
+                    .ToList();
+                
+                if (pedidos.Count <= 0) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Nenhum pedido encontrado para este usuario.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var count = _context.Pedido
+                    .Where(e => e.UsuarioCodigo == usuarioCodigo && e.Status == status)
+                    .Count();
+
+                ListarResponse list = new ListarResponse 
+                {
+                    NumeroRegistros = count,
+                    Dados = _mapper.Map<List<ConsultarPedidoSimplesResponse>>(pedidos)
+                };
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Pedido(s) encontrados com sucesso.";
+                response.Response = list;
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
+        [HttpGet("Consultar/")]
+        [Authorize(Roles = "USUARIO")]
+        public ActionResult<DefaultResponse> Consultar( 
+            [FromQuery] Guid codigo,
+            [FromQuery] Guid usuarioCodigo)
+        {
+
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+            
+            try
+            {
+                MUsuario usuario = _context.Usuario
+                    .FirstOrDefault((x) => x.Codigo == usuarioCodigo && x.Status == true);
+
+                if (usuario == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Usuario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                MPedido pedido = _context.Pedido
+                    .FirstOrDefault((e) => e.UsuarioCodigo == usuarioCodigo && e.Codigo == codigo);
+
+                if (pedido == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Pedido não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+                ConsultarPedidoResponse pedidoResponse = _mapper.Map<ConsultarPedidoResponse>(pedido);
+
+                MMetodoPagamento metodoPagamento = _context.MetodoPagamento
+                    .FirstOrDefault((e) => e.Codigo == pedido.MetodoPagamentoCodigo);
+
+                pedidoResponse.MetodoPagamento = _mapper.Map<ConsultarMetodoPagtoResponse>(metodoPagamento);
+
+                var items = _context.PedidoItem
+                    .Where((e) => e.PedidoCodigo == pedido.Codigo && e.Status == true)
+                    .Include((e) => e.Produto)
+                    .ToList();
+                
+                foreach (var item in items)
+                {
+                    pedidoResponse.Items.Add(new ConsultarPedidoItemResponse(){
+                        Codigo = item.Codigo,
+                        Titulo = item.Produto.Titulo,
+                        Descricao = item.Produto.Descricao,
+                        Quantidade = item.Quantidade,
+                        Valor = item.Valor
+                    });
+                }
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Pedido encontrado com sucesso.";
+                response.Response = pedidoResponse;                
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
 
     }
 }

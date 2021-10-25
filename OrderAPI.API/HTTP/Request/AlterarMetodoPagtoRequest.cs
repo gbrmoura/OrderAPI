@@ -5,7 +5,6 @@ namespace OrderAPI.API.HTTP.Request {
     public class AlterarMetodoPagtoRequest {
         [Key]
         [Required(ErrorMessage = "Codigo deve ser informado.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Codigo não deve ser menor que zero.")]
         public Guid Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]

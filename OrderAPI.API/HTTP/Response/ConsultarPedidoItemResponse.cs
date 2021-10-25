@@ -1,12 +1,17 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OrderAPI.API.HTTP.Request {
-    public class AlterarProdutoRequest {
+namespace OrderAPI.API.HTTP.Response
+{
+    public class ConsultarPedidoItemResponse
+    {
         [Key]
-        [Required(ErrorMessage = "Codigo deve ser informado.")]
         public Guid Codigo { get; set; }
-        
+
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45,  ErrorMessage = "O limite de 45 caractéres foi atingido.")]
         public string Titulo { get; set; }
@@ -14,10 +19,11 @@ namespace OrderAPI.API.HTTP.Request {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
 
+        [Required(ErrorMessage = "Quantidade deve ser informada.")]
+        public int Quantidade { get; set; }
+
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
 
-        [Required(ErrorMessage = "Codigo de Categoria deve ser informado.")]
-        public Guid CategoriaCodigo { get; set; }   
     }
 }

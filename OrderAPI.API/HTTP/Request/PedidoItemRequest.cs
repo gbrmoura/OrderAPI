@@ -10,7 +10,7 @@ namespace OrderAPI.API.HTTP.Request
     public class PedidoItemRequest
     {
         [ForeignKey("Pedido")]
-        [Range(1, int.MaxValue, ErrorMessage = "Codigo não deve ser menor que zero.")]
+        [Required(ErrorMessage = "Produto Codigo deve ser informado.")]
         public Guid ProdutoCodigo { get; set; }
 
         [Required(ErrorMessage = "Quantidade deve ser informada.")]

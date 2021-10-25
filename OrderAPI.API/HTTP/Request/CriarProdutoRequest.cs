@@ -16,7 +16,6 @@ namespace OrderAPI.API.HTTP.Request {
         public float Valor { get; set; }
         
         [Required( ErrorMessage = "Codigo de Categoria deve ser informado.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Codigo de Categoria deve ser maior que zero.")]
         public Guid CategoriaCodigo { get; set; }
     }
 }

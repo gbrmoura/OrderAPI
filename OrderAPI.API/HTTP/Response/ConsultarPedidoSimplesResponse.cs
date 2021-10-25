@@ -1,12 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using OrderAPI.Data.Helpers;
 
-namespace OrderAPI.Data.Models 
+namespace OrderAPI.API.HTTP.Response
 {
-    public class MPedido 
+    public class ConsultarPedidoSimplesResponse 
     {
         [Key]
         public Guid Codigo { get; set; }
@@ -20,19 +20,6 @@ namespace OrderAPI.Data.Models
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Observacao { get; set; }
-
-        [ForeignKey("Usuario")]
-        public Guid UsuarioCodigo { get; set; }
-
-        public MUsuario Usuario { get; set; }
-
-        [ForeignKey("MetodoPagamento")]
-        public Guid MetodoPagamentoCodigo { get; set; }
-
-        public MMetodoPagamento MetodoPagamento { get; set; }
-
-        public List<MPedidoItem> Items { get; set; }
-
         public PedidoStatusEnum Status { get; set; }
     }
 }

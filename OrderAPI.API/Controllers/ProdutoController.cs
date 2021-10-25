@@ -108,10 +108,8 @@ namespace OrderAPI.API.Controllers
             {
                 
                 MProduto produto = _context.Produto
-                    .Include((element) => element.Categoria)
                     .FirstOrDefault((element) => element.Codigo == body.Codigo && element.Status == true);
-                    
-
+                
                 if (produto == null) 
                 {
                     response.Code = StatusCodes.Status404NotFound;
@@ -128,8 +126,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                _mapper.Map(body, categoria);
-                produto.Categoria = categoria;
+                _mapper.Map(body, produto);
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;
@@ -243,7 +240,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                var count = _context.MetodoPagamento
+                var count = _context.Produto
                     .Where(e => e.Status == true)
                     .Count();
 
