@@ -80,7 +80,8 @@ namespace OrderAPI.API {
 
             app.UseSwagger();
             app.UseSwaggerUI(ops => {
-                ops.SwaggerEndpoint("v1/swagger.json", "OrderAPI");
+                ops.SwaggerEndpoint("swagger/v1/swagger.json", "OrderAPI");
+                ops.RoutePrefix = String.Empty;
             });
 
             app.UseEndpoints(endpoints => {
