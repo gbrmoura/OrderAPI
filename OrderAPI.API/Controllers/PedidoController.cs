@@ -127,10 +127,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Listar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Listar(
-            [FromQuery] ListarRequest query,
-            [FromQuery] PedidoStatusEnum status,
-            [FromQuery] Guid usuarioCodigo)
+        public ActionResult<DefaultResponse> Listar([FromQuery] ListarPedidosRequest query)
         {
 
             DefaultResponse response = new DefaultResponse() 
@@ -148,13 +145,11 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-
                 List<MPedido> pedidos = new List<MPedido>();
-
-                if (!String.IsNullOrEmpty(usuarioCodigo.ToString()))
+                if (Guid.TryParse(query.UsuarioCodigo, out var codigo ))
                 {
                     MUsuario usuario = _context.Usuario
-                    .FirstOrDefault((x) => x.Codigo == usuarioCodigo && x.Status == true);
+                        .FirstOrDefault((x) => x.Codigo == codigo && x.Status == true);
 
                     if (usuario == null) 
                     {
@@ -164,7 +159,7 @@ namespace OrderAPI.API.Controllers
                     }
 
                     pedidos = _context.Pedido
-                        .Where(e => e.UsuarioCodigo == usuarioCodigo && e.Status == status)
+                        .Where(e => e.UsuarioCodigo == codigo && e.Status == query.Status)
                         .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                         .Take(query.TamanhoPagina)
                         .OrderBy(e => e.Numero)
@@ -173,7 +168,7 @@ namespace OrderAPI.API.Controllers
                 else 
                 {
                     pedidos = _context.Pedido
-                        .Where(e => e.Status == status)
+                        .Where(e => e.Status == query.Status)
                         .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                         .Take(query.TamanhoPagina)
                         .OrderBy(e => e.Numero)
@@ -183,11 +178,9 @@ namespace OrderAPI.API.Controllers
                 if (pedidos.Count <= 0) 
                 {
                     response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Nenhum pedido encontrado para este usuario.";
+                    response.Message = "Nenhum pedido encontrado.";
                     return StatusCode(response.Code, response);
                 }
-
-
 
                 ListarResponse list = new ListarResponse 
                 {
@@ -277,11 +270,9 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Cancelar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Cancelar(
-            [FromQuery] Guid codio
-        )
+        public ActionResult<DefaultResponse> Cancelar([FromQuery] Guid codio)
         {
-            return NotFound();
+            return NotFound(); // TODO: Fazer metodo de cancelar
         }
     }
 }
