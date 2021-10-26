@@ -390,7 +390,7 @@ namespace OrderAPI.API.Controllers
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;
-                response.Message = "Pedido cancelado.";             
+                response.Message = "Pedido retirado.";             
                 return StatusCode(response.Code, response);
             }
             catch (Exception E)
