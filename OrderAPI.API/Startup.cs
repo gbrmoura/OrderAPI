@@ -22,6 +22,7 @@ namespace OrderAPI.API {
         }
 
         public void ConfigureServices(IServiceCollection services) {
+            
             AuthenticationConfig authenticationConfig = new AuthenticationConfig();
             _configuration.Bind("Authentication", authenticationConfig);
 
@@ -30,8 +31,8 @@ namespace OrderAPI.API {
                 ops => ops.UseMySQL(connectionString)
             );
 
-            services.AddSingleton<TokenService>();
             services.AddSingleton(authenticationConfig);
+            services.AddScoped<TokenService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
             services.AddControllers();

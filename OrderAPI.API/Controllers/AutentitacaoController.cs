@@ -166,7 +166,6 @@ namespace OrderAPI.API.Controllers
                 MUsuario usuario = _context.Usuario
                     .FirstOrDefault(e => e.Email.Equals(body.Login));
 
-                
                 if (usuario != null) 
                 {
                     if (!PasswordService.VerifyPassword(body.Senha, usuario.Senha))
@@ -230,6 +229,7 @@ namespace OrderAPI.API.Controllers
                         Codigo = funcionario.Codigo,
                         Nome = funcionario.Nome,
                         Login = funcionario.Login,
+                        Previlegio = funcionario.Previlegio,
                         Token = token,
                         RefreshToken = refreshToken 
                     };

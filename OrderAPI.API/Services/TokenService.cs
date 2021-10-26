@@ -9,6 +9,7 @@ using OrderAPI.Data.Models;
 using OrderAPI.API.Configurations;
 using System.Collections.Generic;
 using System.Security.Cryptography;
+using OrderAPI.Data;
 
 namespace OrderAPI.API.Services
 {
@@ -16,10 +17,13 @@ namespace OrderAPI.API.Services
     public class TokenService 
     {
         private readonly AuthenticationConfig _configuration;
+
+        private OrderAPIContext _context;
         private List<(Guid, string)> _refreshtokens = new();
 
-        public TokenService(AuthenticationConfig configuration) 
+        public TokenService(AuthenticationConfig configuration, OrderAPIContext context) 
         {
+            _context = context;
             _configuration = configuration;
         }
 
@@ -75,20 +79,23 @@ namespace OrderAPI.API.Services
     
         public void SaveRefreshToken(Guid actor, string refreshToken)
         {
-            _refreshtokens.Add(new (actor, refreshToken));
+            _context.Token.Add(new MToken()
+            {
+                Actor = actor,
+                RefreshToken = refreshToken
+            });
+            _context.SaveChanges();
         }
 
         public string GetRefreshToken(Guid actor)
         {
-            return _refreshtokens.FirstOrDefault(x => x.Item1 == actor).Item2;
+            return _context.Token.FirstOrDefault((x) => x.Actor == actor).RefreshToken;
         }
 
         public void DeleteRefreshToken(Guid actor, string refreshToken) 
         {
-            var item = _refreshtokens.FirstOrDefault(x => x.Item1 == actor && x.Item2 == refreshToken);
-            _refreshtokens.Remove(item);
+            var token = _context.Token.FirstOrDefault((x) => x.Actor == actor && x.RefreshToken == refreshToken);
+            _context.Token.Remove(token);
         }
-
-    
     }
 }

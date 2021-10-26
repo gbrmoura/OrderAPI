@@ -23,5 +23,7 @@ namespace OrderAPI.Data
         public DbSet<MMetodoPagamento> MetodoPagamento { get; set; }
         public DbSet<MControleEstoque> ControleEstoque { get; set; }
 
+        public DbSet<MToken> Token { get; set; }
+
     }
 }
