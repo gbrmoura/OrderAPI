@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -47,7 +48,13 @@ namespace OrderAPI.API.Controllers
                 response.Error = ModelStateService.ErrorConverter(ModelState);
                 return StatusCode(response.Code, response);
             }
-            
+
+            if (body.Items.Count <= 0) 
+            {
+                response.Message = "Pedido deve conter items para ser registrado.";
+                return StatusCode(response.Code, response);
+            }
+
             try
             {
                 MUsuario usuario = _context.Usuario
@@ -147,10 +154,21 @@ namespace OrderAPI.API.Controllers
             {
                 var count = 0;
                 var pedidos = new List<MPedido>();
-                if (Guid.TryParse(query.UsuarioCodigo, out var codigo ))
+
+                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
                 {
-                    MUsuario usuario = _context.Usuario
-                        .FirstOrDefault((x) => x.Codigo == codigo && x.Status == true);
+
+                    if (String.IsNullOrEmpty(query.UsuarioCodigo) || !Guid.TryParseExact( query.UsuarioCodigo,"D",out var codigo))
+                    {
+                        response.Message = "Erro ao listar pedido(s)";
+                        response.Error = new List<ErrorResponse>()
+                        {
+                            new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
+                        };
+                        return StatusCode(response.Code, response);
+                    }
+
+                    MUsuario usuario = _context.Usuario.FirstOrDefault((x) => x.Codigo == codigo && x.Status == true);
 
                     if (usuario == null) 
                     {
@@ -165,9 +183,9 @@ namespace OrderAPI.API.Controllers
                         .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                         .Take(query.TamanhoPagina)
                         .OrderBy(e => e.Numero)
-                        .ToList();
+                        .ToList();     
                 }
-                else 
+                else
                 {
                     count = _context.Pedido.Where(e => e.Status == query.Status).Count();
                     pedidos = _context.Pedido
@@ -207,7 +225,9 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Consultar([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Consultar(
+            [FromQuery] Guid codigo,
+            [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -224,9 +244,26 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                MPedido pedido = _context.Pedido
-                    .FirstOrDefault((e) => e.Codigo == codigo);
-                
+                MPedido pedido = new MPedido();
+
+                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
+                {
+                    if (String.IsNullOrEmpty(usuarioCodigo) || !Guid.TryParseExact(usuarioCodigo,"D",out var uCodigo))
+                    {
+                        response.Message = "Erro ao consultar pedido";
+                        response.Error = new List<ErrorResponse>() {
+                            new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
+                        };
+                        return StatusCode(response.Code, response);
+                    }
+
+                    pedido = _context.Pedido.FirstOrDefault(e => e.Codigo == codigo && e.UsuarioCodigo == uCodigo);
+                }
+                else
+                {
+                    pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == codigo);
+                }
+
                 if (pedido == null) 
                 {
                     response.Code = StatusCodes.Status404NotFound;
@@ -273,9 +310,48 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Cancelar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Cancelar([FromQuery] Guid codio)
+        public ActionResult<DefaultResponse> Cancelar(
+            [FromQuery] Guid codigo,
+            [FromQuery] Guid usuario)
         {
-            return NotFound(); // TODO: Fazer metodo de cancelar
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+            
+            try
+            {
+                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO);
+                
+                if (pedido == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Pedido não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+                
+                pedido.Status = PedidoStatusEnum.CANCELADO;
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Pedido cancelado.";             
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
     }
 }

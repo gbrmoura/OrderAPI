@@ -4,7 +4,8 @@
     {
         MASTER, 
         GERENTE,
-        FUNCIONARIO
+        FUNCIONARIO,
+        USUARIO
     }
 
     public enum PedidoStatusEnum 
