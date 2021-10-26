@@ -221,7 +221,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = metodos.Count,
+                    NumeroRegistros = _context.MetodoPagamento.Where(e => e.Status == true).Count(),
                     Dados = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodos)
                 };
 

@@ -242,7 +242,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = produtos.Count,
+                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
                     Dados = _mapper.Map<List<ConsultarProdutoResponse>>(produtos)
                 };
 

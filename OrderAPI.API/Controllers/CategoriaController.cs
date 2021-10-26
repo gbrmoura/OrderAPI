@@ -230,7 +230,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = categorias.Count,
+                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
                     Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
                 };
 

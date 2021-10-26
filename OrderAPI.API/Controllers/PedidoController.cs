@@ -145,7 +145,8 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                List<MPedido> pedidos = new List<MPedido>();
+                var count = 0;
+                var pedidos = new List<MPedido>();
                 if (Guid.TryParse(query.UsuarioCodigo, out var codigo ))
                 {
                     MUsuario usuario = _context.Usuario
@@ -158,6 +159,7 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(response.Code, response);
                     }
 
+                    count = _context.Pedido.Where(e => e.UsuarioCodigo == codigo && e.Status == query.Status).Count();
                     pedidos = _context.Pedido
                         .Where(e => e.UsuarioCodigo == codigo && e.Status == query.Status)
                         .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
@@ -167,6 +169,7 @@ namespace OrderAPI.API.Controllers
                 }
                 else 
                 {
+                    count = _context.Pedido.Where(e => e.Status == query.Status).Count();
                     pedidos = _context.Pedido
                         .Where(e => e.Status == query.Status)
                         .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
@@ -184,7 +187,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = pedidos.Count,
+                    NumeroRegistros = count,
                     Dados = _mapper.Map<List<ConsultarPedidoSimplesResponse>>(pedidos)
                 };
 
