@@ -226,7 +226,7 @@ namespace OrderAPI.API.Controllers
         [HttpGet("Consultar/")]
         [Authorize]
         public ActionResult<DefaultResponse> Consultar(
-            [FromQuery] Guid codigo,
+            [FromQuery] string codigo,
             [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
@@ -235,10 +235,12 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada."
             };
 
-            if (!ModelState.IsValid)
+            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
             {
                 response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
+                response.Error = new List<ErrorResponse>() {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
+                };
                 return StatusCode(response.Code, response);
             }
             
@@ -257,11 +259,11 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(response.Code, response);
                     }
 
-                    pedido = _context.Pedido.FirstOrDefault(e => e.Codigo == codigo && e.UsuarioCodigo == uCodigo);
+                    pedido = _context.Pedido.FirstOrDefault(e => e.Codigo == pCodigo && e.UsuarioCodigo == uCodigo);
                 }
                 else
                 {
-                    pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == codigo);
+                    pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo);
                 }
 
                 if (pedido == null) 
@@ -310,9 +312,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Cancelar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Cancelar(
-            [FromQuery] Guid codigo,
-            [FromQuery] Guid usuario)
+        public ActionResult<DefaultResponse> Cancelar([FromQuery] string codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -320,16 +320,18 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada."
             };
 
-            if (!ModelState.IsValid)
+            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
             {
                 response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
+                response.Error = new List<ErrorResponse>() {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
+                };
                 return StatusCode(response.Code, response);
             }
             
             try
             {
-                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO);
+                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo && e.Status == PedidoStatusEnum.ABERTO);
                 
                 if (pedido == null) 
                 {
@@ -339,6 +341,52 @@ namespace OrderAPI.API.Controllers
                 }
                 
                 pedido.Status = PedidoStatusEnum.CANCELADO;
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Pedido cancelado.";             
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
+        }
+
+        [HttpGet("Retirar/")]
+        [Authorize(Roles = "FUNCIONARIO, GERENTE, MASTER")]
+        public ActionResult<DefaultResponse> Retirar([FromQuery] string codigo)
+        {
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+
+            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
+            {
+                response.Message = "Parametros Ausentes.";
+                response.Error = new List<ErrorResponse>() {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
+                };
+                return StatusCode(response.Code, response);
+            }
+            
+            try
+            {
+                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo && e.Status == PedidoStatusEnum.ABERTO);
+                
+                if (pedido == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = "Pedido não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+                
+                pedido.Status = PedidoStatusEnum.RETIRADO;
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;
