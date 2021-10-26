@@ -17,9 +17,7 @@ namespace OrderAPI.API.Services
     public class TokenService 
     {
         private readonly AuthenticationConfig _configuration;
-
-        private OrderAPIContext _context;
-        private List<(Guid, string)> _refreshtokens = new();
+        private readonly OrderAPIContext _context;
 
         public TokenService(AuthenticationConfig configuration, OrderAPIContext context) 
         {
@@ -36,9 +34,7 @@ namespace OrderAPI.API.Services
             {
                 Subject = new ClaimsIdentity(claims),
                 Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature),
-                // Audience = _configuration.Audience,
-                // Issuer = _configuration.Issuer
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
             var token = tokenHandler.CreateToken(tokenDescriptor);
@@ -48,10 +44,8 @@ namespace OrderAPI.API.Services
         public string GenerateRefreshToken() 
         {
             var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create()) 
-            {
+            using (var rng = RandomNumberGenerator.Create())
                 rng.GetBytes(randomNumber);
-            };
             return Convert.ToBase64String(randomNumber);
         }
 
@@ -79,11 +73,8 @@ namespace OrderAPI.API.Services
     
         public void SaveRefreshToken(Guid actor, string refreshToken)
         {
-            _context.Token.Add(new MToken()
-            {
-                Actor = actor,
-                RefreshToken = refreshToken
-            });
+            var token = new MToken() { Actor = actor, RefreshToken = refreshToken };
+            _context.Token.Add(token);
             _context.SaveChanges();
         }
 
@@ -92,10 +83,11 @@ namespace OrderAPI.API.Services
             return _context.Token.FirstOrDefault((x) => x.Actor == actor).RefreshToken;
         }
 
-        public void DeleteRefreshToken(Guid actor, string refreshToken) 
+        public void DeleteRefreshToken(Guid actor) 
         {
-            var token = _context.Token.FirstOrDefault((x) => x.Actor == actor && x.RefreshToken == refreshToken);
-            _context.Token.Remove(token);
+            var token = _context.Token.FirstOrDefault((x) => x.Actor == actor);
+            if (token != null)
+                _context.Token.Remove(token);
         }
     }
 }

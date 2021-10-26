@@ -89,7 +89,7 @@ namespace OrderAPI.API.Controllers
         }
 
         [HttpPost("AtualizarToken/")]
-        [Authorize]
+        [AllowAnonymous]
         public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body) // TODO: arrumar atualizar token
         {
             DefaultResponse response = new DefaultResponse()
@@ -115,6 +115,7 @@ namespace OrderAPI.API.Controllers
                 var savedRefreshToken = _jwtService.GetRefreshToken(value);
                 if (savedRefreshToken != body.RefreshToken)
                 {
+                    _jwtService.DeleteRefreshToken(value);
                     response.Message = "Refresh Token Invalido.";
                     return StatusCode(response.Code, response);
                 }
@@ -122,7 +123,7 @@ namespace OrderAPI.API.Controllers
                 var newJwtToken = _jwtService.GenerateToken(claims);
                 var newRefreshToken = _jwtService.GenerateRefreshToken();
 
-                _jwtService.DeleteRefreshToken(value, body.RefreshToken);
+                _jwtService.DeleteRefreshToken(value);
                 _jwtService.SaveRefreshToken(value, newRefreshToken);
 
                 response.Code = StatusCodes.Status200OK;
@@ -146,6 +147,7 @@ namespace OrderAPI.API.Controllers
 
 
         [HttpPost("Login/")]
+        [AllowAnonymous]
         public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest body)
         {
             DefaultResponse response = new DefaultResponse()
@@ -182,6 +184,7 @@ namespace OrderAPI.API.Controllers
                     });
                     var userRefreshToken = _jwtService.GenerateRefreshToken();
 
+                    _jwtService.DeleteRefreshToken(usuario.Codigo);
                     _jwtService.SaveRefreshToken(usuario.Codigo, userRefreshToken);
                     _context.SaveChanges();
 
@@ -217,8 +220,9 @@ namespace OrderAPI.API.Controllers
                         new Claim(ClaimTypes.Name, funcionario.Login),
                         new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
                     });
-                    var refreshToken = _jwtService.GenerateRefreshToken();
 
+                    var refreshToken = _jwtService.GenerateRefreshToken();
+                    _jwtService.DeleteRefreshToken(funcionario.Codigo);
                     _jwtService.SaveRefreshToken(funcionario.Codigo, refreshToken);
                     _context.SaveChanges();
 
