@@ -43,7 +43,7 @@ namespace OrderAPI.API {
                     new Microsoft.OpenApi.Models.OpenApiInfo {
                         Title = "Swagger Demo API",
                         Description = "Demo API for showing Swagger",
-                        Version = "v0.0.3"
+                        Version = "v0.0.7"
                     }
                 );
             });
