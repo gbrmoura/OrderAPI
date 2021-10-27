@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,11 +9,6 @@ using OrderAPI.API.Services;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
-using OrderAPI.Data.Helpers;
-using OrderAPI.API.Helpers;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
-
 namespace OrderAPI.API.Controllers
 {
     [Route("api/Autenticacao/[controller]/")]
@@ -64,6 +58,7 @@ namespace OrderAPI.API.Controllers
 
                 MUsuario usuarioDB = _mapper.Map<MUsuario>(body);
                 usuarioDB.Senha = PasswordService.EncryptPassword(usuarioDB.Senha);
+                usuarioDB.Token = Guid.NewGuid();
 
                 _context.Usuario.Add(usuarioDB);
                 _context.SaveChanges();

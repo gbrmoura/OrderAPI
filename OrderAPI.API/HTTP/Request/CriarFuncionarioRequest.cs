@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using OrderAPI.Data.Helpers;
 
-namespace OrderAPI.API.HTTP.Request {
-
-    public class CriarFuncionarioRequest {
+namespace OrderAPI.API.HTTP.Request 
+{
+    public class CriarFuncionarioRequest 
+    {
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
         public string Nome { get; set; }
@@ -18,6 +19,7 @@ namespace OrderAPI.API.HTTP.Request {
         public string Senha { get; set; }
 
         [Required(ErrorMessage = "Previlégio deve ser informado.")]
+        [Range(0, 2, ErrorMessage = "Privilegio deve estar entre MASTER, GERENTE, FUNCIONARIO.")]
         public PrevilegioEnum Previlegio { get; set; }
     }
 }

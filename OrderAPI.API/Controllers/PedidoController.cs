@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
@@ -83,13 +84,20 @@ namespace OrderAPI.API.Controllers
                     MProduto produto = _context.Produto
                         .FirstOrDefault((x) => x.Codigo == item.ProdutoCodigo && x.Status == true);
                     
-                    if (produto == null) 
+                    if (produto == null)
                     {
                         response.Code = StatusCodes.Status404NotFound;
                         response.Message = $"Produto de codigo { item.ProdutoCodigo } não encontrado.";
                         return StatusCode(response.Code, response);
                     }
-                
+
+                    if (produto.Quantidade <= 0 || (produto.Quantidade - item.Quantidade) < 0)
+                    {
+                        response.Code = StatusCodes.Status404NotFound;
+                        response.Message = $"Produto { produto.Titulo } esta fora estoque.";
+                        return StatusCode(response.Code, response);
+                    }
+
                     MPedidoItem pedidoItem = new MPedidoItem()
                     {
                         Produto = produto,
@@ -106,7 +114,6 @@ namespace OrderAPI.API.Controllers
                 MPedido pedido = new MPedido()
                 {
                     Data = DateTime.Now,
-                    Numero = numeroPedido,
                     MetodoPagamento = metodoPagamento,
                     MetodoPagamentoCodigo = metodoPagamento.Codigo,
                     Status = Data.Helpers.PedidoStatusEnum.ABERTO,
@@ -152,49 +159,49 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                var count = 0;
-                var pedidos = new List<MPedido>();
+                IQueryable<MPedido> sqlCount = _context.Pedido;
+                IQueryable<MPedido> sql = _context.Pedido;
+
+                if (!String.IsNullOrEmpty(query.CampoPesquisa))
+                {
+                    sql = sql.Where((e) =>
+                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                        e.Data.ToString().Contains(query.CampoPesquisa) ||
+                        e.Observacao.Contains(query.CampoPesquisa)
+                    );
+                }
 
                 if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
                 {
 
-                    if (String.IsNullOrEmpty(query.UsuarioCodigo) || !Guid.TryParseExact( query.UsuarioCodigo,"D",out var codigo))
+                    if (String.IsNullOrEmpty(query.UsuarioCodigo) || !Int32.TryParse(query.UsuarioCodigo, out var codigo))
                     {
-                        response.Message = "Erro ao listar pedido(s)";
-                        response.Error = new List<ErrorResponse>()
-                        {
+                        response.Message = "Parametros Ausentes";
+                        response.Error = new List<ErrorResponse>() {
                             new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
                         };
                         return StatusCode(response.Code, response);
                     }
 
-                    MUsuario usuario = _context.Usuario.FirstOrDefault((x) => x.Codigo == codigo && x.Status == true);
-
-                    if (usuario == null) 
+                    if (!_context.Usuario.Any((e) => e.Codigo == codigo && e.Status == true)) 
                     {
                         response.Code = StatusCodes.Status404NotFound;
                         response.Message = "Usuario não encontrado.";
                         return StatusCode(response.Code, response);
                     }
 
-                    count = _context.Pedido.Where(e => e.UsuarioCodigo == codigo && e.Status == query.Status).Count();
-                    pedidos = _context.Pedido
-                        .Where(e => e.UsuarioCodigo == codigo && e.Status == query.Status)
-                        .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
-                        .Take(query.TamanhoPagina)
-                        .OrderBy(e => e.Numero)
-                        .ToList();     
+                    sqlCount = sqlCount.Where(e => e.UsuarioCodigo == codigo);
+                    sql = sql.Where(e => e.UsuarioCodigo == codigo);
                 }
-                else
-                {
-                    count = _context.Pedido.Where(e => e.Status == query.Status).Count();
-                    pedidos = _context.Pedido
-                        .Where(e => e.Status == query.Status)
-                        .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
-                        .Take(query.TamanhoPagina)
-                        .OrderBy(e => e.Numero)
-                        .ToList();
-                }
+
+                var count = sqlCount.Where((e) => e.Status == query.Status).Count();
+                var pedidos = sql
+                    .Where(e => e.Status == query.Status)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .OrderBy(e => e.Codigo)
+                    .ToList();
+
                 
                 if (pedidos.Count <= 0) 
                 {
@@ -226,7 +233,7 @@ namespace OrderAPI.API.Controllers
         [HttpGet("Consultar/")]
         [Authorize]
         public ActionResult<DefaultResponse> Consultar(
-            [FromQuery] string codigo,
+            [FromQuery] int codigo,
             [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
@@ -234,37 +241,35 @@ namespace OrderAPI.API.Controllers
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
-
-            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
-            {
-                response.Message = "Parametros Ausentes.";
-                response.Error = new List<ErrorResponse>() {
-                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
-                };
-                return StatusCode(response.Code, response);
-            }
             
             try
             {
-                MPedido pedido = new MPedido();
+                IQueryable<MPedido> sql = _context.Pedido;
 
                 if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
                 {
-                    if (String.IsNullOrEmpty(usuarioCodigo) || !Guid.TryParseExact(usuarioCodigo,"D",out var uCodigo))
+                    if (String.IsNullOrEmpty(usuarioCodigo) || !Int32.TryParse(usuarioCodigo, out var uCodigo))
                     {
-                        response.Message = "Erro ao consultar pedido";
+                        response.Message = "Parametros ausentes.";
                         response.Error = new List<ErrorResponse>() {
                             new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
                         };
                         return StatusCode(response.Code, response);
                     }
 
-                    pedido = _context.Pedido.FirstOrDefault(e => e.Codigo == pCodigo && e.UsuarioCodigo == uCodigo);
+                    if (!_context.Usuario.Any((e) => e.Codigo == uCodigo && e.Status == true)) 
+                    {
+                        response.Code = StatusCodes.Status404NotFound;
+                        response.Message = "Usuario não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    sql = sql.Where((e) => e.UsuarioCodigo == uCodigo);
                 }
-                else
-                {
-                    pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo);
-                }
+
+                var pedido = sql
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
 
                 if (pedido == null) 
                 {
@@ -273,10 +278,8 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
                 
-                ConsultarPedidoResponse pedidoResponse = _mapper.Map<ConsultarPedidoResponse>(pedido);
-
-                MMetodoPagamento metodoPagamento = _context.MetodoPagamento
-                    .FirstOrDefault((e) => e.Codigo == pedido.MetodoPagamentoCodigo);
+                var pedidoResponse = _mapper.Map<ConsultarPedidoResponse>(pedido);
+                var metodoPagamento = _context.MetodoPagamento.FirstOrDefault((e) => e.Codigo == pedido.MetodoPagamentoCodigo);
                 
                 pedidoResponse.MetodoPagamento = _mapper.Map<ConsultarMetodoPagtoResponse>(metodoPagamento);
 
@@ -284,17 +287,16 @@ namespace OrderAPI.API.Controllers
                     .Where((e) => e.PedidoCodigo == pedido.Codigo && e.Status == true)
                     .Include((e) => e.Produto)
                     .ToList();
-                
-                foreach (var item in items)
-                {
+            
+                items.ForEach((e) => {
                     pedidoResponse.Items.Add(new ConsultarPedidoItemResponse(){
-                        Codigo = item.Codigo,
-                        Titulo = item.Produto.Titulo,
-                        Descricao = item.Produto.Descricao,
-                        Quantidade = item.Quantidade,
-                        Valor = item.Valor
-                    });
-                }
+                        Codigo = e.Codigo,
+                        Titulo = e.Produto.Titulo,
+                        Descricao = e.Produto.Descricao,
+                        Quantidade = e.Quantidade,
+                        Valor = e.Valor
+                    }); 
+                });
 
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Pedido encontrado com sucesso.";
@@ -312,27 +314,45 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Cancelar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Cancelar([FromQuery] string codigo)
+        public ActionResult<DefaultResponse> Cancelar(
+            [FromQuery] int codigo,
+            [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
-
-            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
-            {
-                response.Message = "Parametros Ausentes.";
-                response.Error = new List<ErrorResponse>() {
-                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
-                };
-                return StatusCode(response.Code, response);
-            }
             
             try
             {
-                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo && e.Status == PedidoStatusEnum.ABERTO);
-                
+                IQueryable<MPedido> sql = _context.Pedido;
+                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
+                {
+                    if (String.IsNullOrEmpty(usuarioCodigo) || !Int32.TryParse(usuarioCodigo, out var uCodigo))
+                    {
+                        response.Message = "Parametros ausentes.";
+                        response.Error = new List<ErrorResponse>() {
+                            new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
+                        };
+                        return StatusCode(response.Code, response);
+                    }
+
+                    if (!_context.Usuario.Any((e) => e.Codigo == uCodigo && e.Status == true)) 
+                    {
+                        response.Code = StatusCodes.Status404NotFound;
+                        response.Message = "Usuario não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    sql = sql.Where((e) => e.UsuarioCodigo == uCodigo);
+                }
+
+                var pedido = sql
+                    .Where((e) => e.Codigo == codigo)
+                    .Where((e) => e.Status == PedidoStatusEnum.ABERTO)
+                    .SingleOrDefault();
+
                 if (pedido == null) 
                 {
                     response.Code = StatusCodes.Status404NotFound;
@@ -358,26 +378,17 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Retirar/")]
         [Authorize(Roles = "FUNCIONARIO, GERENTE, MASTER")]
-        public ActionResult<DefaultResponse> Retirar([FromQuery] string codigo)
+        public ActionResult<DefaultResponse> Retirar([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
-
-            if (String.IsNullOrEmpty(codigo) || !Guid.TryParseExact(codigo,"D",out var pCodigo))
-            {
-                response.Message = "Parametros Ausentes.";
-                response.Error = new List<ErrorResponse>() {
-                    new ErrorResponse() { Field = "Codigo", Message = "Codigo do pedido deve ser informado." }
-                };
-                return StatusCode(response.Code, response);
-            }
             
             try
             {
-                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == pCodigo && e.Status == PedidoStatusEnum.ABERTO);
+                MPedido pedido = _context.Pedido.FirstOrDefault((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO);
                 
                 if (pedido == null) 
                 {

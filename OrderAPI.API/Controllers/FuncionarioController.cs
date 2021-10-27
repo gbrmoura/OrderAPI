@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +9,6 @@ using OrderAPI.API.Services;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
-using OrderAPI.Data.Helpers;
-using OrderAPI.API.Helpers;
-using Microsoft.Extensions.Logging;
-using System.Security.Claims;
 
 namespace OrderAPI.API.Controllers
 {
@@ -64,6 +59,7 @@ namespace OrderAPI.API.Controllers
 
                 MFuncionario funcionario = _mapper.Map<MFuncionario>(body);
                 funcionario.Senha = PasswordService.EncryptPassword(funcionario.Senha);
+                funcionario.Token = Guid.NewGuid();
 
                 _context.Funcionario.Add(funcionario);
                 _context.SaveChanges();

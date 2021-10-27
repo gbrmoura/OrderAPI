@@ -1,5 +1,6 @@
 ﻿using OrderAPI.Data.Helpers;
 using System;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
@@ -7,7 +8,7 @@ namespace OrderAPI.Data.Models
     public class MFuncionario 
     {
         [Key]
-        public Guid Codigo { get; set; }
+        public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
@@ -23,11 +24,10 @@ namespace OrderAPI.Data.Models
 
         [Required(ErrorMessage = "Previlégio deve ser informado.")]
         public PrevilegioEnum Previlegio { get; set; }
-
-        public string Token { get; set; }
-
+        public Guid Token { get; set; }
         private bool _status = true;
-        public bool Status {
+        public bool Status
+        {
             get { return _status; }
             set { _status = value; }
         }

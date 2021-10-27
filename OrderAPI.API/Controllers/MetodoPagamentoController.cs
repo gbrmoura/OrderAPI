@@ -123,7 +123,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Deletar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Deletar([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -160,7 +160,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Consultar([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
         {
             DefaultResponse httpMessage = new DefaultResponse() 
             {
@@ -206,11 +206,21 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                List<MMetodoPagamento> metodos = _context.MetodoPagamento
+                IQueryable<MMetodoPagamento> sql = _context.MetodoPagamento;
+
+                if (!String.IsNullOrEmpty(query.CampoPesquisa))
+                {
+                    sql = sql.Where((e) =>
+                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                        e.Nome.Contains(query.CampoPesquisa)
+                    );
+                }
+
+                var metodos = sql
                     .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
-                    .ToList();
+                    .ToList(); 
 
                 if (metodos.Count <= 0) 
                 {

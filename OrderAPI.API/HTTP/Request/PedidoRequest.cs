@@ -14,11 +14,13 @@ namespace OrderAPI.API.HTTP.Request
 
         [ForeignKey("MetodoPagamento")]
         [Required(ErrorMessage = "Metodo de Pagamento Codigo deve ser informado.")]
-        public Guid MetodoPagamentoCodigo { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
+        public int MetodoPagamentoCodigo { get; set; }
 
         [ForeignKey("Usuario")]
         [Required(ErrorMessage = "Usuario Codigo deve ser informado.")]
-        public Guid UsuarioCodigo { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
+        public int UsuarioCodigo { get; set; }
 
         [Required(ErrorMessage = "Produtos necessarios.")]
         public List<PedidoItemRequest> Items { get; set; }

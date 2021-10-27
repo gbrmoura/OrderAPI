@@ -178,14 +178,14 @@ namespace OrderAPI.API.Controllers
 
                     var userToken = _jwtService.GenerateToken(new List<Claim>()
                     {
-                        new Claim(ClaimTypes.Actor, usuario.Codigo.ToString()),
+                        new Claim(ClaimTypes.Actor, usuario.Token.ToString()),
                         new Claim(ClaimTypes.Name, usuario.Email),
                         new Claim(ClaimTypes.Role, "USUARIO")
                     });
                     var userRefreshToken = _jwtService.GenerateRefreshToken();
 
-                    _jwtService.DeleteRefreshToken(usuario.Codigo);
-                    _jwtService.SaveRefreshToken(usuario.Codigo, userRefreshToken);
+                    _jwtService.DeleteRefreshToken(usuario.Token);
+                    _jwtService.SaveRefreshToken(usuario.Token, userRefreshToken);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;
@@ -216,14 +216,14 @@ namespace OrderAPI.API.Controllers
 
                     var token = _jwtService.GenerateToken(new List<Claim>()
                     {
-                        new Claim(ClaimTypes.Actor, funcionario.Codigo.ToString()),
+                        new Claim(ClaimTypes.Actor, funcionario.Token.ToString()),
                         new Claim(ClaimTypes.Name, funcionario.Login),
                         new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
                     });
 
                     var refreshToken = _jwtService.GenerateRefreshToken();
-                    _jwtService.DeleteRefreshToken(funcionario.Codigo);
-                    _jwtService.SaveRefreshToken(funcionario.Codigo, refreshToken);
+                    _jwtService.DeleteRefreshToken(funcionario.Token);
+                    _jwtService.SaveRefreshToken(funcionario.Token, refreshToken);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;

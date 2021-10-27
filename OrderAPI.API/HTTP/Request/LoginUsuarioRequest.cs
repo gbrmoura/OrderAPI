@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using OrderAPI.API.Helpers;
 
-namespace OrderAPI.API.HTTP.Request {
+namespace OrderAPI.API.HTTP.Request 
+{
 
-    public class LoginUsuarioRequest {
+    public class LoginUsuarioRequest 
+    {
 
         [Required(ErrorMessage = "E-Mail deve ser informado.")]
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]

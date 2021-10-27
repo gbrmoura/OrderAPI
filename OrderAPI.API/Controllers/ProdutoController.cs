@@ -144,7 +144,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Deletar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Deletar([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -181,7 +181,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Consultar([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -227,7 +227,19 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                List<MProduto> produtos = _context.Produto
+
+                IQueryable<MProduto> sql = _context.Produto;
+
+                if (!String.IsNullOrEmpty(query.CampoPesquisa))
+                {
+                    sql = sql.Where((e) =>
+                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                        e.Titulo.Contains(query.CampoPesquisa) ||
+                        e.Descricao.Contains(query.CampoPesquisa)
+                    );
+                }
+
+                var produtos = sql
                     .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)

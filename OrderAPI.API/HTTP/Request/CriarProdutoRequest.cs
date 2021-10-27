@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderAPI.API.HTTP.Request {
+namespace OrderAPI.API.HTTP.Request 
+{
 
-    public class CriarProdutoRequest {
+    public class CriarProdutoRequest 
+    {
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45,  ErrorMessage = "O limite de 45 caractéres foi atingido.")]
         public string Titulo { get; set; }
@@ -16,6 +18,7 @@ namespace OrderAPI.API.HTTP.Request {
         public float Valor { get; set; }
         
         [Required( ErrorMessage = "Codigo de Categoria deve ser informado.")]
-        public Guid CategoriaCodigo { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
+        public int CategoriaCodigo { get; set; }
     }
 }

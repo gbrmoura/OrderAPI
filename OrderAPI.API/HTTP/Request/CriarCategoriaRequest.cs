@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace OrderAPI.API.HTTP.Request {
-    public class CriarCategoriaRequest {
+namespace OrderAPI.API.HTTP.Request 
+{
+    public class CriarCategoriaRequest 
+    {
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 145 caractéres foi atingido.")]
         public string Titulo { get; set; }

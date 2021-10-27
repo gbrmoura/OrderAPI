@@ -119,7 +119,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Categoria/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Categoria([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Categoria([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -203,7 +203,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Produto/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Produto([FromQuery] Guid codigo)
+        public ActionResult<DefaultResponse> Produto([FromQuery] int codigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {

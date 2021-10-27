@@ -8,7 +8,7 @@ namespace OrderAPI.Data.Models
     public class MToken
     {
         [Key]
-        public Guid Codigo { get; set; }
+        public int Codigo { get; set; }
 
         public Guid Actor { get; set; }
 

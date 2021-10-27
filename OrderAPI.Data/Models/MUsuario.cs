@@ -7,7 +7,7 @@ namespace OrderAPI.Data.Models
     public class MUsuario 
     {
         [Key]
-        public Guid Codigo { get; set; }
+        public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
@@ -28,11 +28,10 @@ namespace OrderAPI.Data.Models
         [EmailAddress(ErrorMessage = "E-Mail inválido.")]
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
-
-        public string Token { get; set; }
-
+        public Guid Token { get; set; }
         private bool _status = true;
-        public bool Status {
+        public bool Status
+        {
             get { return _status; }
             set { _status = value; }
         }

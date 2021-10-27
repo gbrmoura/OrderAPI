@@ -9,11 +9,9 @@ namespace OrderAPI.Data.Models
     public class MPedido 
     {
         [Key]
-        public Guid Codigo { get; set; }
-
         [Required(ErrorMessage = "Numero deve ser informado")]
-        [Range(1, int.MaxValue, ErrorMessage = "Numero deve estar entre 1 e N")]
-        public int Numero { get; set; }
+        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
+        public int Codigo { get; set; }
         
         [Required(ErrorMessage = "Data deve ser informada.")]
         public DateTime Data { get; set; }
@@ -22,12 +20,12 @@ namespace OrderAPI.Data.Models
         public string Observacao { get; set; }
 
         [ForeignKey("Usuario")]
-        public Guid UsuarioCodigo { get; set; }
+        public int UsuarioCodigo { get; set; }
 
         public MUsuario Usuario { get; set; }
 
         [ForeignKey("MetodoPagamento")]
-        public Guid MetodoPagamentoCodigo { get; set; }
+        public int MetodoPagamentoCodigo { get; set; }
 
         public MMetodoPagamento MetodoPagamento { get; set; }
 

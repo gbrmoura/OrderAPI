@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
@@ -8,7 +9,7 @@ namespace OrderAPI.Data.Models
     public class MCategoria 
     {
         [Key]
-        public Guid Codigo { get; set; }
+        public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Titulo deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 145 caractéres foi atingido.")]
@@ -16,13 +17,15 @@ namespace OrderAPI.Data.Models
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
+        public List<MProduto> Produtos { get; set; }
 
         private bool _status = true;
-        public bool Status {
+        public bool Status
+        {
             get { return _status; }
             set { _status = value; }
         }
         
-        public List<MProduto> Produtos { get; set; }
+
     }
 }

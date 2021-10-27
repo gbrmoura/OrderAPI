@@ -11,6 +11,30 @@ namespace OrderAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
+            modelBuilder.Entity<MCategoria>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<MFuncionario>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<MMetodoPagamento>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<MPedidoItem>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+            
+            modelBuilder.Entity<MProduto>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<MUsuario>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
             base.OnModelCreating(modelBuilder);
         }
 

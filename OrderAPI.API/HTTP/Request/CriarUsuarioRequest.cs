@@ -1,8 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace OrderAPI.API.HTTP.Request {
+namespace OrderAPI.API.HTTP.Request 
+{
 
-    public class CriarUsuarioRequest {
+    public class CriarUsuarioRequest 
+    {
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
         public string Nome { get; set; }

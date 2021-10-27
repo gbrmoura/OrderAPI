@@ -6,7 +6,7 @@ namespace OrderAPI.Data.Models
     public class MControleEstoque 
     {
         [Key]
-        public Guid Codigo { get; set; }
+        public int Codigo { get; set; }
 
         [Required(ErrorMessage = "Quantidade deve ser informada.")]
         public int Quantidade { get; set; }
