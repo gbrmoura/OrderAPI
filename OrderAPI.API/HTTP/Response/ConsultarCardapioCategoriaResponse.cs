@@ -18,6 +18,6 @@ namespace OrderAPI.API.HTTP.Response
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
         
-        public List<ConsultarProdutoResponse> Produtos { get; set; }
+        public List<ConsultarProdutoSimplesResponse> Produtos { get; set; }
     }
 }

@@ -1,9 +1,12 @@
-using System;
+ using System;
+ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-
-namespace OrderAPI.API.HTTP.Response 
-{
-    public class ConsultarProdutoResponse 
+using System.Linq;
+ using System.Threading.Tasks;
+ 
+ namespace OrderAPI.API.HTTP.Response
+ {
+    public class ConsultarProdutoSimplesResponse
     {
         [Key]
         [Required(ErrorMessage = "Codigo deve ser informado.")]
@@ -22,9 +25,5 @@ namespace OrderAPI.API.HTTP.Response
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-
-        [Required(ErrorMessage = "Codigo de Categoria deve ser informado.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
-        public ConsultarCategoriaResponse Categoria { get; set; } 
     }
-}
+ }

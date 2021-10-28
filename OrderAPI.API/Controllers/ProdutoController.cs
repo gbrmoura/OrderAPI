@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.API.HTTP.Response;
@@ -227,9 +226,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-
                 IQueryable<MProduto> sql = _context.Produto;
-
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
@@ -240,7 +237,8 @@ namespace OrderAPI.API.Controllers
                 }
 
                 var produtos = sql
-                    .Where(e => e.Status == true)
+                    .Where((e) => e.Status == true)
+                    .Include((e) => e.Categoria)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();

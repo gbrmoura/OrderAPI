@@ -11,6 +11,7 @@ namespace OrderAPI.API.Profiles {
             CreateMap<CriarProdutoRequest, MProduto>();   
             CreateMap<AlterarProdutoRequest, MProduto>();
             CreateMap<MProduto, ConsultarProdutoResponse>();
+            CreateMap<MProduto, ConsultarProdutoSimplesResponse>();
             CreateMap<MProduto, ConsultarCardapioProdutoResponse>();
         }
 
