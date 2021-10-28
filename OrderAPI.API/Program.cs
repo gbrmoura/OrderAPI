@@ -4,9 +4,12 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
 
-namespace OrderAPI.API {
-    public class Program {
-        public static void Main(string[] args) {
+namespace OrderAPI.API 
+{
+    public class Program 
+    {
+        public static void Main(string[] args) 
+        {
             var config = new ConfigurationBuilder()
                 .AddJsonFile("appsettings.json")
                 .Build();

@@ -145,7 +145,6 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-
         [HttpPost("Login/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> Login([FromBody] LoginUsuarioRequest body)

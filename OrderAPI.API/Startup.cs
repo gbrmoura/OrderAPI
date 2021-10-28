@@ -5,32 +5,35 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using OrderAPI.API.Configurations;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
 using System;
+using System.Collections.Generic;
 using System.Text;
 
-namespace OrderAPI.API {
+namespace OrderAPI.API 
+{
 
-    public class Startup {
+    public class Startup 
+    {
 
         private IConfiguration _configuration { get; }
         
-        public Startup(IConfiguration configuration) {
+        public Startup(IConfiguration configuration) 
+        {
             _configuration = configuration;
         }
 
-        public void ConfigureServices(IServiceCollection services) {
+        public void ConfigureServices(IServiceCollection services) 
+        {
             
             AuthenticationConfig authenticationConfig = new AuthenticationConfig();
             _configuration.Bind("Authentication", authenticationConfig);
 
             string connectionString = _configuration.GetConnectionString("MySQLConnection");
-            services.AddDbContextPool<OrderAPIContext>(
-                ops => ops.UseMySQL(connectionString)
-            );
-
+            services.AddDbContextPool<OrderAPIContext>(ops => ops.UseMySQL(connectionString));
             services.AddSingleton(authenticationConfig);
             services.AddScoped<TokenService>();
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -38,54 +41,97 @@ namespace OrderAPI.API {
             services.AddControllers();
             services.AddOptions();
            
-            services.AddSwaggerGen(ops => {
+            services.AddSwaggerGen(ops => 
+            {
+                ops.AddSecurityDefinition("bearer",
+                    new OpenApiSecurityScheme
+                    {
+                        In = ParameterLocation.Header,
+                        Description = "Autenticação baseada em Json Web Token (JWT)",
+                        Name = "Authorization",
+                        Type = SecuritySchemeType.ApiKey,
+                        Scheme = "Bearer"
+                    }
+                );
+
+                ops.AddSecurityRequirement(
+                    new OpenApiSecurityRequirement()
+                    {
+                        {
+                            new OpenApiSecurityScheme()
+                            {
+                                Reference = new OpenApiReference()
+                                {
+                                    Type = ReferenceType.SecurityScheme,
+                                    Id = "Bearer"
+                                },
+                                Scheme = "oauth2",
+                                Name = "Bearer",
+                                In = ParameterLocation.Header
+                            },
+                            new List<string>()
+                        }
+                    }
+                );
+
                 ops.SwaggerDoc("v1", 
-                    new Microsoft.OpenApi.Models.OpenApiInfo {
-                        Title = "Swagger Demo API",
-                        Description = "Demo API for showing Swagger",
-                        Version = "v0.0.7"
+                    new Microsoft.OpenApi.Models.OpenApiInfo 
+                    {
+                        Version = "v0.0.7",
+                        Title = "Documentação OrderAPI",
+                        Description = "Documentação da api para uso do Instituto Federeal de São Paulo - Campus Boituva",
+                        Contact = new Microsoft.OpenApi.Models.OpenApiContact()
+                        {
+                            Email = "moura.g@aluno.ifsp.edu.br",
+                            Name = "Gabriel Alves de Moura",
+                            Url = new Uri("https://github.com/gbrextreme"),
+                        }                       
                     }
                 );
             });
 
             var key = Encoding.ASCII.GetBytes(authenticationConfig.AccessTokenSecret);
-            services.AddAuthentication(ops => {
+            services.AddAuthentication(ops => 
+            {
                 ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 ops.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-            }).AddJwtBearer(ops => {
+            })
+            .AddJwtBearer(ops => 
+            {
                 ops.RequireHttpsMetadata = false;
                 ops.SaveToken = true;
-                ops.TokenValidationParameters = new TokenValidationParameters {
+                ops.TokenValidationParameters = new TokenValidationParameters 
+                {
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKey = new SymmetricSecurityKey(key),
                     ValidateIssuer = false,
                     ValidateAudience = false
-                    // ValidateIssuer = true,
-                    // ValidateAudience = true,
-                    // ValidIssuer = authenticationConfig.Issuer,
-                    // ValidAudience = authenticationConfig.Audience
                 };
             });   
         }
 
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) {
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env) 
+        {
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
             
-            app.UseCors(ops => {
+            app.UseCors(ops => 
+            {
                 ops.AllowAnyOrigin();
                 ops.AllowAnyMethod();
                 ops.AllowAnyHeader();
             });
 
             app.UseSwagger();
-            app.UseSwaggerUI(ops => {
+            app.UseSwaggerUI(ops => 
+            {
                 ops.SwaggerEndpoint("swagger/v1/swagger.json", "OrderAPI");
                 ops.RoutePrefix = String.Empty;
             });
 
-            app.UseEndpoints(endpoints => {
+            app.UseEndpoints(endpoints => 
+            {
                 endpoints.MapControllers();
             });
         }
