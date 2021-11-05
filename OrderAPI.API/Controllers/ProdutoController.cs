@@ -104,7 +104,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("Alterar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body) // TODO: fazer alterar
+        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -119,11 +119,9 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(response.Code, response);
             }
 
-            try 
+            try
             {
-                
-                MProduto produto = _context.Produto
-                    .FirstOrDefault((element) => element.Codigo == body.Codigo && element.Status == true);
+                var produto = _context.Produto.FirstOrDefault((e) => e.Codigo == body.Codigo && e.Status == true);
                 
                 if (produto == null) 
                 {
@@ -132,8 +130,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((element) => element.Codigo == body.CategoriaCodigo);
+                var categoria = _context.Categoria.SingleOrDefault((e) => e.Codigo == body.CategoriaCodigo);
 
                 if (categoria == null) 
                 {
@@ -141,13 +138,25 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                _mapper.Map(body, produto);
+                produto.Titulo = body.Titulo;
+                produto.Descricao = body.Descricao;
+                produto.Valor = body.Valor;
+                produto.Categoria = categoria;
+
+                _context.SaveChanges();
+
+                var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.ImageCodigo);
+                var caminho = ImageService.SaveImage(body.Imagem, imagem.Nome);
+
+                imagem.Caminho = caminho;
+                imagem.Produto = produto;
+
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Produto alterado com sucesso.";
                 return StatusCode(response.Code, response);
-            } 
+            }
             catch (Exception E) 
             {
                 response.Code = StatusCodes.Status500InternalServerError;
@@ -169,8 +178,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MProduto produto = _context.Produto
-                    .FirstOrDefault((element) => element.Codigo == codigo);
+                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
 
                 if (produto == null) 
                 {
@@ -206,8 +214,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MProduto produto = _context.Produto
-                    .FirstOrDefault((element) => element.Codigo == codigo);
+                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
 
                 if (produto == null) 
                 {
