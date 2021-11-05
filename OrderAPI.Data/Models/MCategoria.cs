@@ -25,7 +25,6 @@ namespace OrderAPI.Data.Models
             get { return _status; }
             set { _status = value; }
         }
-        
 
     }
 }

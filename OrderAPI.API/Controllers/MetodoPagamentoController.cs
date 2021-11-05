@@ -49,7 +49,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 MMetodoPagamento MetodoPagamento = _context.MetodoPagamento
-                    .FirstOrDefault(pagto => pagto.Nome.Equals(body.Nome));
+                    .FirstOrDefault(pagto => pagto.Titulo.Equals(body.Titulo));
 
                 if (MetodoPagamento != null) 
                 {
@@ -212,7 +212,7 @@ namespace OrderAPI.API.Controllers
                 {
                     sql = sql.Where((e) =>
                         e.Codigo.ToString().Contains(query.CampoPesquisa) ||
-                        e.Nome.Contains(query.CampoPesquisa)
+                        e.Titulo.Contains(query.CampoPesquisa)
                     );
                 }
 

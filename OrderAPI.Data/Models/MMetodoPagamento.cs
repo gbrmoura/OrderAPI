@@ -14,7 +14,7 @@ namespace OrderAPI.Data.Models
 
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 45 caractéres foi atigido.")]
-        public string Nome { get; set; }
+        public string Titulo { get; set; }
 
         [Required(ErrorMessage = "Status deve ser informado.")]
         private bool _status = true;
