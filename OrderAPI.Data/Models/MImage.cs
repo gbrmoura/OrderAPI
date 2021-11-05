@@ -18,7 +18,7 @@ namespace OrderAPI.Data.Models
         
         [ForeignKey("Produto")]
         public int ProductCodigo { get; set; }
-        public MProduto Product { get; set; }
+        public MProduto Produto { get; set; }
         private bool _status = true;
         public bool Status
         {

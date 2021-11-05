@@ -22,6 +22,9 @@ namespace OrderAPI.API.HTTP.Request
 
         [Required(ErrorMessage = "Codigo de Categoria deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
-        public int CategoriaCodigo { get; set; }   
+        public int CategoriaCodigo { get; set; }
+        
+        [Required(ErrorMessage = "Imagem deve ser informado.")]
+        public string Imagem { get; set; }
     }
 }

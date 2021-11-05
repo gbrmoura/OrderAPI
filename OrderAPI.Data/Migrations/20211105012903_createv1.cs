@@ -4,7 +4,7 @@ using MySql.EntityFrameworkCore.Metadata;
 
 namespace OrderAPI.Data.Migrations
 {
-    public partial class create : Migration
+    public partial class createv1 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -16,25 +16,11 @@ namespace OrderAPI.Data.Migrations
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
                     Titulo = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
                     Descricao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Categoria", x => x.Codigo);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "ControleEstoque",
-                columns: table => new
-                {
-                    Codigo = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Quantidade = table.Column<int>(type: "int", nullable: false),
-                    observacao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ControleEstoque", x => x.Codigo);
                 });
 
             migrationBuilder.CreateTable(
@@ -48,7 +34,7 @@ namespace OrderAPI.Data.Migrations
                     Senha = table.Column<string>(type: "text", nullable: false),
                     Previlegio = table.Column<int>(type: "int", nullable: false),
                     Token = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -61,8 +47,8 @@ namespace OrderAPI.Data.Migrations
                 {
                     Codigo = table.Column<int>(type: "int", nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    Nome = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Titulo = table.Column<string>(type: "varchar(45)", maxLength: 45, nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -95,7 +81,7 @@ namespace OrderAPI.Data.Migrations
                     Senha = table.Column<string>(type: "text", nullable: false),
                     Email = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: false),
                     Token = table.Column<byte[]>(type: "varbinary(16)", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -112,8 +98,9 @@ namespace OrderAPI.Data.Migrations
                     Descricao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
                     Quantidade = table.Column<int>(type: "int", nullable: false),
                     Valor = table.Column<float>(type: "float", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false),
-                    CategoriaCodigo = table.Column<int>(type: "int", nullable: false)
+                    CategoriaCodigo = table.Column<int>(type: "int", nullable: false),
+                    ImageCodigo = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -156,6 +143,58 @@ namespace OrderAPI.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ControleEstoque",
+                columns: table => new
+                {
+                    Codigo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Quantidade = table.Column<int>(type: "int", nullable: false),
+                    Observacao = table.Column<string>(type: "varchar(245)", maxLength: 245, nullable: true),
+                    Data = table.Column<DateTime>(type: "datetime", nullable: false),
+                    ProdutoCodigo = table.Column<int>(type: "int", nullable: false),
+                    FuncionarioCodigo = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ControleEstoque", x => x.Codigo);
+                    table.ForeignKey(
+                        name: "FK_ControleEstoque_Funcionario_FuncionarioCodigo",
+                        column: x => x.FuncionarioCodigo,
+                        principalTable: "Funcionario",
+                        principalColumn: "Codigo",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ControleEstoque_Produto_ProdutoCodigo",
+                        column: x => x.ProdutoCodigo,
+                        principalTable: "Produto",
+                        principalColumn: "Codigo",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Image",
+                columns: table => new
+                {
+                    Codigo = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    Nome = table.Column<string>(type: "varchar(60)", maxLength: 60, nullable: false),
+                    Caminho = table.Column<string>(type: "text", nullable: false),
+                    ProductCodigo = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Image", x => x.Codigo);
+                    table.ForeignKey(
+                        name: "FK_Image_Produto_ProductCodigo",
+                        column: x => x.ProductCodigo,
+                        principalTable: "Produto",
+                        principalColumn: "Codigo",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "PedidoItem",
                 columns: table => new
                 {
@@ -165,7 +204,7 @@ namespace OrderAPI.Data.Migrations
                     Valor = table.Column<float>(type: "float", nullable: false),
                     ProdutoCodigo = table.Column<int>(type: "int", nullable: false),
                     PedidoCodigo = table.Column<int>(type: "int", nullable: false),
-                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false)
+                    Status = table.Column<bool>(type: "tinyint(1)", nullable: false, defaultValue: true)
                 },
                 constraints: table =>
                 {
@@ -183,6 +222,22 @@ namespace OrderAPI.Data.Migrations
                         principalColumn: "Codigo",
                         onDelete: ReferentialAction.Cascade);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ControleEstoque_FuncionarioCodigo",
+                table: "ControleEstoque",
+                column: "FuncionarioCodigo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ControleEstoque_ProdutoCodigo",
+                table: "ControleEstoque",
+                column: "ProdutoCodigo");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Image_ProductCodigo",
+                table: "Image",
+                column: "ProductCodigo",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Pedido_MetodoPagamentoCodigo",
@@ -216,13 +271,16 @@ namespace OrderAPI.Data.Migrations
                 name: "ControleEstoque");
 
             migrationBuilder.DropTable(
-                name: "Funcionario");
+                name: "Image");
 
             migrationBuilder.DropTable(
                 name: "PedidoItem");
 
             migrationBuilder.DropTable(
                 name: "Token");
+
+            migrationBuilder.DropTable(
+                name: "Funcionario");
 
             migrationBuilder.DropTable(
                 name: "Pedido");

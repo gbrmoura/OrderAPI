@@ -34,6 +34,14 @@ namespace OrderAPI.Data
             modelBuilder.Entity<MUsuario>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
+            
+            modelBuilder.Entity<MControleEstoque>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
+
+            modelBuilder.Entity<MImage>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -46,7 +54,7 @@ namespace OrderAPI.Data
         public DbSet<MProduto> Produto { get; set; }
         public DbSet<MMetodoPagamento> MetodoPagamento { get; set; }
         public DbSet<MControleEstoque> ControleEstoque { get; set; }
-
+        public DbSet<MImage> Image { get; set; }
         public DbSet<MToken> Token { get; set; }
 
     }

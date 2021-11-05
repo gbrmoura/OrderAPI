@@ -27,6 +27,9 @@ namespace OrderAPI.Data.Models
         public int CategoriaCodigo { get; set; }
         public MCategoria Categoria { get; set; }
 
+        [ForeignKey("ImageCodigo")]
+        public int ImageCodigo { get; set; }
+        public MImage Imagem { get; set; }
         private bool _status = true;
         public bool Status
         {

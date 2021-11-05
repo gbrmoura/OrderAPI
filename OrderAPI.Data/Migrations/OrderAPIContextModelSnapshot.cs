@@ -47,14 +47,31 @@ namespace OrderAPI.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<int>("Quantidade")
+                    b.Property<DateTime>("Data")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("FuncionarioCodigo")
                         .HasColumnType("int");
 
-                    b.Property<string>("observacao")
+                    b.Property<string>("Observacao")
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
 
+                    b.Property<int>("ProdutoCodigo")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantidade")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
                     b.HasKey("Codigo");
+
+                    b.HasIndex("FuncionarioCodigo");
+
+                    b.HasIndex("ProdutoCodigo");
 
                     b.ToTable("ControleEstoque");
                 });
@@ -95,20 +112,50 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Funcionario");
                 });
 
+            modelBuilder.Entity("OrderAPI.Data.Models.MImage", b =>
+                {
+                    b.Property<int>("Codigo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Caminho")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Nome")
+                        .IsRequired()
+                        .HasMaxLength(60)
+                        .HasColumnType("varchar(60)");
+
+                    b.Property<int>("ProductCodigo")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Status")
+                        .HasColumnType("tinyint(1)")
+                        .HasDefaultValue(true);
+
+                    b.HasKey("Codigo");
+
+                    b.HasIndex("ProductCodigo")
+                        .IsUnique();
+
+                    b.ToTable("Image");
+                });
+
             modelBuilder.Entity("OrderAPI.Data.Models.MMetodoPagamento", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    b.Property<string>("Nome")
-                        .IsRequired()
-                        .HasMaxLength(45)
-                        .HasColumnType("varchar(45)");
-
                     b.Property<bool>("Status")
                         .HasColumnType("tinyint(1)")
                         .HasDefaultValue(true);
+
+                    b.Property<string>("Titulo")
+                        .IsRequired()
+                        .HasMaxLength(45)
+                        .HasColumnType("varchar(45)");
 
                     b.HasKey("Codigo");
 
@@ -189,6 +236,9 @@ namespace OrderAPI.Data.Migrations
                     b.Property<string>("Descricao")
                         .HasMaxLength(245)
                         .HasColumnType("varchar(245)");
+
+                    b.Property<int>("ImageCodigo")
+                        .HasColumnType("int");
 
                     b.Property<int>("Quantidade")
                         .HasColumnType("int");
@@ -272,6 +322,36 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Usuario");
                 });
 
+            modelBuilder.Entity("OrderAPI.Data.Models.MControleEstoque", b =>
+                {
+                    b.HasOne("OrderAPI.Data.Models.MFuncionario", "Funcionario")
+                        .WithMany()
+                        .HasForeignKey("FuncionarioCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("OrderAPI.Data.Models.MProduto", "Produto")
+                        .WithMany()
+                        .HasForeignKey("ProdutoCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Funcionario");
+
+                    b.Navigation("Produto");
+                });
+
+            modelBuilder.Entity("OrderAPI.Data.Models.MImage", b =>
+                {
+                    b.HasOne("OrderAPI.Data.Models.MProduto", "Produto")
+                        .WithOne("Imagem")
+                        .HasForeignKey("OrderAPI.Data.Models.MImage", "ProductCodigo")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Produto");
+                });
+
             modelBuilder.Entity("OrderAPI.Data.Models.MPedido", b =>
                 {
                     b.HasOne("OrderAPI.Data.Models.MMetodoPagamento", "MetodoPagamento")
@@ -329,6 +409,11 @@ namespace OrderAPI.Data.Migrations
             modelBuilder.Entity("OrderAPI.Data.Models.MPedido", b =>
                 {
                     b.Navigation("Items");
+                });
+
+            modelBuilder.Entity("OrderAPI.Data.Models.MProduto", b =>
+                {
+                    b.Navigation("Imagem");
                 });
 #pragma warning restore 612, 618
         }

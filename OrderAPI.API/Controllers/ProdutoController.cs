@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Drawing;
+using System.Drawing.Imaging;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -12,6 +14,7 @@ using OrderAPI.API.HTTP.Response;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
 using OrderAPI.Data.Models;
+using System.IO;
 
 namespace OrderAPI.API.Controllers
 {
@@ -46,10 +49,16 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(response.Code, response);
             }
 
-            try {
+            try 
+            {
                 
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((element) => element.Codigo == body.CategoriaCodigo);
+                if (_context.Produto.Any(x => x.Titulo.Equals(body.Titulo) && x.Status == true)) 
+                {
+                    response.Message = "Produto ja cadastrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var categoria = _context.Categoria.FirstOrDefault((e) => e.Codigo == body.CategoriaCodigo);
 
                 if (categoria == null) 
                 {
@@ -57,20 +66,27 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MProduto produto = _context.Produto
-                    .FirstOrDefault((element) => element.Titulo.Equals(body.Titulo) && element.Status == true);
-
-                if (produto != null) 
+                MProduto produto = new MProduto()
                 {
-                    response.Message = "Produto ja cadastrado.";
-                    return StatusCode(response.Code, response);
-                }
+                    Titulo = body.Titulo,
+                    Valor = body.Valor,
+                    Descricao = body.Descricao,
+                    Categoria = categoria,
+                };
 
-                MProduto produtoDB = _mapper.Map<MProduto>(body);
-                produtoDB.Status = true;
-                produtoDB.Categoria = categoria;
+                _context.Produto.Add(produto);
+                _context.SaveChanges();
 
-                _context.Produto.Add(produtoDB);
+                var imageName = Guid.NewGuid().ToString() + ".png";
+                var path = ImageService.SaveImage(body.Imagem, imageName);
+                MImage image = new MImage() 
+                {
+                    Produto = produto,
+                    Nome = imageName,
+                    Caminho = path,
+                };
+
+                _context.Image.Add(image);
                 _context.SaveChanges();
 
                 response.Code = StatusCodes.Status201Created;
@@ -88,7 +104,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("Alterar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body)
+        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body) // TODO: fazer alterar
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -263,5 +279,12 @@ namespace OrderAPI.API.Controllers
             }
         }
 
+        [HttpGet("Image/")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
+        public ActionResult Image([FromBody] int codigo)
+        {
+            // TODO:  Fazer retornar imagem
+            return NotFound();
+        }
     }
 }
