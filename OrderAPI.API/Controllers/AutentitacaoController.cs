@@ -90,7 +90,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("AtualizarToken/")]
         [AllowAnonymous]
-        public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body) // TODO: arrumar atualizar token
+        public ActionResult<DefaultResponse> AtualizarToken([FromBody] RefreshTokenRequest body)
         {
             DefaultResponse response = new DefaultResponse()
             {

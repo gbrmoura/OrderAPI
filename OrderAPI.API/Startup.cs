@@ -82,7 +82,7 @@ namespace OrderAPI.API
                         Description = "Documentação da api para uso do Instituto Federeal de São Paulo - Campus Boituva",
                         Contact = new Microsoft.OpenApi.Models.OpenApiContact()
                         {
-                            Email = "moura.g@aluno.ifsp.edu.br",
+                            Email = "gbr@gabrielalves.net",
                             Name = "Gabriel Alves de Moura",
                             Url = new Uri("https://github.com/gbrextreme"),
                         }                       

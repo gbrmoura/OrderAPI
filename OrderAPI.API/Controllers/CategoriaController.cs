@@ -231,13 +231,6 @@ namespace OrderAPI.API.Controllers
                     .Take(query.TamanhoPagina)
                     .ToList();
 
-                if (categorias.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Nenhuma categoria encontrada.";
-                    return StatusCode(response.Code, response);
-                }
-
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),

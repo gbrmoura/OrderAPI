@@ -198,14 +198,6 @@ namespace OrderAPI.API.Controllers
                     .OrderBy(e => e.Codigo)
                     .ToList();
 
-                
-                if (pedidos.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Nenhum pedido encontrado.";
-                    return StatusCode(response.Code, response);
-                }
-
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = count,
@@ -228,9 +220,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Consultar(
-            [FromQuery] int codigo,
-            [FromQuery] string usuarioCodigo)
+        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo, [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -310,9 +300,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Cancelar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Cancelar(
-            [FromQuery] int codigo,
-            [FromQuery] string usuarioCodigo)
+        public ActionResult<DefaultResponse> Cancelar([FromQuery] int codigo, [FromQuery] string usuarioCodigo)
         {
             DefaultResponse response = new DefaultResponse() 
             {

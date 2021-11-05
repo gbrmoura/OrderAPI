@@ -49,13 +49,6 @@ namespace OrderAPI.API.Controllers
                     .Take(query.TamanhoPagina)
                     .ToList();
 
-                if (categorias.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Categoria(s) não encontrado(s).";
-                    return StatusCode(response.Code, response);
-                }
-
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Categoria encontrada(s)!";
                 response.Response = _mapper.Map<List<ConsultarCardapioCategoriaResponse>>(categorias);;
@@ -87,13 +80,6 @@ namespace OrderAPI.API.Controllers
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
-
-                if (categorias.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Categoria(s) não encontrado(s).";
-                    return StatusCode(response.Code, response);
-                }
                 
                 ListarResponse list = new ListarResponse 
                 {
@@ -132,13 +118,6 @@ namespace OrderAPI.API.Controllers
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
-
-                if (produtos.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Produtos não encontrados.";
-                    return StatusCode(response.Code, response);
-                }
 
                 ListarResponse list = new ListarResponse 
                 {

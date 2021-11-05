@@ -243,13 +243,6 @@ namespace OrderAPI.API.Controllers
                     .Take(query.TamanhoPagina)
                     .ToList();
 
-                if (produtos.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Nenhum produto encontrado.";
-                    return StatusCode(response.Code, response);
-                }
-
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),

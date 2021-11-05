@@ -220,14 +220,7 @@ namespace OrderAPI.API.Controllers
                     .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
-                    .ToList(); 
-
-                if (metodos.Count <= 0) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Nenhum metododo de pagamento encontrado.";
-                    return StatusCode(response.Code, response);
-                }
+                    .ToList();
 
                 ListarResponse list = new ListarResponse 
                 {
