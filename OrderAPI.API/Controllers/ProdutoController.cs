@@ -15,6 +15,8 @@ using OrderAPI.API.Services;
 using OrderAPI.Data;
 using OrderAPI.Data.Models;
 using System.IO;
+using System.Net.Http;
+using System.Net.Http.Headers;
 
 namespace OrderAPI.API.Controllers
 {
@@ -73,10 +75,7 @@ namespace OrderAPI.API.Controllers
                     Descricao = body.Descricao,
                     Categoria = categoria,
                 };
-
-                _context.Produto.Add(produto);
-                _context.SaveChanges();
-
+                
                 var imageName = Guid.NewGuid().ToString() + ".png";
                 var path = ImageService.SaveImage(body.Imagem, imageName);
                 MImage image = new MImage() 
@@ -276,7 +275,7 @@ namespace OrderAPI.API.Controllers
                 response.Message = "Produtos encontrado(s).";
                 response.Response = list;
                 return StatusCode(response.Code, response);
-            } 
+            }
             catch (Exception E) 
             {
                 response.Code = StatusCodes.Status500InternalServerError;
@@ -286,12 +285,39 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpGet("Image/")]
+        [HttpGet("Imagem/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult Image([FromBody] int codigo)
+        public IActionResult Imagem([FromQuery] int codigo) 
         {
-            // TODO:  Fazer retornar imagem
-            return NotFound();
+            DefaultResponse response = new  DefaultResponse()
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+
+            try
+            {
+                var image = _context.Image
+                    .Include(e => e.Produto)
+                    .Where(e => e.ProductCodigo == codigo)
+                    .SingleOrDefault();
+
+                if (image == null) 
+                {
+                    response.Code = StatusCodes.Status404NotFound;
+                    response.Message = $"Imagem não encontrada.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var img = System.IO.File.OpenRead(image.Caminho);
+                return File(img, "image/png");
+            }
+            catch (Exception err)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = err.Message;
+                return StatusCode(response.Code, response);
+            }
         }
     }
 }

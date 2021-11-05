@@ -366,3 +366,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Images - Generate by system
+OrderAPI.API/Imagens

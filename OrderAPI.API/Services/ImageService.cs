@@ -12,6 +12,12 @@ namespace OrderAPI.API.Services
 
         public static string SaveImage(string base64Image, string name)
         {
+
+            if (!Directory.Exists(_caminho))
+            {
+                Directory.CreateDirectory(_caminho);
+            }
+
             string path = _caminho + name;
             System.IO.File.WriteAllBytes(path, Convert.FromBase64String(base64Image));
             return path;
