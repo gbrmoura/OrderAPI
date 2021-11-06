@@ -71,6 +71,13 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
+                if (!ImageService.ValidarBase64(body.Imagem)) 
+                {   
+                    response.Message = "Imagem é invalida.";
+                    response.Error = "Imagem nao contem cabeçalho base64, ou esta vazia.";
+                    return StatusCode(response.Code, response);
+                }
+
                 MProduto produto = new MProduto()
                 {
                     Titulo = body.Titulo,
@@ -78,8 +85,7 @@ namespace OrderAPI.API.Controllers
                     Descricao = body.Descricao,
                     Categoria = categoria,
                 };
-                
-                // TODO: ver se tem cabeçalho de base64
+
                 var imageName = Guid.NewGuid().ToString() + ".png";
                 var path = ImageService.SaveImage(body.Imagem, imageName);
                 MImage image = new MImage() 
@@ -124,7 +130,11 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                var produto = _context.Produto.FirstOrDefault((e) => e.Codigo == body.Codigo && e.Status == true);
+                var produto = _context.Produto
+                    .Include(x => x.Imagem)
+                    .Where((e) => e.Codigo == body.Codigo)
+                    .Where((e) => e.Status == true)
+                    .SingleOrDefault();
                 
                 if (produto == null) 
                 {
@@ -146,14 +156,14 @@ namespace OrderAPI.API.Controllers
                 produto.Valor = body.Valor;
                 produto.Categoria = categoria;
 
-                _context.SaveChanges();
+                if (ImageService.ValidarBase64(body.Imagem))
+                {   
+                    var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.Imagem.Codigo);
+                    var caminho = ImageService.SaveImage(body.Imagem, imagem.Nome);
 
-                // TODO: se nao for base64
-                var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.ImageCodigo);
-                var caminho = ImageService.SaveImage(body.Imagem, imagem.Nome);
-
-                imagem.Caminho = caminho;
-                imagem.Produto = produto;
+                    imagem.Caminho = caminho;
+                    imagem.Produto = produto;
+                }
 
                 _context.SaveChanges();
 
@@ -268,8 +278,9 @@ namespace OrderAPI.API.Controllers
                     .Include((e) => e.Categoria)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
+                    .OrderBy((e) => e.Codigo)
                     .ToList();
-
+    
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
