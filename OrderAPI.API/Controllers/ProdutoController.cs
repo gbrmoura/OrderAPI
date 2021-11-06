@@ -28,10 +28,13 @@ namespace OrderAPI.API.Controllers
 
         private IMapper _mapper;
 
-        public ProdutoController(OrderAPIContext context, IMapper mapper)
+        private TokenService _tokenService;
+
+        public ProdutoController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
         {   
             _context = context;
             _mapper = mapper;
+            _tokenService = jwtService;
         }
 
         [HttpPost("Registrar/")]
@@ -297,11 +300,14 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada."
             };
 
+            if (_tokenService.ValidateRefreshToken(query.RefreshToken, query.Token))
+            {
+                return StatusCode(response.Code);
+            }
+
             try
             {
-
                 
-
                 var image = _context.Image
                     .Include(e => e.Produto)
                     .Where(e => e.ProductCodigo == query.Codigo)
