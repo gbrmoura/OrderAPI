@@ -78,7 +78,7 @@ namespace OrderAPI.API.Services
                 RefreshToken = refreshToken,
                 Token = token
             };
-            
+
             _context.Token.Add(dbToken);
             _context.SaveChanges();
         }

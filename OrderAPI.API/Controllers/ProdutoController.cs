@@ -300,14 +300,13 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada."
             };
 
-            if (_tokenService.ValidateRefreshToken(query.RefreshToken, query.Token))
+            if (!_tokenService.ValidateRefreshToken(query.RefreshToken, query.Token))
             {
                 return StatusCode(response.Code);
             }
 
             try
             {
-                
                 var image = _context.Image
                     .Include(e => e.Produto)
                     .Where(e => e.ProductCodigo == query.Codigo)
