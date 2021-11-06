@@ -71,10 +71,15 @@ namespace OrderAPI.API.Services
             return principal;
         }
     
-        public void SaveRefreshToken(Guid actor, string refreshToken)
+        public void SaveRefreshToken(Guid actor, string refreshToken, string token)
         {
-            var token = new MToken() { Actor = actor, RefreshToken = refreshToken };
-            _context.Token.Add(token);
+            var dbToken = new MToken() { 
+                Actor = actor, 
+                RefreshToken = refreshToken,
+                Token = token
+            };
+            
+            _context.Token.Add(dbToken);
             _context.SaveChanges();
         }
 
@@ -88,6 +93,11 @@ namespace OrderAPI.API.Services
             var token = _context.Token.FirstOrDefault((x) => x.Actor == actor);
             if (token != null)
                 _context.Token.Remove(token);
+        }
+
+        public bool ValidateRefreshToken(string refreshToken, string token) 
+        {
+            return _context.Token.Any((x) => x.RefreshToken == refreshToken && x.Token == token);
         }
     }
 }

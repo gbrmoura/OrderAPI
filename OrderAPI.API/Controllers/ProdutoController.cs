@@ -76,6 +76,7 @@ namespace OrderAPI.API.Controllers
                     Categoria = categoria,
                 };
                 
+                // TODO: ver se tem cabeçalho de base64
                 var imageName = Guid.NewGuid().ToString() + ".png";
                 var path = ImageService.SaveImage(body.Imagem, imageName);
                 MImage image = new MImage() 
@@ -103,7 +104,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("Alterar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body)
+        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body) // TODO: alterar imagem
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -144,6 +145,7 @@ namespace OrderAPI.API.Controllers
 
                 _context.SaveChanges();
 
+                // TODO: se nao for base64
                 var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.ImageCodigo);
                 var caminho = ImageService.SaveImage(body.Imagem, imagem.Nome);
 
@@ -286,8 +288,8 @@ namespace OrderAPI.API.Controllers
         }
 
         [HttpGet("Imagem/")]
-        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public IActionResult Imagem([FromQuery] int codigo) 
+        [AllowAnonymous]
+        public IActionResult Imagem([FromQuery] ImagemRequest query) 
         {
             DefaultResponse response = new  DefaultResponse()
             {
@@ -297,9 +299,12 @@ namespace OrderAPI.API.Controllers
 
             try
             {
+
+                
+
                 var image = _context.Image
                     .Include(e => e.Produto)
-                    .Where(e => e.ProductCodigo == codigo)
+                    .Where(e => e.ProductCodigo == query.Codigo)
                     .SingleOrDefault();
 
                 if (image == null) 

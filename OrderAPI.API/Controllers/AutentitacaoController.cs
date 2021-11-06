@@ -124,7 +124,7 @@ namespace OrderAPI.API.Controllers
                 var newRefreshToken = _jwtService.GenerateRefreshToken();
 
                 _jwtService.DeleteRefreshToken(value);
-                _jwtService.SaveRefreshToken(value, newRefreshToken);
+                _jwtService.SaveRefreshToken(value, newRefreshToken, newJwtToken);
 
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Token Atualizado,";
@@ -184,7 +184,7 @@ namespace OrderAPI.API.Controllers
                     var userRefreshToken = _jwtService.GenerateRefreshToken();
 
                     _jwtService.DeleteRefreshToken(usuario.Token);
-                    _jwtService.SaveRefreshToken(usuario.Token, userRefreshToken);
+                    _jwtService.SaveRefreshToken(usuario.Token, userRefreshToken, userToken);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;
@@ -222,7 +222,7 @@ namespace OrderAPI.API.Controllers
 
                     var refreshToken = _jwtService.GenerateRefreshToken();
                     _jwtService.DeleteRefreshToken(funcionario.Token);
-                    _jwtService.SaveRefreshToken(funcionario.Token, refreshToken);
+                    _jwtService.SaveRefreshToken(funcionario.Token, refreshToken, token);
                     _context.SaveChanges();
 
                     response.Code = StatusCodes.Status200OK;
