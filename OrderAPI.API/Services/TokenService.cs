@@ -41,14 +41,6 @@ namespace OrderAPI.API.Services
             return tokenHandler.WriteToken(token);
         }
 
-        public string GenerateRefreshToken() 
-        {
-            var randomNumber = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-                rng.GetBytes(randomNumber);
-            return Convert.ToBase64String(randomNumber);
-        }
-
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token) 
         {
             var tokenValidationParameters = new TokenValidationParameters
@@ -70,7 +62,9 @@ namespace OrderAPI.API.Services
 
             return principal;
         }
-    
+
+        public string GenerateRefreshToken() => Guid.NewGuid().ToString();
+        
         public void SaveRefreshToken(Guid actor, string refreshToken, string token)
         {
             var dbToken = new MToken() { 
