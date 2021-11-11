@@ -14,4 +14,10 @@
         RETIRADO,
         CANCELADO
     }
+
+    public enum EstoqueCrontoleEnum
+    {
+        ENTRADA,
+        SAIDA
+    }
 }

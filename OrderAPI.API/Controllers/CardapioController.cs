@@ -112,6 +112,13 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada"
             };
 
+            if (!ModelState.IsValid) 
+            {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
             try
             {
                 var usuario = _context.Usuario.SingleOrDefault((e) => e.Codigo == body.UsuarioCodigo && e.Status == true);
@@ -149,8 +156,9 @@ namespace OrderAPI.API.Controllers
                 {
                     var favorito = _context.Favorito
                         .Include((e) => e.Produto)
+                        .Where((e) => e.Produto.Codigo == body.ProdutoCodigo)
                         .Include((e) => e.Usuario)
-                        .Where((e) => e.Produto.Codigo == body.ProdutoCodigo && e.Usuario.Codigo == body.UsuarioCodigo)
+                        .Where((e) => e.Usuario.Codigo == body.UsuarioCodigo && e.Status == true)
                         .SingleOrDefault();
 
                     if (favorito == null) 

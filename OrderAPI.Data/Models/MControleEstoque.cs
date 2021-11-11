@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using OrderAPI.Data.Helpers;
 
 namespace OrderAPI.Data.Models 
 {
@@ -15,7 +16,8 @@ namespace OrderAPI.Data.Models
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Observacao { get; set; }
         public DateTime Data { get; set; }
-
+        public EstoqueCrontoleEnum Tipo { get; set; }
+        
         [ForeignKey("Produto")]
         public int ProdutoCodigo { get; set; }
         public MProduto Produto { get; set; }
