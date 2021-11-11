@@ -102,22 +102,15 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpPost("RegistrarFavorito/")]
+        [HttpPost("Favorito/")]
         [Authorize(Roles = "USUARIO")]
-        public ActionResult<DefaultResponse> RegistrarFavorito([FromBody] RegistrarFavoritoRequest body)
+        public ActionResult<DefaultResponse> Favorito([FromBody] FavoritoRequest body) 
         {
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada."
+                Message = "Rota não autorizada"
             };
-
-            if (!ModelState.IsValid) 
-            {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
-            }
 
             try
             {
@@ -128,27 +121,52 @@ namespace OrderAPI.API.Controllers
                     response.Message = "Usuario não encontrado.";
                     return StatusCode(response.Code, response);
                 }
-
-                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == body.ProdutoCodigo && e.Status == true);
-                if (produto == null) 
+                
+                if (body.Estado)
                 {
-                    response.Code = StatusCodes.Status401Unauthorized;
-                    response.Message = "Produto não encontrado.";
+                    var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == body.ProdutoCodigo && e.Status == true);
+                    if (produto == null) 
+                    {
+                        response.Code = StatusCodes.Status401Unauthorized;
+                        response.Message = "Produto não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    MFavorito favorito = new MFavorito() 
+                    {
+                        Produto = produto,
+                        Usuario = usuario
+                    };
+
+                    _context.Favorito.Add(favorito);
+                    _context.SaveChanges();
+
+                    response.Code = StatusCodes.Status200OK;
+                    response.Message = "Produto favoritado com sucesso.";
                     return StatusCode(response.Code, response);
                 }
-
-                MFavorito favorito = new MFavorito() 
+                else
                 {
-                    Produto = produto,
-                    Usuario = usuario
-                };
+                    var favorito = _context.Favorito
+                        .Include((e) => e.Produto)
+                        .Include((e) => e.Usuario)
+                        .Where((e) => e.Produto.Codigo == body.ProdutoCodigo && e.Usuario.Codigo == body.UsuarioCodigo)
+                        .SingleOrDefault();
 
-                _context.Favorito.Add(favorito);
-                _context.SaveChanges();
-                
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto favoritado com sucesso.";
-                return StatusCode(response.Code, response);
+                    if (favorito == null) 
+                    {
+                        response.Code = StatusCodes.Status401Unauthorized;
+                        response.Message = "Favorito não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
+
+                    favorito.Status = false;
+                    _context.SaveChanges();
+
+                    response.Code = StatusCodes.Status200OK;
+                    response.Message = "Produto favoritado removido com sucesso.";
+                    return StatusCode(response.Code, response);
+                }
             }
             catch (Exception E)
             {
@@ -159,60 +177,5 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpGet("RemoverFavorito/")]
-        [Authorize(Roles = "USUARIO")]
-        public ActionResult<DefaultResponse> RemoverFavorito([FromQuery] RemoverFavoritoRequest query) 
-        {
-            DefaultResponse response = new DefaultResponse() 
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada."
-            };
-            
-            if (!ModelState.IsValid) 
-            {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
-            }
-
-            try
-            {
-                var usuario = _context.Usuario.SingleOrDefault((e) => e.Codigo == query.UsuarioCodigo && e.Status == true);
-                if (usuario == null)
-                {
-                    response.Code = StatusCodes.Status401Unauthorized;
-                    response.Message = "Usuario não encontrado.";
-                    return StatusCode(response.Code, response);
-                }
-
-                var favorito = _context.Favorito
-                    .Include((e) => e.Produto)
-                    .Include((e) => e.Usuario)
-                    .Where((e) => e.Produto.Codigo == query.ProdutoCodigo && e.Usuario.Codigo == query.UsuarioCodigo)
-                    .SingleOrDefault();
-                
-                if (favorito == null) 
-                {
-                    response.Code = StatusCodes.Status401Unauthorized;
-                    response.Message = "Favorito não encontrado.";
-                    return StatusCode(response.Code, response);
-                }
-
-                favorito.Status = false;
-                _context.SaveChanges();
-
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto favoritado removido com sucesso.";
-                return StatusCode(response.Code, response);
-            }
-            catch (Exception E)
-            {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
-            }
-        }
     }
 }

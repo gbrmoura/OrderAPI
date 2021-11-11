@@ -12,7 +12,7 @@ using OrderAPI.Data.Models;
 
 namespace OrderAPI.API.Controllers
 {
-    [Route("api/[controller]/")]
+    [Route("api/Produto/")]
     public class EstoqueController : ControllerBase
     {
 
@@ -111,5 +111,8 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(response.Code, response);
             }
         }
+
+        // TODO: 
+        // TODO: listar
     }
 }
