@@ -59,7 +59,7 @@ namespace OrderAPI.API.Controllers
 
                 if (usuario == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
+                    response.Code = StatusCodes.Status401Unauthorized;
                     response.Message = "Usuario não encontrado.";
                     return StatusCode(response.Code, response);
                 }
@@ -69,7 +69,7 @@ namespace OrderAPI.API.Controllers
 
                 if (metodoPagamento == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
+                    response.Code = StatusCodes.Status401Unauthorized;
                     response.Message = "Metodo de Pagamento não encontrado.";
                     return StatusCode(response.Code, response);
                 }
@@ -82,14 +82,14 @@ namespace OrderAPI.API.Controllers
                     
                     if (produto == null)
                     {
-                        response.Code = StatusCodes.Status404NotFound;
+                        response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = $"Produto de codigo { item.ProdutoCodigo } não encontrado.";
                         return StatusCode(response.Code, response);
                     }
 
                     if (produto.Quantidade <= 0 || (produto.Quantidade - item.Quantidade) < 0)
                     {
-                        response.Code = StatusCodes.Status404NotFound;
+                        response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = $"Produto { produto.Titulo } esta fora estoque.";
                         return StatusCode(response.Code, response);
                     }
@@ -181,7 +181,7 @@ namespace OrderAPI.API.Controllers
 
                     if (!_context.Usuario.Any((e) => e.Codigo == codigo && e.Status == true)) 
                     {
-                        response.Code = StatusCodes.Status404NotFound;
+                        response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = "Usuario não encontrado.";
                         return StatusCode(response.Code, response);
                     }
@@ -245,7 +245,7 @@ namespace OrderAPI.API.Controllers
 
                     if (!_context.Usuario.Any((e) => e.Codigo == uCodigo && e.Status == true)) 
                     {
-                        response.Code = StatusCodes.Status404NotFound;
+                        response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = "Usuario não encontrado.";
                         return StatusCode(response.Code, response);
                     }
@@ -324,7 +324,7 @@ namespace OrderAPI.API.Controllers
 
                     if (!_context.Usuario.Any((e) => e.Codigo == uCodigo && e.Status == true)) 
                     {
-                        response.Code = StatusCodes.Status404NotFound;
+                        response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = "Usuario não encontrado.";
                         return StatusCode(response.Code, response);
                     }

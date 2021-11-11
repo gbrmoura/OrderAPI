@@ -204,6 +204,13 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada"
             };
 
+            if (!ModelState.IsValid) 
+            {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
             try 
             {
                 IQueryable<MMetodoPagamento> sql = _context.MetodoPagamento;

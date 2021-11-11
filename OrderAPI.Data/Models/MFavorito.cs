@@ -1,25 +1,24 @@
-
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace OrderAPI.Data.Models 
+namespace OrderAPI.Data.Models
 {
-    public class MImage
+    public class MFavorito
     {
         [Key]
         public int Codigo { get; set; }
         
-        [Required(ErrorMessage = "Nome do arquivo deve ser informado.")]
-        [MaxLength(60, ErrorMessage = "Nome do arquivo deve ter no máximo 60 caracteres.")]
-        public string Nome { get; set; }
-
-        [Required(ErrorMessage = "Caminho do arquivo deve ser informado.")]
-        public string Caminho { get; set; }
-        
         [ForeignKey("Produto")]
-        public int ProductCodigo { get; set; }
+        public int ProdutoCodigo { get; set; }
         public MProduto Produto { get; set; }
+
+        [ForeignKey("Usuario")]
+        public int UsuarioCodigo { get; set; }
+        public MUsuario Usuario { get; set; }
         private bool _status = true;
         public bool Status
         {

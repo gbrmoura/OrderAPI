@@ -32,7 +32,7 @@ namespace OrderAPI.API.Controllers
         
         [HttpGet]
     	[Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Cardapio([FromQuery] ListarRequest query) 
+        public ActionResult<DefaultResponse> Cardapio([FromQuery] ListarCardapioRequest query) 
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -40,132 +40,57 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada"
             };
 
-            try 
+            if (!ModelState.IsValid) 
             {
-                List<MCategoria> categorias = _context.Categoria            
-                    .Where((e) => e.Status == true)
-                    .Include((e) => e.Produtos)
-                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
-                    .Take(query.TamanhoPagina)
-                    .ToList();
-
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria encontrada(s)!";
-                response.Response = _mapper.Map<List<ConsultarCardapioCategoriaResponse>>(categorias);;
-                return StatusCode(response.Code, response);
-            }   
-            catch (Exception E)   
-            {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
                 return StatusCode(response.Code, response);
             }
-        }
-
-        [HttpGet("Categorias/")]
-        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Categorias ([FromQuery] ListarRequest query)
-        {
-            DefaultResponse response = new DefaultResponse() 
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
-            };
 
             try 
             {
-                List<MCategoria> categorias = _context.Categoria            
-                    .Where(e => e.Status == true)
-                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
-                    .Take(query.TamanhoPagina)
-                    .ToList();
-                
-                ListarResponse list = new ListarResponse 
+                var usuarioCodigo = 0;
+                IQueryable<MCategoria> sql = _context.Categoria;
+                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString() && Int32.TryParse(query.UsuarioCodigo, out usuarioCodigo))
                 {
-                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
-                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
-                };
-
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria encontrada(s)!";
-                response.Response = list;
-                return StatusCode(response.Code, response);
-            }   
-            catch (Exception E)   
-            {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
-            }
-        }
-
-        [HttpGet("Produtos/")]
-        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Produtos ([FromQuery] ListarRequest query)
-        {
-            DefaultResponse response = new DefaultResponse() 
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
-            };
-
-            try 
-            {
-                List<MProduto> produtos = _context.Produto            
-                    .Where(e => e.Status == true)
-                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
-                    .Take(query.TamanhoPagina)
-                    .ToList();
-
-                ListarResponse list = new ListarResponse 
-                {
-                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
-                    Dados = _mapper.Map<List<ConsultarProdutoResponse>>(produtos)
-                };
-                
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto encontrado(s)!";
-                response.Response = list;
-                return StatusCode(response.Code, response);
-            }   
-            catch (Exception E)   
-            {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
-            } 
-        }
-
-        [HttpGet("Categoria/")]
-        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Categoria([FromQuery] int codigo)
-        {
-            DefaultResponse response = new DefaultResponse() 
-            {
-                Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
-            };
-
-            try 
-            {
-                MCategoria categoria = _context.Categoria
-                    .Where((e) => e.Codigo == codigo)       
-                    .Include((e) => e.Produtos)
-                    .SingleOrDefault();
-
-                if (categoria == null) 
-                {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Categoria de codigo { codigo }, não encontrada.";
-                    return StatusCode(response.Code, response);
+                    if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString() && !_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
+                    {
+                        response.Code = StatusCodes.Status401Unauthorized;
+                        response.Message = "Usuario não encontrado.";
+                        return StatusCode(response.Code, response);
+                    }
                 }
                 
+                List<MCategoria> categorias = _context.Categoria
+                    .Include((e) => e.Produtos)
+                        .ThenInclude((e) => e.Favoritos)       
+                    .Where((e) => e.Status == true)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .ToList();
+
+                var list = categorias.Select((e) => new ConsultarCardapioCategoriaResponse() 
+                {
+                    Codigo = e.Codigo,
+                    Titulo = e.Titulo,
+                    Descricao = e.Descricao,
+                    Produtos = e.Produtos.Where((p) => p.Status == true).Select((j) => new ConsultarProdutoSimplesResponse() 
+                    {
+                        Codigo = j.Codigo,
+                        Titulo = j.Titulo,
+                        Descricao = j.Descricao,
+                        Valor = j.Valor,
+                        Quantidade = j.Quantidade,
+                        Favorito = j.Favoritos.Any((h) => 
+                            h.UsuarioCodigo == usuarioCodigo && 
+                            h.ProdutoCodigo == j.Codigo && 
+                            h.Status == true)
+                    }).ToList()
+                });
+
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Categoria encontrada(s)!";
-                response.Response = _mapper.Map<ConsultarCardapioCategoriaResponse>(categoria);;
+                response.Response = list;
                 return StatusCode(response.Code, response);
             }   
             catch (Exception E)   
@@ -174,45 +99,120 @@ namespace OrderAPI.API.Controllers
                 response.Message = "Erro interno do servidor.";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
-            } 
+            }
         }
 
-        [HttpGet("Produto/")]
-        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
-        public ActionResult<DefaultResponse> Produto([FromQuery] int codigo)
+        [HttpPost("RegistrarFavorito/")]
+        [Authorize(Roles = "USUARIO")]
+        public ActionResult<DefaultResponse> RegistrarFavorito([FromBody] RegistrarFavoritoRequest body)
         {
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
-                Message = "Rota não autorizada"
+                Message = "Rota não autorizada."
             };
 
-            try 
+            if (!ModelState.IsValid) 
             {
-                MProduto produto = _context.Produto
-                    .Where((e) => e.Codigo == codigo)
-                    .Include((e) => e.Categoria)
-                    .SingleOrDefault();
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
 
+            try
+            {
+                var usuario = _context.Usuario.SingleOrDefault((e) => e.Codigo == body.UsuarioCodigo && e.Status == true);
+                if (usuario == null)
+                {
+                    response.Code = StatusCodes.Status401Unauthorized;
+                    response.Message = "Usuario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == body.ProdutoCodigo && e.Status == true);
                 if (produto == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Produto de codigo { codigo }, não encontrada.";
+                    response.Code = StatusCodes.Status401Unauthorized;
+                    response.Message = "Produto não encontrado.";
                     return StatusCode(response.Code, response);
                 }
+
+                MFavorito favorito = new MFavorito() 
+                {
+                    Produto = produto,
+                    Usuario = usuario
+                };
+
+                _context.Favorito.Add(favorito);
+                _context.SaveChanges();
                 
                 response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto encontrado(s)!";
-                response.Response = _mapper.Map<ConsultarCardapioProdutoResponse>(produto);
+                response.Message = "Produto favoritado com sucesso.";
                 return StatusCode(response.Code, response);
-            }   
-            catch (Exception E)   
+            }
+            catch (Exception E)
             {
                 response.Code = StatusCodes.Status500InternalServerError;
                 response.Message = "Erro interno do servidor.";
                 response.Error = E.Message;
                 return StatusCode(response.Code, response);
-            } 
+            }
+        }
+
+        [HttpGet("RemoverFavorito/")]
+        [Authorize(Roles = "USUARIO")]
+        public ActionResult<DefaultResponse> RemoverFavorito([FromQuery] RemoverFavoritoRequest query) 
+        {
+            DefaultResponse response = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada."
+            };
+            
+            if (!ModelState.IsValid) 
+            {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
+
+            try
+            {
+                var usuario = _context.Usuario.SingleOrDefault((e) => e.Codigo == query.UsuarioCodigo && e.Status == true);
+                if (usuario == null)
+                {
+                    response.Code = StatusCodes.Status401Unauthorized;
+                    response.Message = "Usuario não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                var favorito = _context.Favorito
+                    .Include((e) => e.Produto)
+                    .Include((e) => e.Usuario)
+                    .Where((e) => e.Produto.Codigo == query.ProdutoCodigo && e.Usuario.Codigo == query.UsuarioCodigo)
+                    .SingleOrDefault();
+                
+                if (favorito == null) 
+                {
+                    response.Code = StatusCodes.Status401Unauthorized;
+                    response.Message = "Favorito não encontrado.";
+                    return StatusCode(response.Code, response);
+                }
+
+                favorito.Status = false;
+                _context.SaveChanges();
+
+                response.Code = StatusCodes.Status200OK;
+                response.Message = "Produto favoritado removido com sucesso.";
+                return StatusCode(response.Code, response);
+            }
+            catch (Exception E)
+            {
+                response.Code = StatusCodes.Status500InternalServerError;
+                response.Message = "Erro interno do servidor.";
+                response.Error = E.Message;
+                return StatusCode(response.Code, response);
+            }
         }
     }
 }

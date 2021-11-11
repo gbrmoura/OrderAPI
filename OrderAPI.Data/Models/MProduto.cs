@@ -30,6 +30,7 @@ namespace OrderAPI.Data.Models
         [ForeignKey("ImageCodigo")]
         public int ImageCodigo { get; set; }
         public MImage Imagem { get; set; }
+        public List<MFavorito> Favoritos { get; set; }
         private bool _status = true;
         public bool Status
         {

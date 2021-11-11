@@ -42,6 +42,10 @@ namespace OrderAPI.Data
             modelBuilder.Entity<MImage>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
+            
+            modelBuilder.Entity<MFavorito>()
+                .Property(p => p.Status)
+                .HasDefaultValue(1);
 
             base.OnModelCreating(modelBuilder);
         }
@@ -56,6 +60,7 @@ namespace OrderAPI.Data
         public DbSet<MControleEstoque> ControleEstoque { get; set; }
         public DbSet<MImage> Image { get; set; }
         public DbSet<MToken> Token { get; set; }
+        public DbSet<MFavorito> Favorito { get; set; }
 
     }
 }

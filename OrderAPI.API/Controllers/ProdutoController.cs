@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Drawing;
-using System.Drawing.Imaging;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -14,9 +12,6 @@ using OrderAPI.API.HTTP.Response;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
 using OrderAPI.Data.Models;
-using System.IO;
-using System.Net.Http;
-using System.Net.Http.Headers;
 
 namespace OrderAPI.API.Controllers
 {
@@ -260,6 +255,13 @@ namespace OrderAPI.API.Controllers
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
             };
+            
+            if (!ModelState.IsValid) 
+            {
+                response.Message = "Parametros Ausentes";
+                response.Error = ModelStateService.ErrorConverter(ModelState);
+                return StatusCode(response.Code, response);
+            }
 
             try 
             {
@@ -280,7 +282,9 @@ namespace OrderAPI.API.Controllers
                     .Take(query.TamanhoPagina)
                     .OrderBy((e) => e.Codigo)
                     .ToList();
-    
+
+
+
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),

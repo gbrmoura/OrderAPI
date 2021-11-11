@@ -25,5 +25,6 @@ using System.Linq;
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
+        public bool Favorito { get; set; }
     }
  }

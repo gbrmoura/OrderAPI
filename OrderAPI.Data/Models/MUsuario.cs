@@ -29,6 +29,7 @@ namespace OrderAPI.Data.Models
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
         public Guid Token { get; set; }
+        public List<MFavorito> Favoritos { get; set; }
         private bool _status = true;
         public bool Status
         {
