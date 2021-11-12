@@ -51,9 +51,19 @@ namespace OrderAPI.API.Controllers
             {
                 var usuarioCodigo = 0;
                 IQueryable<MCategoria> sql = _context.Categoria;
-                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString() && Int32.TryParse(query.UsuarioCodigo, out usuarioCodigo))
+                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
                 {
-                    if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString() && !_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
+                    
+                    if (String.IsNullOrEmpty(query.UsuarioCodigo) || !Int32.TryParse(query.UsuarioCodigo, out usuarioCodigo))
+                    {
+                        response.Message = "Parametros ausentes.";
+                        response.Error = new List<ErrorResponse>() {
+                            new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
+                        };
+                        return StatusCode(response.Code, response);
+                    }
+
+                    if (!_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
                     {
                         response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = "Usuario não encontrado.";
@@ -61,32 +71,33 @@ namespace OrderAPI.API.Controllers
                     }
                 }
                 
-                List<MCategoria> categorias = _context.Categoria
-                    .Include((e) => e.Produtos)
-                        .ThenInclude((e) => e.Favoritos)       
+                List<MProduto> produtos = _context.Produto
+                    .Include((e) => e.Categoria)
+                    .Include((e) => e.Favoritos)
                     .Where((e) => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
 
-                var list = categorias.Select((e) => new ConsultarCardapioCategoriaResponse() 
-                {
+                var dados = produtos.Select(e => new ConsultarCardapioProdutoResponse() {
                     Codigo = e.Codigo,
                     Titulo = e.Titulo,
                     Descricao = e.Descricao,
-                    Produtos = e.Produtos.Where((p) => p.Status == true).Select((j) => new ConsultarProdutoSimplesResponse() 
-                    {
-                        Codigo = j.Codigo,
-                        Titulo = j.Titulo,
-                        Descricao = j.Descricao,
-                        Valor = j.Valor,
-                        Quantidade = j.Quantidade,
-                        Favorito = j.Favoritos.Any((h) => 
-                            h.UsuarioCodigo == usuarioCodigo && 
-                            h.ProdutoCodigo == j.Codigo && 
-                            h.Status == true)
-                    }).ToList()
+                    Valor = e.Valor,
+                    Quantidade = e.Quantidade,
+                    Favorito = e.Favoritos.Any((fav) => fav.UsuarioCodigo == usuarioCodigo && fav.ProdutoCodigo == e.Codigo &&  fav.Status == true),
+                    Categoria = new ConsultarCategoriaResponse() {
+                        Codigo = e.Categoria.Codigo,
+                        Titulo = e.Categoria.Titulo,
+                        Descricao = e.Categoria.Descricao
+                    }
                 });
+                
+                ListarResponse list = new ListarResponse 
+                {
+                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
+                    Dados = dados
+                };
 
                 response.Code = StatusCodes.Status200OK;
                 response.Message = "Categoria encontrada(s)!";

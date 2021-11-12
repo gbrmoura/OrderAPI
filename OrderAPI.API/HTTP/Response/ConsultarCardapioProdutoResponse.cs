@@ -22,7 +22,7 @@ namespace OrderAPI.API.HTTP.Response
 
         [Required(ErrorMessage = "Valor deve ser informado.")]
         public float Valor { get; set; }
-
+        public bool Favorito { get; set; }
         public ConsultarCategoriaResponse Categoria { get; set; }
     
     }
