@@ -40,7 +40,7 @@ namespace OrderAPI.API.Controllers
                 Message = "Rota não autorizada"
             };
 
-            if (!ModelState.IsValid) 
+            if (!ModelState.IsValid)
             {
                 response.Message = "Parametros Ausentes";
                 response.Error = ModelStateService.ErrorConverter(ModelState);
@@ -50,7 +50,6 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 var usuarioCodigo = 0;
-                IQueryable<MCategoria> sql = _context.Categoria;
                 if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
                 {
                     
@@ -71,7 +70,16 @@ namespace OrderAPI.API.Controllers
                     }
                 }
                 
-                List<MProduto> produtos = _context.Produto
+                
+                IQueryable<MProduto> sql = _context.Produto;
+                if (usuarioCodigo > 0 && query.Favorito)
+                {
+                    sql = sql
+                        .Include(e => e.Favoritos)
+                        .Where((e) => e.Favoritos.Any((fav) => fav.UsuarioCodigo == usuarioCodigo && fav.Status == true));
+                }
+
+                List<MProduto> produtos = sql
                     .Include((e) => e.Categoria)
                     .Include((e) => e.Favoritos)
                     .Where((e) => e.Status == true)
@@ -92,7 +100,7 @@ namespace OrderAPI.API.Controllers
                         Descricao = e.Categoria.Descricao
                     }
                 });
-                
+
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
