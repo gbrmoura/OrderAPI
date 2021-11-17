@@ -31,7 +31,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpPost("Registrar/")]
         [Authorize(Roles = "USUARIO")]
-        public ActionResult<DefaultResponse> Registrar([FromBody] PedidoRequest body)
+        public ActionResult<DefaultResponse> Registrar([FromBody] PedidoRequest body) 
         {
             DefaultResponse response = new DefaultResponse() 
             {
@@ -48,15 +48,16 @@ namespace OrderAPI.API.Controllers
 
             if (body.Items.Count <= 0) 
             {
-                response.Message = "Pedido deve conter items para ser registrado.";
+                response.Message = "Parametros Ausentes.";
+                response.Error = new List<ErrorResponse>() {
+                    new ErrorResponse() { Field = "Items", Message = "Pedido deve conter items." }
+                };
                 return StatusCode(response.Code, response);
             }
 
             try
             {
-                MUsuario usuario = _context.Usuario
-                    .FirstOrDefault((x) => x.Codigo == body.UsuarioCodigo && x.Status == true);
-
+                var usuario = _context.Usuario.SingleOrDefault((x) => x.Codigo == body.UsuarioCodigo && x.Status == true);
                 if (usuario == null) 
                 {
                     response.Code = StatusCodes.Status401Unauthorized;
@@ -64,9 +65,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                MMetodoPagamento metodoPagamento = _context.MetodoPagamento
-                    .FirstOrDefault((x) => x.Codigo == body.MetodoPagamentoCodigo && x.Status == true);
-
+                var metodoPagamento = _context.MetodoPagamento.SingleOrDefault((x) => x.Codigo == body.MetodoPagamentoCodigo && x.Status == true);
                 if (metodoPagamento == null) 
                 {
                     response.Code = StatusCodes.Status401Unauthorized;
@@ -74,38 +73,47 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(response.Code, response);
                 }
 
-                List<MPedidoItem> pedidoItems = new();
-                foreach (PedidoItemRequest item in body.Items)
+                var errors = new List<ErrorResponse>();
+                var items = new List<MPedidoItem>();
+                foreach (var item in body.Items)
                 {
-                    MProduto produto = _context.Produto
-                        .FirstOrDefault((x) => x.Codigo == item.ProdutoCodigo && x.Status == true);
+                    var produto = _context.Produto
+                        .Where((x) => x.Codigo == item.ProdutoCodigo && x.Status == true)
+                        .SingleOrDefault();
                     
                     if (produto == null)
                     {
-                        response.Code = StatusCodes.Status401Unauthorized;
-                        response.Message = $"Produto de codigo { item.ProdutoCodigo } não encontrado.";
-                        return StatusCode(response.Code, response);
+                        errors.Add(new ErrorResponse() { 
+                            Field = "Produto", 
+                            Message = $"Produto de codigo { item.ProdutoCodigo }  não encontrado." 
+                        });
+                        break;
                     }
 
                     if (produto.Quantidade <= 0 || (produto.Quantidade - item.Quantidade) < 0)
                     {
-                        response.Code = StatusCodes.Status401Unauthorized;
-                        response.Message = $"Produto { produto.Titulo } esta fora estoque.";
-                        return StatusCode(response.Code, response);
+                        errors.Add(new ErrorResponse() { 
+                            Field = "Produto", 
+                            Message = $"Produto {produto.Titulo } esta fora de estoque." 
+                        });
+                        break;
                     }
 
-                    MPedidoItem pedidoItem = new MPedidoItem()
-                    {
+                    items.Add(new MPedidoItem() {
                         Produto = produto,
                         ProdutoCodigo = produto.Codigo,
                         Quantidade = item.Quantidade,
-                        Valor = (item.Quantidade * produto.Valor)
-                    };
-
-                    pedidoItems.Add(pedidoItem);
+                        Valor = (produto.Valor * item.Quantidade)
+                    });
                 }
 
-                var numeroPedido = _context.Pedido.ToList().Count() + 1;
+                if (errors.Count > 0)
+                {
+                    response.Code = StatusCodes.Status401Unauthorized;
+                    response.Message = "Parametros Ausentes.";
+                    response.Error = errors;
+                    return StatusCode(response.Code, response);
+                }
 
                 MPedido pedido = new MPedido()
                 {
@@ -116,7 +124,7 @@ namespace OrderAPI.API.Controllers
                     Observacao = body.Obersavacao,
                     Usuario = usuario,
                     UsuarioCodigo = usuario.Codigo,
-                    Items = pedidoItems
+                    Items = items
                 };
 
                 _context.Pedido.Add(pedido);
@@ -137,9 +145,8 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Listar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Listar([FromQuery] ListarPedidosRequest query)
+        public ActionResult<DefaultResponse> Listar([FromQuery] ListarPedidosRequest query) 
         {
-
             DefaultResponse response = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
@@ -187,7 +194,7 @@ namespace OrderAPI.API.Controllers
                     }
 
                     sqlCount = sqlCount.Where(e => e.UsuarioCodigo == codigo);
-                    sql = sql.Where(e => e.UsuarioCodigo == codigo);
+                    sql = sql.Where(e => e.UsuarioCodigo == codigo); 
                 }
 
                 var count = sqlCount.Where((e) => e.Status == query.Status).Count();
@@ -220,7 +227,7 @@ namespace OrderAPI.API.Controllers
 
         [HttpGet("Consultar/")]
         [Authorize]
-        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo, [FromQuery] string usuarioCodigo)
+        public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo, [FromQuery] string usuarioCodigo) //TODO: Consultar
         {
             DefaultResponse response = new DefaultResponse() 
             {
