@@ -14,25 +14,24 @@ namespace OrderAPI.API.Controllers
     [Route("api/Autenticacao/[controller]/")]
     public class UsuarioController : ControllerBase
     {
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
+        private PasswordService password;
 
-        private OrderAPIContext _context;
-
-        private IMapper _mapper;
-
-        private TokenService _jwtService;
-
-        public UsuarioController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        public UsuarioController(OrderAPIContext context, IMapper mapper, ModelService model, PasswordService password)
         {
-            _context = context;
-            _mapper = mapper;
-            _jwtService = jwtService;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
+            this.password = password;
         }
 
         [HttpPost("Registrar/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> Registrar([FromBody] CriarUsuarioRequest body)
         {
-            DefaultResponse response = new DefaultResponse()
+            DefaultResponse http = new DefaultResponse()
             {
                 Code = StatusCodes.Status403Forbidden,
                 Message = "Rota não autorizada!"
@@ -40,40 +39,41 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid)
             {
-                response.Message = "Parametros Ausentes!";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes!";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
-                MUsuario usuario = _context.Usuario
-                    .FirstOrDefault(user => user.Email.Equals(body.Email));
+                MUsuario usuario = this.context.Usuario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
 
                 if (usuario != null)
                 {
-                    response.Message = "Email ja cadastrado!";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Email ja cadastrado!";
+                    return StatusCode(http.Code, http);
                 }
 
-                MUsuario usuarioDB = _mapper.Map<MUsuario>(body);
-                usuarioDB.Senha = PasswordService.EncryptPassword(usuarioDB.Senha);
+                MUsuario usuarioDB = this.mapper.Map<MUsuario>(body);
+                usuarioDB.Senha = this.password.EncryptPassword(usuarioDB.Senha);
                 usuarioDB.Token = Guid.NewGuid();
 
-                _context.Usuario.Add(usuarioDB);
-                _context.SaveChanges();
+                this.context.Usuario.Add(usuarioDB);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status201Created;
-                response.Message = "Usuario cadastrado com sucesso!";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status201Created;
+                http.Message = "Usuario cadastrado com sucesso!";
+                return StatusCode(http.Code, http);
 
             }
             catch (Exception E)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
     }

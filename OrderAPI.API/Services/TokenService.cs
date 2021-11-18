@@ -16,24 +16,24 @@ namespace OrderAPI.API.Services
 
     public class TokenService 
     {
-        private readonly AuthenticationConfig _configuration;
-        private readonly OrderAPIContext _context;
+        private AuthenticationConfig configuration;
+        private OrderAPIContext context;
 
         public TokenService(AuthenticationConfig configuration, OrderAPIContext context) 
         {
-            _context = context;
-            _configuration = configuration;
+            this.context = context;
+            this.configuration = configuration;
         }
 
         public string GenerateToken(IEnumerable<Claim> claims) 
         {
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret);
+            var key = Encoding.ASCII.GetBytes(this.configuration.AccessTokenSecret);
 
             var tokenDescriptor = new SecurityTokenDescriptor 
             {
                 Subject = new ClaimsIdentity(claims),
-                Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(_configuration.AccessTokenExpirantionMinutes)),
+                Expires = DateTime.UtcNow.AddMinutes(Int32.Parse(this.configuration.AccessTokenExpirantionMinutes)),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -48,7 +48,7 @@ namespace OrderAPI.API.Services
                 ValidateAudience = false,
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_configuration.AccessTokenSecret)),
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(this.configuration.AccessTokenSecret)),
                 ValidateLifetime = false
             };
 
@@ -73,25 +73,28 @@ namespace OrderAPI.API.Services
                 Token = token
             };
 
-            _context.Token.Add(dbToken);
-            _context.SaveChanges();
+            this.context.Token.Add(dbToken);
+            this.context.SaveChanges();
         }
 
         public string GetRefreshToken(Guid actor)
         {
-            return _context.Token.FirstOrDefault((x) => x.Actor == actor).RefreshToken;
+            return this.context.Token.FirstOrDefault((x) => x.Actor == actor).RefreshToken;
         }
 
         public void DeleteRefreshToken(Guid actor) 
         {
-            var token = _context.Token.FirstOrDefault((x) => x.Actor == actor);
-            if (token != null)
-                _context.Token.Remove(token);
+            if (this.context.Token.Any((x) => x.Actor == actor))
+            {
+                var token = this.context.Token.FirstOrDefault((x) => x.Actor == actor);
+                this.context.Token.Remove(token);
+                this.context.SaveChanges();
+            }
         }
 
-        public bool ValidateRefreshToken(string refreshToken, string token) 
+        public bool IsValidRefreshToken(string refreshToken, string token) 
         {
-            return _context.Token.Any((x) => x.RefreshToken == refreshToken && x.Token == token);
+            return this.context.Token.Any((x) => x.RefreshToken == refreshToken && x.Token == token);
         }
     }
 }

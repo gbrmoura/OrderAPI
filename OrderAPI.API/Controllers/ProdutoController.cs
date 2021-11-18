@@ -18,25 +18,26 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class ProdutoController : ControllerBase
     {
-        
-        private OrderAPIContext _context;
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
+        private FileService file;
+        private TokenService token;
 
-        private IMapper _mapper;
-
-        private TokenService _tokenService;
-
-        public ProdutoController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        public ProdutoController(OrderAPIContext context, IMapper mapper, ModelService model, FileService file, TokenService token)
         {   
-            _context = context;
-            _mapper = mapper;
-            _tokenService = jwtService;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
+            this.file = file;
+            this.token = token;
         }
 
         [HttpPost("Registrar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Registrar([FromBody] CriarProdutoRequest body) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
@@ -44,33 +45,34 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
+
+            if (!this.file.IsValidBase64(body.Imagem)) 
+            {   
+                http.Message = "Imagem é invalida.";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Imagem", Message = "Imagem nao contem cabeçalho base64, ou esta vazia." }
+                };
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                
-                if (_context.Produto.Any(x => x.Titulo.Equals(body.Titulo) && x.Status == true)) 
+                if (this.context.Produto.Any(x => x.Titulo.Equals(body.Titulo) && x.Status == true)) 
                 {
-                    response.Message = "Produto ja cadastrado.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Produto ja cadastrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                var categoria = _context.Categoria.FirstOrDefault((e) => e.Codigo == body.CategoriaCodigo);
-
+                var categoria = this.context.Categoria.FirstOrDefault((e) => e.Codigo == body.CategoriaCodigo);
                 if (categoria == null) 
                 {
-                    response.Message = "Categoria não encontrada.";
-                    return StatusCode(response.Code, response);
-                }
-
-                if (!ImageService.ValidarBase64(body.Imagem)) 
-                {   
-                    response.Message = "Imagem é invalida.";
-                    response.Error = "Imagem nao contem cabeçalho base64, ou esta vazia.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Categoria não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
                 MProduto produto = new MProduto()
@@ -81,36 +83,37 @@ namespace OrderAPI.API.Controllers
                     Categoria = categoria,
                 };
 
-                var imageName = Guid.NewGuid().ToString() + ".png";
-                var path = ImageService.SaveImage(body.Imagem, imageName);
+                var name = Guid.NewGuid().ToString();
+                var path = this.file.SaveFile(body.Imagem, name, "png");
                 MImage image = new MImage() 
                 {
                     Produto = produto,
-                    Nome = imageName,
+                    Nome = name,
+                    Extensao = "png",
                     Caminho = path,
                 };
 
-                _context.Image.Add(image);
-                _context.SaveChanges();
+                this.context.Image.Add(image);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status201Created;
-                response.Message = "Produto cadastrado com sucesso.";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status201Created;
+                http.Message = "Produto cadastrado com sucesso.";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
         [HttpPost("Alterar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
-        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body) // TODO: alterar imagem
+        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarProdutoRequest body)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
@@ -118,14 +121,14 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
-                var produto = _context.Produto
+                var produto = this.context.Produto
                     .Include(x => x.Imagem)
                     .Where((e) => e.Codigo == body.Codigo)
                     .Where((e) => e.Status == true)
@@ -133,45 +136,47 @@ namespace OrderAPI.API.Controllers
                 
                 if (produto == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Produto não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = "Produto não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                var categoria = _context.Categoria.SingleOrDefault((e) => e.Codigo == body.CategoriaCodigo);
+                var categoria = this.context.Categoria
+                    .Where((e) => e.Codigo == body.CategoriaCodigo)
+                    .SingleOrDefault();
 
                 if (categoria == null) 
                 {
-                    response.Message = "Categoria não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Categoria não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
                 produto.Titulo = body.Titulo;
                 produto.Descricao = body.Descricao;
                 produto.Valor = body.Valor;
                 produto.Categoria = categoria;
-
-                if (ImageService.ValidarBase64(body.Imagem))
+                
+                if (this.file.IsValidBase64(body.Imagem))
                 {   
-                    var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.Imagem.Codigo);
-                    var caminho = ImageService.SaveImage(body.Imagem, imagem.Nome);
+                    var imagem = this.context.Image.SingleOrDefault(e => e.Codigo == produto.Imagem.Codigo);
+                    var caminho = this.file.SaveFile(body.Imagem, imagem.Nome, imagem.Extensao);
 
                     imagem.Caminho = caminho;
                     imagem.Produto = produto;
                 }
 
-                _context.SaveChanges();
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto alterado com sucesso.";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Produto alterado com sucesso.";
+                return StatusCode(http.Code, http);
             }
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -179,35 +184,47 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo nao pode ser menor ou igual a zero." }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
+                var produto = this.context.Produto
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
 
                 if (produto == null) 
                 {
-                    response.Message = "Produto não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Produto não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
                 produto.Status = false;
-                _context.SaveChanges();
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto deletado com sucesso.";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Produto deletado com sucesso.";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -215,34 +232,43 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };  
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo nao pode ser menor ou igual a zero." }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-                var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
-
+                var produto = this.context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
                 if (produto == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Produto de codigo {codigo} não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = $"Produto de codigo {codigo} não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produto encontrado.";
-                response.Response = _mapper.Map<ConsultarProdutoResponse>(produto);
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Produto encontrado.";
+                http.Response = this.mapper.Map<ConsultarProdutoResponse>(produto);
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             } 
         }
 
@@ -250,7 +276,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Listar([FromQuery] ListarRequest query) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -258,50 +284,47 @@ namespace OrderAPI.API.Controllers
             
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<MProduto> sql = _context.Produto;
+                IQueryable<MProduto> sql = this.context.Produto;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
                         e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                         e.Titulo.Contains(query.CampoPesquisa) ||
-                        e.Descricao.Contains(query.CampoPesquisa)
+                        e.Descricao.Contains(query.CampoPesquisa) ||
+                        e.Valor.ToString().Contains(query.CampoPesquisa)
                     );
                 }
 
-                var produtos = sql
-                    .Where((e) => e.Status == true)
+                var produtos = sql.Where((e) => e.Status == true)
                     .Include((e) => e.Categoria)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
-                    .OrderBy((e) => e.Codigo)
                     .ToList();
-
-
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
-                    Dados = _mapper.Map<List<ConsultarProdutoResponse>>(produtos)
+                    NumeroRegistros = this.context.Produto.Where(e => e.Status == true).Count(),
+                    Dados = this.mapper.Map<List<ConsultarProdutoResponse>>(produtos)
                 };
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Produtos encontrado(s).";
-                response.Response = list;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Produtos encontrado(s).";
+                http.Response = list;
+                return StatusCode(http.Code, http);
             }
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -309,39 +332,45 @@ namespace OrderAPI.API.Controllers
         [AllowAnonymous]
         public IActionResult Imagem([FromQuery] ImagemRequest query) 
         {
-            DefaultResponse response = new  DefaultResponse()
+            DefaultResponse http = new  DefaultResponse()
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
 
-            if (!_tokenService.ValidateRefreshToken(query.RefreshToken, query.Token))
-            {
-                return StatusCode(response.Code);
-            }
+            if (!this.token.IsValidRefreshToken(query.RefreshToken, query.Token))
+                return StatusCode(http.Code);
 
             try
             {
-                var image = _context.Image
+                var image = this.context.Image
                     .Include(e => e.Produto)
                     .Where(e => e.ProductCodigo == query.Codigo)
                     .SingleOrDefault();
 
                 if (image == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Imagem não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = $"Imagem não encontrada.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (!System.IO.File.Exists(image.Caminho)) 
+                {
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = $"Imagem não encontrada nos arquivos.";
+                    return StatusCode(http.Code, http);
                 }
 
                 var img = System.IO.File.OpenRead(image.Caminho);
-                return File(img, "image/png");
+                return File(img, $"image/{ image.Extensao }");
             }
             catch (Exception err)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = err.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = err.Message;
+                return StatusCode(http.Code, http);
             }
         }
     }

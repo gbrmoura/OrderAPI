@@ -13,26 +13,31 @@ using OrderAPI.Data.Helpers;
 using System.Collections.Generic;
 using OrderAPI.API.HTTP.Response;
 using Microsoft.EntityFrameworkCore;
+using OrderAPI.API.EntensionMethods;
 
 namespace OrderAPI.API.Controllers
 {
     [Route("api/Produto/")]
     public class EstoqueController : ControllerBase
     {
-        private OrderAPIContext _context;
-        private IMapper _mapper;
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
+        private UtilsService utils;
 
-        public EstoqueController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        public EstoqueController(OrderAPIContext context, IMapper mapper, ModelService model, UtilsService utils)
         {
-            _context = context;
-            _mapper = mapper;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
+            this.utils = utils;
         }
 
         [HttpPost("Controle/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Controle([FromBody] EstoqueRequest body)
         {
-            DefaultResponse response = new DefaultResponse()
+            DefaultResponse http = new DefaultResponse()
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
@@ -40,34 +45,41 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
-            if (!UtilsService.CompareStrings(body.Tipo, new string[]{ EstoqueCrontoleEnum.ENTRADA.ToString(), EstoqueCrontoleEnum.SAIDA.ToString()}))
+            if (!this.utils.CompareStrings(body.Tipo, new string[]{ "ENTRADA", "SAIDA" }))
             {
-                response.Message = "Tipo de operação inválida. ";
-                response.Error = new List<ErrorResponse>() {
+                http.Message = "Tipo de operação inválida. ";
+                http.Error = new List<ErrorResponse>() {
                     new ErrorResponse() { Field = "Tipo", Message = "Tipo deve estrar entre 'ENTRADA' e 'SAIDA'" }
                 };
-                return StatusCode(response.Code, response);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
-                var funcionario = _context.Funcionario.SingleOrDefault(x => x.Codigo == body.FuncionarioCodigo && x.Status == true);
-                if (funcionario == null) 
+                var funcionarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
+                var funcionario = this.context.Funcionario
+                    .Where(x => x.Codigo == funcionarioCodigo && x.Status == true)
+                    .SingleOrDefault();
+                    
+                if (funcionario == null)
                 {
-                    response.Message = "Funcionario não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Funcionario não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                var produto = _context.Produto.SingleOrDefault(x => x.Codigo == body.ProdutoCodigo);
+                var produto = this.context.Produto
+                    .Where(x => x.Codigo == body.ProdutoCodigo && x.Status == true)
+                    .SingleOrDefault();
+
                 if (produto == null) 
                 {
-                    response.Message = "Produto não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Produto não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
                 MControleEstoque controle = new MControleEstoque()
@@ -90,19 +102,19 @@ namespace OrderAPI.API.Controllers
                         break;
                 }
 
-                _context.ControleEstoque.Add(controle);
-                _context.SaveChanges();
+                this.context.ControleEstoque.Add(controle);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Estoque registrado com sucesso.";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Estoque registrado com sucesso.";
+                return StatusCode(http.Code, http);
             }
             catch (Exception err)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro ao registrar produto estoque.";
-                response.Error = err.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro ao registrar produto estoque.";
+                http.Error = err.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -110,7 +122,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> ListarControle([FromQuery] ListarRequest query)
         {
-            DefaultResponse response = new DefaultResponse()
+            DefaultResponse http = new DefaultResponse()
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
@@ -118,15 +130,15 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
 
-                IQueryable<MControleEstoque> sql = _context.ControleEstoque;
+                IQueryable<MControleEstoque> sql = this.context.ControleEstoque;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 
@@ -167,21 +179,21 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = this.context.Categoria.Where(e => e.Status == true).Count(),
                     Dados = dados
                 };
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Crontole(s) de estoque encontrada(s).";
-                response.Response = list;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Crontole(s) de estoque encontrada(s).";
+                http.Response = list;
+                return StatusCode(http.Code, http);
             }
             catch (Exception err)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro ao listar produtos estoque.";
-                response.Error = err.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro ao listar produtos estoque.";
+                http.Error = err.Message;
+                return StatusCode(http.Code, http);
             }
         }
     }

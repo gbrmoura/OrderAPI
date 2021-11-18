@@ -8,8 +8,6 @@ namespace OrderAPI.API.HTTP.Request
 {
     public class ListarCardapioRequest
     {
-        public string UsuarioCodigo { get; set; }
-
         [Required(ErrorMessage = "Tamanho de pagina deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Tamanho de pagina deve ser maior que zero")]
         public int TamanhoPagina { get; set; }

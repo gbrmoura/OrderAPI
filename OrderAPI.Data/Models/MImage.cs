@@ -14,6 +14,10 @@ namespace OrderAPI.Data.Models
         [MaxLength(60, ErrorMessage = "Nome do arquivo deve ter no máximo 60 caracteres.")]
         public string Nome { get; set; }
 
+        [Required(ErrorMessage = "Tipo do arquivo deve ser informado.")]
+        [MaxLength(5, ErrorMessage = "Tipo do arquivo deve ter no máximo 5 caracteres.")]
+        public string Extensao { get; set; }
+
         [Required(ErrorMessage = "Caminho do arquivo deve ser informado.")]
         public string Caminho { get; set; }
         

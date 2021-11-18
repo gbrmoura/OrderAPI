@@ -18,22 +18,22 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class CategoriaController : ControllerBase
     {
-        
-        private OrderAPIContext _context;
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
 
-        private IMapper _mapper;
-
-        public CategoriaController(OrderAPIContext context, IMapper mapper)
+        public CategoriaController(OrderAPIContext context, IMapper mapper, ModelService model)
         {   
-            _context = context;
-            _mapper = mapper;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
         }
 
         [HttpPost("Registrar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Registrar([FromBody] CriarCategoriaRequest body) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -41,40 +41,34 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((categoria) => categoria.Titulo.Equals(body.Titulo) && categoria.Status == true);
-
-                if (categoria != null) 
+                if (this.context.Categoria.Any(e => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
                 {
-                    response.Message = "Categoria ja cadastrada";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Categoria ja cadastrada";
+                    return StatusCode(http.Code, http);
                 }
 
-                MCategoria categoriaDB = _mapper.Map<MCategoria>(body);
-                _context.Categoria.Add(categoriaDB);
-                _context.SaveChanges();
+                MCategoria categoria = this.mapper.Map<MCategoria>(body);
+                this.context.Categoria.Add(categoria);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status201Created;
-                response.Message = "Categoria cadastrada com sucesso";
-                response.Response = _mapper.Map<ConsultarCategoriaResponse>(categoriaDB);
-
-                return StatusCode(response.Code, response);
-
+                http.Code = StatusCodes.Status201Created;
+                http.Message = "Categoria cadastrada com sucesso";
+                http.Response = this.mapper.Map<ConsultarCategoriaResponse>(categoria);
+                return StatusCode(http.Code, http);
             } 
-            catch (Exception E) 
+            catch (Exception E)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -82,7 +76,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Alterar([FromBody] AlterarCategoriaRequest body)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -90,38 +84,38 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }   
 
             try 
             {
-                
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((categoria) => categoria.Codigo == body.Codigo);
+                MCategoria categoria = this.context.Categoria
+                    .Where(e => e.Codigo == body.Codigo)
+                    .SingleOrDefault();
 
                 if (categoria == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Categoria não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = "Categoria não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
-                _mapper.Map(body, categoria);
-                _context.SaveChanges();
+                this.mapper.Map(body, categoria);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria alterada com sucesso";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Categoria alterada com sucesso";
+                return StatusCode(http.Code, http);
 
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -129,37 +123,47 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
             };
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Código deve ser maior que zero" }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-                
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((categoria) => categoria.Codigo == codigo);
+                MCategoria categoria = this.context.Categoria
+                    .Where(e => e.Codigo == codigo)
+                    .SingleOrDefault();
 
                 if (categoria == null) 
                 {
-                    response.Message = "Categoria não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Categoria não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
                 categoria.Status = false;
-                _context.SaveChanges();
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria deletada com sucesso";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Categoria deletada com sucesso";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -167,38 +171,46 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
             };
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Código deve ser maior que zero" }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-
-                MCategoria categoria = _context.Categoria
-                    .FirstOrDefault((categoria) => categoria.Codigo == codigo);
+                MCategoria categoria = this.context.Categoria
+                    .Where(e => e.Codigo == codigo)
+                    .SingleOrDefault();
 
                 if (categoria == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = $"Categoria de codigo { codigo }, não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = $"Categoria de codigo { codigo }, não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
-
-                ConsultarCategoriaResponse categoriaDB = _mapper.Map<ConsultarCategoriaResponse>(categoria);
-
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria encontrada.";
-                response.Response = categoriaDB;
-                return StatusCode(response.Code, response);
+                
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Categoria encontrada.";
+                http.Response = this.mapper.Map<ConsultarCategoriaResponse>(categoria);;
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -207,7 +219,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Listar([FromQuery] ListarRequest query) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -215,15 +227,14 @@ namespace OrderAPI.API.Controllers
             
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<MCategoria> sql = _context.Categoria;
-
+                IQueryable<MCategoria> sql = this.context.Categoria;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 
@@ -240,21 +251,21 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
-                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
+                    NumeroRegistros = this.context.Categoria.Where(e => e.Status == true).Count(),
+                    Dados = this.mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
                 };
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria encontrada(s).";
-                response.Response = list;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Categoria encontrada(s).";
+                http.Response = list;
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
     }

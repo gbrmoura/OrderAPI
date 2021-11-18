@@ -9,10 +9,6 @@ namespace OrderAPI.API.HTTP.Request
 {
     public class EstoqueRequest
     {   
-        [Required(ErrorMessage = "O codigo de funcionario deve ser infomado.")]
-        [Range(1, int.MaxValue, ErrorMessage = "O codigo de funcionario deve ser maior que zero.")]
-        public int FuncionarioCodigo { get; set; }
-
         [Required(ErrorMessage = "O codigo do produto deve ser informado")]
         [Range(1, int.MaxValue, ErrorMessage = "Codigo do produto deve ser maior que zero.")]
         public int ProdutoCodigo { get; set; }

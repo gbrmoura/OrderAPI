@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using OrderAPI.API.Helpers;
 
 namespace OrderAPI.API.HTTP.Request 
 {

@@ -32,25 +32,40 @@ namespace OrderAPI.API
             AuthenticationConfig authenticationConfig = new AuthenticationConfig();
             _configuration.Bind("Authentication", authenticationConfig);
 
+            /** Database Context */
             string connectionString = _configuration.GetConnectionString("MySQLConnection");
             services.AddDbContextPool<OrderAPIContext>(ops => ops.UseMySQL(connectionString));
+            
+            /** Configuration Class **/
             services.AddSingleton(authenticationConfig);
+
+            /** Scoped Services **/
             services.AddScoped<TokenService>();
+            services.AddScoped<FileService>();
+            services.AddScoped<ModelService>();
+            services.AddScoped<PasswordService>();
+            services.AddScoped<UtilsService>();
+
+            /** Singleton Services **/
+            
+            
+            /** Others **/
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddCors();
             services.AddControllers();
             services.AddOptions();
            
+           /** Swagger **/
             services.AddSwaggerGen(ops => 
             {
-                ops.AddSecurityDefinition("bearer",
+                ops.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme,
                     new OpenApiSecurityScheme
                     {
                         In = ParameterLocation.Header,
                         Description = "Autenticação baseada em Json Web Token (JWT)",
                         Name = "Authorization",
                         Type = SecuritySchemeType.ApiKey,
-                        Scheme = "Bearer"
+                        Scheme = JwtBearerDefaults.AuthenticationScheme
                     }
                 );
 
@@ -63,10 +78,10 @@ namespace OrderAPI.API
                                 Reference = new OpenApiReference()
                                 {
                                     Type = ReferenceType.SecurityScheme,
-                                    Id = "Bearer"
+                                    Id = JwtBearerDefaults.AuthenticationScheme
                                 },
                                 Scheme = "oauth2",
-                                Name = "Bearer",
+                                Name = JwtBearerDefaults.AuthenticationScheme,
                                 In = ParameterLocation.Header
                             },
                             new List<string>()
@@ -77,7 +92,7 @@ namespace OrderAPI.API
                 ops.SwaggerDoc("v1", 
                     new Microsoft.OpenApi.Models.OpenApiInfo 
                     {
-                        Version = "v0.0.7",
+                        Version = "v0.0.5",
                         Title = "Documentação OrderAPI",
                         Description = "Documentação da api para uso do Instituto Federeal de São Paulo - Campus Boituva",
                         Contact = new Microsoft.OpenApi.Models.OpenApiContact()
@@ -90,7 +105,7 @@ namespace OrderAPI.API
                 );
             });
 
-            var key = Encoding.ASCII.GetBytes(authenticationConfig.AccessTokenSecret);
+            /** JWT Authentication **/
             services.AddAuthentication(ops => 
             {
                 ops.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
@@ -103,7 +118,7 @@ namespace OrderAPI.API
                 ops.TokenValidationParameters = new TokenValidationParameters 
                 {
                     ValidateIssuerSigningKey = true,
-                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    IssuerSigningKey = new SymmetricSecurityKey( Encoding.ASCII.GetBytes(authenticationConfig.AccessTokenSecret)),
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };

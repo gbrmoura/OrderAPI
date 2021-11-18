@@ -6,35 +6,36 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using OrderAPI.Data;
 using AutoMapper;
-using OrderAPI.API.Services;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
-using OrderAPI.API.Helpers;
-using OrderAPI.API.HTTP.Response;
 using Microsoft.EntityFrameworkCore;
+using OrderAPI.API.Services;
+using OrderAPI.API.EntensionMethods;
+using OrderAPI.API.HTTP.Response;
 
 namespace OrderAPI.API.Controllers
 {
     [Route("api/[controller]/")]
     public class CardapioController : ControllerBase
     {
-        private OrderAPIContext _context;
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
 
-        private IMapper _mapper;
-
-        public CardapioController(OrderAPIContext context, IMapper mapper)
+        public CardapioController(OrderAPIContext context, IMapper mapper, ModelService model)
         {
-            _context = context;
-            _mapper = mapper;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
         }
         
         [HttpGet]
     	[Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Cardapio([FromQuery] ListarCardapioRequest query) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -42,43 +43,30 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid)
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                var usuarioCodigo = 0;
-                if (IdentityService.getRole(User.Claims) == PrevilegioEnum.USUARIO.ToString())
+                IQueryable<MProduto> sql = this.context.Produto;
+                int codigo = 0;
+                if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
-                    
-                    if (String.IsNullOrEmpty(query.UsuarioCodigo) || !Int32.TryParse(query.UsuarioCodigo, out usuarioCodigo))
+                    codigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
+                    if (!this.context.Usuario.Any((e) => e.Codigo == codigo && e.Status == true)) 
                     {
-                        response.Message = "Parametros ausentes.";
-                        response.Error = new List<ErrorResponse>() {
-                            new ErrorResponse() { Field = "UsuarioCodigo", Message = "Codigo de usuario deve ser informado." }
-                        };
-                        return StatusCode(response.Code, response);
+                        http.Code = StatusCodes.Status401Unauthorized;
+                        http.Message = "Usuario não encontrado.";
+                        return StatusCode(http.Code, http);
                     }
 
-                    if (!_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
-                    {
-                        response.Code = StatusCodes.Status401Unauthorized;
-                        response.Message = "Usuario não encontrado.";
-                        return StatusCode(response.Code, response);
-                    }
-                }
-                
-                
-                IQueryable<MProduto> sql = _context.Produto;
-                if (usuarioCodigo > 0 && query.Favorito)
-                {
                     sql = sql
                         .Include(e => e.Favoritos)
-                        .Where((e) => e.Favoritos.Any((fav) => fav.UsuarioCodigo == usuarioCodigo && fav.Status == true));
+                        .Where((e) => e.Favoritos.Any((fav) => fav.UsuarioCodigo == codigo && fav.Status == true));
                 }
-
+                
                 List<MProduto> produtos = sql
                     .Include((e) => e.Categoria)
                     .Include((e) => e.Favoritos)
@@ -93,7 +81,7 @@ namespace OrderAPI.API.Controllers
                     Descricao = e.Descricao,
                     Valor = e.Valor,
                     Quantidade = e.Quantidade,
-                    Favorito = e.Favoritos.Any((fav) => fav.UsuarioCodigo == usuarioCodigo && fav.ProdutoCodigo == e.Codigo &&  fav.Status == true),
+                    Favorito = e.Favoritos.Any((fav) => fav.UsuarioCodigo == codigo && fav.ProdutoCodigo == e.Codigo &&  fav.Status == true),
                     Categoria = new ConsultarCategoriaResponse() {
                         Codigo = e.Categoria.Codigo,
                         Titulo = e.Categoria.Titulo,
@@ -103,21 +91,21 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = this.context.Produto.Where(e => e.Status == true).Count(),
                     Dados = dados
                 };
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Categoria encontrada(s)!";
-                response.Response = list;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Categoria encontrada(s)!";
+                http.Response = list;
+                return StatusCode(http.Code, http);
             }   
             catch (Exception E)   
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -125,7 +113,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "USUARIO")]
         public ActionResult<DefaultResponse> Favorito([FromBody] FavoritoRequest body) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -133,29 +121,30 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
-                var usuario = _context.Usuario.SingleOrDefault((e) => e.Codigo == body.UsuarioCodigo && e.Status == true);
+                var codigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
+                var usuario = this.context.Usuario.SingleOrDefault((e) => e.Codigo == codigo && e.Status == true);
                 if (usuario == null)
                 {
-                    response.Code = StatusCodes.Status401Unauthorized;
-                    response.Message = "Usuario não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status401Unauthorized;
+                    http.Message = "Usuario não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
                 
                 if (body.Estado)
                 {
-                    var produto = _context.Produto.SingleOrDefault((e) => e.Codigo == body.ProdutoCodigo && e.Status == true);
+                    var produto = this.context.Produto.SingleOrDefault((e) => e.Codigo == body.ProdutoCodigo && e.Status == true);
                     if (produto == null) 
                     {
-                        response.Code = StatusCodes.Status401Unauthorized;
-                        response.Message = "Produto não encontrado.";
-                        return StatusCode(response.Code, response);
+                        http.Code = StatusCodes.Status401Unauthorized;
+                        http.Message = "Produto não encontrado.";
+                        return StatusCode(http.Code, http);
                     }
 
                     MFavorito favorito = new MFavorito() 
@@ -164,43 +153,43 @@ namespace OrderAPI.API.Controllers
                         Usuario = usuario
                     };
 
-                    _context.Favorito.Add(favorito);
-                    _context.SaveChanges();
+                    this.context.Favorito.Add(favorito);
+                    this.context.SaveChanges();
 
-                    response.Code = StatusCodes.Status200OK;
-                    response.Message = "Produto favoritado com sucesso.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Produto favoritado com sucesso.";
+                    return StatusCode(http.Code, http);
                 }
                 else
                 {
-                    var favorito = _context.Favorito
+                    var favorito = this.context.Favorito
                         .Include((e) => e.Produto)
-                        .Where((e) => e.Produto.Codigo == body.ProdutoCodigo)
+                            .Where((e) => e.Produto.Codigo == body.ProdutoCodigo)
                         .Include((e) => e.Usuario)
-                        .Where((e) => e.Usuario.Codigo == body.UsuarioCodigo && e.Status == true)
+                            .Where((e) => e.Usuario.Codigo == codigo && e.Status == true)
                         .SingleOrDefault();
 
                     if (favorito == null) 
                     {
-                        response.Code = StatusCodes.Status401Unauthorized;
-                        response.Message = "Favorito não encontrado.";
-                        return StatusCode(response.Code, response);
+                        http.Code = StatusCodes.Status401Unauthorized;
+                        http.Message = "Favorito não encontrado.";
+                        return StatusCode(http.Code, http);
                     }
 
                     favorito.Status = false;
-                    _context.SaveChanges();
+                    this.context.SaveChanges();
 
-                    response.Code = StatusCodes.Status200OK;
-                    response.Message = "Produto favoritado removido com sucesso.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Produto favoritado removido com sucesso.";
+                    return StatusCode(http.Code, http);
                 }
             }
             catch (Exception E)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 

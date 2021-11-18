@@ -11,12 +11,7 @@ namespace OrderAPI.API.HTTP.Request
     {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Obersavacao { get; set; }
-
-        [ForeignKey("Usuario")]
-        [Required(ErrorMessage = "Usuario Codigo deve ser informado.")]
-        [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]
-        public int UsuarioCodigo { get; set; }
-
+        
         [ForeignKey("MetodoPagamento")]
         [Required(ErrorMessage = "Metodo de Pagamento Codigo deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Codigo deve ser maior que zero")]

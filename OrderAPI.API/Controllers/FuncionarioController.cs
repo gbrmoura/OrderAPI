@@ -15,25 +15,24 @@ namespace OrderAPI.API.Controllers
     [Route("api/Autenticacao/[controller]/")]
     public class FuncionarioController : ControllerBase
     {
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
+        private PasswordService password;
 
-        private OrderAPIContext _context;
-
-        private IMapper _mapper;
-
-        private TokenService _jwtService;
-
-        public FuncionarioController(OrderAPIContext context, IMapper mapper, TokenService jwtService)
+        public FuncionarioController(OrderAPIContext context, IMapper mapper, ModelService model, PasswordService password)
         {
-            _context = context;
-            _mapper = mapper;
-            _jwtService = jwtService;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
+            this.password = password;
         }
 
         [HttpPost("Registrar/")]
         [Authorize(Roles = "MASTER")]
         public ActionResult<DefaultResponse> Registrar([FromBody] CriarFuncionarioRequest body)
         {
-            DefaultResponse response = new DefaultResponse()
+            DefaultResponse http = new DefaultResponse()
             {
                 Code = StatusCodes.Status403Forbidden,
                 Message = "Rota não autorizada."
@@ -41,40 +40,36 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid)
             {
-                response.Message = "Parametros Ausentes.";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try
             {
-                MFuncionario value = _context.Funcionario
-                    .FirstOrDefault((element) => element.Login.Equals(body.Login) && element.Status == true);
-
-                if (value != null)
+                if (this.context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
                 {
-                    response.Message = "Funcionario já cadastrado.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Funcionario já cadastrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                MFuncionario funcionario = _mapper.Map<MFuncionario>(body);
-                funcionario.Senha = PasswordService.EncryptPassword(funcionario.Senha);
+                var funcionario = this.mapper.Map<MFuncionario>(body);
+                funcionario.Senha = this.password.EncryptPassword(funcionario.Senha);
                 funcionario.Token = Guid.NewGuid();
 
-                _context.Funcionario.Add(funcionario);
-                _context.SaveChanges();
+                this.context.Funcionario.Add(funcionario);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status201Created;
-                response.Message = "Funcionario cadastrado com sucesso.";
-                return StatusCode(response.Code, response);
-
+                http.Code = StatusCodes.Status201Created;
+                http.Message = "Funcionario cadastrado com sucesso.";
+                return StatusCode(http.Code, http);
             }
             catch (Exception E)
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
     }

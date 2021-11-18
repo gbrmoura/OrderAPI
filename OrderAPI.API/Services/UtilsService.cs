@@ -2,10 +2,10 @@ using System;
 
 namespace OrderAPI.API.Services
 {
-    public static class UtilsService
+    public class UtilsService
     {   
 
-        public static bool CompareStrings(string str, string[] strArray)
+        public bool CompareStrings(string str, string[] strArray)
         {
             foreach (string s in strArray)
             {

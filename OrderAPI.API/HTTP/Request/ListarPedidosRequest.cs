@@ -16,7 +16,6 @@ namespace OrderAPI.API.HTTP.Request
         [Required(ErrorMessage = "Numero de pagina deve ser informado.")]
         [Range(1, int.MaxValue, ErrorMessage = "Numero de pagina deve ser maior que um.")]
         public int NumeroPagina { get; set; }
-        public string UsuarioCodigo { get; set; }
         public string CampoPesquisa { get; set; }
         public PedidoStatusEnum Status { get; set; }
     }

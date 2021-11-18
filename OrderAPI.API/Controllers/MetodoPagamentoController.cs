@@ -18,22 +18,22 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class MetodoPagamentoController : ControllerBase
     {
-        
-        private OrderAPIContext _context;
+        private OrderAPIContext context;
+        private IMapper mapper;
+        private ModelService model;
 
-        private IMapper _mapper;
-
-        public MetodoPagamentoController(OrderAPIContext context, IMapper mapper)
+        public MetodoPagamentoController(OrderAPIContext context, IMapper mapper, ModelService model)
         {   
-            _context = context;
-            _mapper = mapper;
+            this.context = context;
+            this.mapper = mapper;
+            this.model = model;
         }
         
         [HttpPost("Registrar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Registrar([FromBody] CriarMetodoPagtoRequest body) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada!"
@@ -41,38 +41,33 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                MMetodoPagamento MetodoPagamento = _context.MetodoPagamento
-                    .FirstOrDefault(pagto => pagto.Titulo.Equals(body.Titulo));
-
-                if (MetodoPagamento != null) 
+                if (this.context.MetodoPagamento.Any((e) => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
                 {
-                    response.Message = "Método de Pagamento já cadastrado!";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Método de Pagamento já cadastrado!";
+                    return StatusCode(http.Code, http);
                 }
 
-                MMetodoPagamento pagtoDB = _mapper.Map<MMetodoPagamento>(body);
-                pagtoDB.Status = true;
+                MMetodoPagamento pagto = this.mapper.Map<MMetodoPagamento>(body);
+                this.context.Add(pagto);
+                this.context.SaveChanges();
 
-                _context.Add(pagtoDB);
-                _context.SaveChanges();
-
-                response.Code = StatusCodes.Status201Created;
-                response.Message = "Método de Pagamento cadastrado com sucesso!";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status201Created;
+                http.Message = "Método de Pagamento cadastrado com sucesso!";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -80,7 +75,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Alterar([FromBody] AlterarMetodoPagtoRequest body)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada!"
@@ -88,36 +83,36 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try {
-                MMetodoPagamento metodoPagto = _context.MetodoPagamento
-                    .FirstOrDefault((pagto) => pagto.Codigo == body.Codigo);
+                MMetodoPagamento pagto = this.context.MetodoPagamento
+                    .Where((e) => e.Codigo == body.Codigo)
+                    .SingleOrDefault();
 
-                if (metodoPagto == null) 
+                if (pagto == null) 
                 {
-                    response.Code = StatusCodes.Status404NotFound;
-                    response.Message = "Método Pagto não encontrada.";
-                    return StatusCode(response.Code, response);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = "Método Pagto não encontrada.";
+                    return StatusCode(http.Code, http);
                 }
 
-                _mapper.Map(body, metodoPagto);
-                _context.SaveChanges();
+                this.mapper.Map(body, pagto);
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Método Pagto alterado com sucesso";
-                return StatusCode(response.Code, response);
-
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Método Pagto alterado com sucesso";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -125,36 +120,47 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> Deletar([FromQuery] int codigo)
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
             };
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo deve ser maior que zero" }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-                MMetodoPagamento metodoPagto = _context.MetodoPagamento
-                    .FirstOrDefault((pagto) => pagto.Codigo == codigo);
+                MMetodoPagamento pagto = this.context.MetodoPagamento
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
 
-                if (metodoPagto == null) 
+                if (pagto == null) 
                 {
-                    response.Message = "Método de Pagto não encontrado.";
-                    return StatusCode(response.Code, response);
+                    http.Message = "Método de Pagto não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                metodoPagto.Status = false;
-                _context.SaveChanges();
+                pagto.Status = false;
+                this.context.SaveChanges();
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Método de Pagto deletada com sucesso";
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Método de Pagto deletada com sucesso";
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor!";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -162,35 +168,46 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Consultar([FromQuery] int codigo)
         {
-            DefaultResponse httpMessage = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada!"
             };
 
+            if (codigo <= 0) 
+            {
+                http.Message = "Parametros Ausentes";
+                http.Error = new List<ErrorResponse>()
+                {
+                    new ErrorResponse() { Field = "Codigo", Message = "Codigo deve ser maior que zero" }
+                };
+                return StatusCode(http.Code, http);
+            }
+
             try 
             {
-                MMetodoPagamento metodoPagto = _context.MetodoPagamento
-                    .FirstOrDefault(pagto => pagto.Codigo == codigo);
+                MMetodoPagamento pagto = this.context.MetodoPagamento
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
 
-                if (metodoPagto == null) 
+                if (pagto == null) 
                 {
-                    httpMessage.Code = StatusCodes.Status404NotFound;
-                    httpMessage.Message = $"Método de Pagto. de código { codigo }, não encontrado.";
-                    return StatusCode(httpMessage.Code, httpMessage);
+                    http.Code = StatusCodes.Status404NotFound;
+                    http.Message = $"Método de Pagto. de código { codigo }, não encontrado.";
+                    return StatusCode(http.Code, http);
                 }
 
-                httpMessage.Code = StatusCodes.Status200OK;
-                httpMessage.Message = "Método de Pagto. encontrado.";
-                httpMessage.Response = _mapper.Map<ConsultarMetodoPagtoResponse>(metodoPagto);
-                return StatusCode(httpMessage.Code, httpMessage);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Método de Pagto. encontrado.";
+                http.Response = this.mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
+                return StatusCode(http.Code, http);
             }
             catch (Exception E) 
             {
-                httpMessage.Code = StatusCodes.Status500InternalServerError;
-                httpMessage.Message = "Erro interno do servidor.";
-                httpMessage.Error = E.Message;
-                return StatusCode(httpMessage.Code, httpMessage);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
 
@@ -198,7 +215,7 @@ namespace OrderAPI.API.Controllers
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO, USUARIO")]
         public ActionResult<DefaultResponse> Listar([FromQuery] ListarRequest query) 
         {
-            DefaultResponse response = new DefaultResponse() 
+            DefaultResponse http = new DefaultResponse() 
             {
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada"
@@ -206,15 +223,14 @@ namespace OrderAPI.API.Controllers
 
             if (!ModelState.IsValid) 
             {
-                response.Message = "Parametros Ausentes";
-                response.Error = ModelStateService.ErrorConverter(ModelState);
-                return StatusCode(response.Code, response);
+                http.Message = "Parametros Ausentes";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<MMetodoPagamento> sql = _context.MetodoPagamento;
-
+                IQueryable<MMetodoPagamento> sql = this.context.MetodoPagamento;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
@@ -223,31 +239,29 @@ namespace OrderAPI.API.Controllers
                     );
                 }
 
-                var metodos = sql
-                    .Where(e => e.Status == true)
+                var result = sql.Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.MetodoPagamento.Where(e => e.Status == true).Count(),
-                    Dados = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(metodos)
+                    NumeroRegistros = this.context.MetodoPagamento.Where(e => e.Status == true).Count(),
+                    Dados = this.mapper.Map<List<ConsultarMetodoPagtoResponse>>(result)
                 };
 
-                response.Code = StatusCodes.Status200OK;
-                response.Message = "Metodo pagamento encontrado(s).";
-                response.Response = list;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Metodo pagamento encontrado(s).";
+                http.Response = list;
+                return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
             {
-                response.Code = StatusCodes.Status500InternalServerError;
-                response.Message = "Erro interno do servidor.";
-                response.Error = E.Message;
-                return StatusCode(response.Code, response);
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
             }
         }
-
     }
 }
