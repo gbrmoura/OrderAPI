@@ -15,7 +15,7 @@ namespace OrderAPI.API.EntensionMethods
 
         public static string GetUsuarioPrivilegio(this IIdentity identity)
         {
-            var claim = ((ClaimsIdentity)identity).FindFirst("privilegio");
+            var claim = ((ClaimsIdentity)identity).FindFirst(ClaimTypes.Role);
             return claim?.Value;
         }
 

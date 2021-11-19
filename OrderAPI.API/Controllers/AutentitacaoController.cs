@@ -31,6 +31,7 @@ namespace OrderAPI.API.Controllers
             this.mapper = mapper;
             this.token = token;
             this.model = model;
+            this.password = password;
         }
 
         [HttpPost("PrimeiroRegistro/")]
@@ -59,6 +60,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 MFuncionario funcionario = this.mapper.Map<MFuncionario>(body);
+                funcionario.Token = Guid.NewGuid();
                 funcionario.Senha = this.password.EncryptPassword(funcionario.Senha);
                 funcionario.Previlegio = PrevilegioEnum.MASTER;
                 funcionario.Status = true;
@@ -118,7 +120,7 @@ namespace OrderAPI.API.Controllers
                         new Claim("nome", usuario.Nome),
                         new Claim("login", usuario.Email),
                         new Claim("token", usuario.Token.ToString()),
-                        new Claim("privilegio", "USUARIO"),
+                        new Claim(ClaimTypes.Role, "USUARIO"),
                     });
                     
                     this.token.DeleteRefreshToken(usuario.Token);
@@ -158,7 +160,7 @@ namespace OrderAPI.API.Controllers
                         new Claim("nome", funcionario.Nome),
                         new Claim("login", funcionario.Login),
                         new Claim("token", funcionario.Token.ToString()),
-                        new Claim("privilegio", funcionario.Previlegio.ToString())
+                        new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
                     });
 
                     
