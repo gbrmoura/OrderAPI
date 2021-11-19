@@ -14,9 +14,5 @@ public class ConsultarMetodoPagtoResponse
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(45, ErrorMessage = "O limite de 45 caractéres foi atigido.")]
         public string Titulo { get; set; }
-
-        [Required(ErrorMessage = "Status deve ser informado.")]
-        public Boolean Status { get; set; }
-
     }
 }

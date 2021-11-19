@@ -148,7 +148,7 @@ namespace OrderAPI.API.Controllers
                         e.Tipo.ToString().Contains(query.CampoPesquisa));
                 }
 
-                var categorias = sql
+                var estoque = sql
                     .Include(x => x.Funcionario)
                     .Include(x => x.Produto)
                     .Where(e => e.Status == true)
@@ -156,7 +156,7 @@ namespace OrderAPI.API.Controllers
                     .Take(query.TamanhoPagina)
                     .ToList();
 
-                var dados = categorias.Select(e => new ConsultarEstoqueResponse()
+                var dados = estoque.Select(e => new ConsultarEstoqueResponse()
                 {
                     Codigo = e.Codigo,
                     Quantidade = e.Quantidade,
@@ -179,7 +179,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = this.context.Categoria.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = this.context.ControleEstoque.Where(e => e.Status == true).Count(),
                     Dados = dados
                 };
 

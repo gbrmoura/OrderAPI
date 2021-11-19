@@ -250,7 +250,11 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                var produto = this.context.Produto.SingleOrDefault((e) => e.Codigo == codigo);
+                var produto = this.context.Produto
+                    .Include((e) => e.Categoria)
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
+
                 if (produto == null) 
                 {
                     http.Code = StatusCodes.Status404NotFound;
@@ -337,6 +341,13 @@ namespace OrderAPI.API.Controllers
                 Code = StatusCodes.Status401Unauthorized,
                 Message = "Rota não autorizada."
             };
+
+            if (!ModelState.IsValid) 
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = this.model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
 
             if (!this.token.IsValidRefreshToken(query.RefreshToken, query.Token))
                 return StatusCode(http.Code);

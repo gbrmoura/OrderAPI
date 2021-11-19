@@ -369,3 +369,4 @@ FodyWeavers.xsd
 
 # Images - Generate by system
 OrderAPI.API/Imagens
+OrderAPI.API/Files

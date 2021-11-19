@@ -60,7 +60,6 @@ namespace OrderAPI.API.Controllers
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Categoria cadastrada com sucesso";
-                http.Response = this.mapper.Map<ConsultarCategoriaResponse>(categoria);
                 return StatusCode(http.Code, http);
             } 
             catch (Exception E)
