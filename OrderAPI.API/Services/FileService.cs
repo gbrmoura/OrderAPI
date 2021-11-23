@@ -9,7 +9,7 @@ namespace OrderAPI.API.Services
 {
     public class FileService
     {
-        private string path = Environment.CurrentDirectory + "\\Files\\";
+        private string path = Environment.CurrentDirectory + "/files/";
 
         public bool IsValidBase64(string base64)
         {
