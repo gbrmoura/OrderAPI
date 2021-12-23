@@ -75,7 +75,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MProduto produto = new MProduto()
+                ProdutoModel produto = new ProdutoModel()
                 {
                     Titulo = body.Titulo,
                     Valor = body.Valor,
@@ -85,7 +85,7 @@ namespace OrderAPI.API.Controllers
 
                 var name = Guid.NewGuid().ToString();
                 var path = this.file.SaveFile(body.Imagem, name, "png");
-                MImage image = new MImage() 
+                ImageModel image = new ImageModel() 
                 {
                     Produto = produto,
                     Nome = name,
@@ -295,7 +295,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                IQueryable<MProduto> sql = this.context.Produto;
+                IQueryable<ProdutoModel> sql = this.context.Produto;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
