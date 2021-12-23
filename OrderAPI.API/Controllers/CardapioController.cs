@@ -50,7 +50,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                IQueryable<MProduto> sql = this.context.Produto;
+                IQueryable<ProdutoModel> sql = this.context.Produto;
                 int codigo = 0;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
@@ -67,7 +67,7 @@ namespace OrderAPI.API.Controllers
                         .Where((e) => e.Favoritos.Any((fav) => fav.UsuarioCodigo == codigo && fav.Status == true));
                 }
                 
-                List<MProduto> produtos = sql
+                List<ProdutoModel> produtos = sql
                     .Include((e) => e.Categoria)
                     .Include((e) => e.Favoritos)
                     .Where((e) => e.Status == true)
@@ -147,7 +147,7 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(http.Code, http);
                     }
 
-                    MFavorito favorito = new MFavorito() 
+                    FavoritoModel favorito = new FavoritoModel() 
                     {
                         Produto = produto,
                         Usuario = usuario

@@ -11,8 +11,8 @@ namespace OrderAPI.API.Profiles
     public class PedidoProfile : Profile
     {
         public PedidoProfile() {
-            CreateMap<MPedido, ConsultarPedidoSimplesResponse>();
-            CreateMap<MPedido, ConsultarPedidoResponse>();
+            CreateMap<PedidoModel, ConsultarPedidoSimplesResponse>();
+            CreateMap<PedidoModel, ConsultarPedidoResponse>();
         }
     }
 }

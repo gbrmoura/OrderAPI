@@ -59,7 +59,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MFuncionario funcionario = this.mapper.Map<MFuncionario>(body);
+                FuncionarioModel funcionario = this.mapper.Map<FuncionarioModel>(body);
                 funcionario.Token = Guid.NewGuid();
                 funcionario.Senha = this.password.EncryptPassword(funcionario.Senha);
                 funcionario.Previlegio = PrevilegioEnum.MASTER;
@@ -101,7 +101,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MUsuario usuario = this.context.Usuario
+                UsuarioModel usuario = this.context.Usuario
                     .Where((e) => e.Email.Equals(body.Login))
                     .SingleOrDefault();
 
@@ -141,7 +141,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 } 
 
-                MFuncionario funcionario = this.context.Funcionario
+                FuncionarioModel funcionario = this.context.Funcionario
                     .Where((e) => e.Login.Equals(body.Login))
                     .SingleOrDefault();
             

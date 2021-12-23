@@ -82,7 +82,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MControleEstoque controle = new MControleEstoque()
+                ControleEstoqueModel controle = new ControleEstoqueModel()
                 {
                     Produto = produto,
                     Quantidade = body.Quantidade,
@@ -138,7 +138,7 @@ namespace OrderAPI.API.Controllers
             try
             {
 
-                IQueryable<MControleEstoque> sql = this.context.ControleEstoque;
+                IQueryable<ControleEstoqueModel> sql = this.context.ControleEstoque;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 

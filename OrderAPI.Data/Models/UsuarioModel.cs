@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MUsuario 
+    public class UsuarioModel 
     {
         [Key]
         public int Codigo { get; set; }
@@ -29,7 +29,7 @@ namespace OrderAPI.Data.Models
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Email { get; set; }
         public Guid Token { get; set; }
-        public List<MFavorito> Favoritos { get; set; }
+        public List<FavoritoModel> Favoritos { get; set; }
         private bool _status = true;
         public bool Status
         {

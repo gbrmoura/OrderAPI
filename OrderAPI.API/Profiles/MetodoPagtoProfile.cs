@@ -8,9 +8,9 @@ namespace OrderAPI.API.Profiles {
     public class MetodoPagtoProfile : Profile {
 
         public MetodoPagtoProfile() {
-            CreateMap<CriarMetodoPagtoRequest, MMetodoPagamento>();
-            CreateMap<AlterarMetodoPagtoRequest, MMetodoPagamento>();
-            CreateMap<MMetodoPagamento, ConsultarMetodoPagtoResponse>();
+            CreateMap<CriarMetodoPagtoRequest, MetodoPagamentoModel>();
+            CreateMap<AlterarMetodoPagtoRequest, MetodoPagamentoModel>();
+            CreateMap<MetodoPagamentoModel, ConsultarMetodoPagtoResponse>();
         }
     }
 }

@@ -7,18 +7,18 @@ using System.Threading.Tasks;
 
 namespace OrderAPI.Data.Models
 {
-    public class MFavorito
+    public class FavoritoModel
     {
         [Key]
         public int Codigo { get; set; }
         
         [ForeignKey("Produto")]
         public int ProdutoCodigo { get; set; }
-        public MProduto Produto { get; set; }
+        public ProdutoModel Produto { get; set; }
 
         [ForeignKey("Usuario")]
         public int UsuarioCodigo { get; set; }
-        public MUsuario Usuario { get; set; }
+        public UsuarioModel Usuario { get; set; }
         private bool _status = true;
         public bool Status
         {

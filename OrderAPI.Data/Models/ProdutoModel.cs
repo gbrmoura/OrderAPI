@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MProduto 
+    public class ProdutoModel 
     {
         [Key]
         public int Codigo { get; set; }
@@ -25,12 +25,12 @@ namespace OrderAPI.Data.Models
 
         [ForeignKey("CategoriaCodigo")]
         public int CategoriaCodigo { get; set; }
-        public MCategoria Categoria { get; set; }
+        public CategoriaModel Categoria { get; set; }
 
         [ForeignKey("ImageCodigo")]
         public int ImageCodigo { get; set; }
-        public MImage Imagem { get; set; }
-        public List<MFavorito> Favoritos { get; set; }
+        public ImageModel Imagem { get; set; }
+        public List<FavoritoModel> Favoritos { get; set; }
         private bool _status = true;
         public bool Status
         {

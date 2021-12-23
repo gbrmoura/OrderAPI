@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MToken
+    public class TokenModel
     {
         [Key]
         public int Codigo { get; set; }

@@ -54,7 +54,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MMetodoPagamento pagto = this.mapper.Map<MMetodoPagamento>(body);
+                MetodoPagamentoModel pagto = this.mapper.Map<MetodoPagamentoModel>(body);
                 this.context.Add(pagto);
                 this.context.SaveChanges();
 
@@ -89,7 +89,7 @@ namespace OrderAPI.API.Controllers
             }
 
             try {
-                MMetodoPagamento pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = this.context.MetodoPagamento
                     .Where((e) => e.Codigo == body.Codigo)
                     .SingleOrDefault();
 
@@ -138,7 +138,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MMetodoPagamento pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = this.context.MetodoPagamento
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -186,7 +186,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MMetodoPagamento pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = this.context.MetodoPagamento
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -230,7 +230,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                IQueryable<MMetodoPagamento> sql = this.context.MetodoPagamento;
+                IQueryable<MetodoPagamentoModel> sql = this.context.MetodoPagamento;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>

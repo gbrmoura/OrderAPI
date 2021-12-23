@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MFuncionario 
+    public class FuncionarioModel 
     {
         [Key]
         public int Codigo { get; set; }

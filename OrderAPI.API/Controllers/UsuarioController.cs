@@ -46,7 +46,7 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                MUsuario usuario = this.context.Usuario
+                UsuarioModel usuario = this.context.Usuario
                     .Where(e => e.Email == body.Email)
                     .SingleOrDefault();
 
@@ -56,7 +56,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MUsuario usuarioDB = this.mapper.Map<MUsuario>(body);
+                UsuarioModel usuarioDB = this.mapper.Map<UsuarioModel>(body);
                 usuarioDB.Senha = this.password.EncryptPassword(usuarioDB.Senha);
                 usuarioDB.Token = Guid.NewGuid();
 

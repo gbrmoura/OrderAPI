@@ -8,10 +8,10 @@ namespace OrderAPI.API.Profiles {
     public class CategoriaProfile : Profile {
 
         public CategoriaProfile() {
-            CreateMap<CriarCategoriaRequest, MCategoria>();
-            CreateMap<AlterarCategoriaRequest, MCategoria>();
-            CreateMap<MCategoria, ConsultarCategoriaResponse>();
-            CreateMap<MCategoria, ConsultarCardapioCategoriaResponse>();
+            CreateMap<CriarCategoriaRequest, CategoriaModel>();
+            CreateMap<AlterarCategoriaRequest, CategoriaModel>();
+            CreateMap<CategoriaModel, ConsultarCategoriaResponse>();
+            CreateMap<CategoriaModel, ConsultarCardapioCategoriaResponse>();
         }
     }
 }

@@ -54,7 +54,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MCategoria categoria = this.mapper.Map<MCategoria>(body);
+                CategoriaModel categoria = this.mapper.Map<CategoriaModel>(body);
                 this.context.Categoria.Add(categoria);
                 this.context.SaveChanges();
 
@@ -90,7 +90,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MCategoria categoria = this.context.Categoria
+                CategoriaModel categoria = this.context.Categoria
                     .Where(e => e.Codigo == body.Codigo)
                     .SingleOrDefault();
 
@@ -140,7 +140,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MCategoria categoria = this.context.Categoria
+                CategoriaModel categoria = this.context.Categoria
                     .Where(e => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -188,7 +188,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MCategoria categoria = this.context.Categoria
+                CategoriaModel categoria = this.context.Categoria
                     .Where(e => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -233,7 +233,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                IQueryable<MCategoria> sql = this.context.Categoria;
+                IQueryable<CategoriaModel> sql = this.context.Categoria;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 

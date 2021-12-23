@@ -8,8 +8,8 @@ namespace OrderAPI.API.Profiles {
     public class FuncionarioProfile : Profile {
 
         public FuncionarioProfile() {
-            CreateMap<CriarFuncionarioMasterRequest, MFuncionario>();
-            CreateMap<CriarFuncionarioRequest, MFuncionario>();
+            CreateMap<CriarFuncionarioMasterRequest, FuncionarioModel>();
+            CreateMap<CriarFuncionarioRequest, FuncionarioModel>();
         }
     }
 }

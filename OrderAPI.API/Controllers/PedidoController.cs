@@ -82,7 +82,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 var errors = new List<ErrorResponse>();
-                var items = new List<MPedidoItem>();
+                var items = new List<PedidoItemModel>();
                 foreach (var item in body.Items)
                 {
                     var produto = this.context.Produto
@@ -107,7 +107,7 @@ namespace OrderAPI.API.Controllers
                         break;
                     }
 
-                    items.Add(new MPedidoItem() {
+                    items.Add(new PedidoItemModel() {
                         Produto = produto,
                         ProdutoCodigo = produto.Codigo,
                         Quantidade = item.Quantidade,
@@ -123,7 +123,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MPedido pedido = new MPedido()
+                PedidoModel pedido = new PedidoModel()
                 {
                     Data = DateTime.Now,
                     MetodoPagamento = pagto,
@@ -170,8 +170,8 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                IQueryable<MPedido> count = this.context.Pedido;
-                IQueryable<MPedido> sql = this.context.Pedido;
+                IQueryable<PedidoModel> count = this.context.Pedido;
+                IQueryable<PedidoModel> sql = this.context.Pedido;
 
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
@@ -235,7 +235,7 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                IQueryable<MPedido> sql = this.context.Pedido;
+                IQueryable<PedidoModel> sql = this.context.Pedido;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
                     var usuarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
@@ -309,7 +309,7 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                IQueryable<MPedido> sql = this.context.Pedido;
+                IQueryable<PedidoModel> sql = this.context.Pedido;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
                     var usuarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
@@ -363,7 +363,7 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                MPedido pedido = this.context.Pedido
+                PedidoModel pedido = this.context.Pedido
                     .Where((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO)
                     .SingleOrDefault();
                 

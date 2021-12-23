@@ -53,7 +53,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                var funcionario = this.mapper.Map<MFuncionario>(body);
+                var funcionario = this.mapper.Map<FuncionarioModel>(body);
                 funcionario.Senha = this.password.EncryptPassword(funcionario.Senha);
                 funcionario.Token = Guid.NewGuid();
 
