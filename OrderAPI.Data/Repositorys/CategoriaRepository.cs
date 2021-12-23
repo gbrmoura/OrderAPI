@@ -30,18 +30,23 @@ namespace OrderAPI.Data.Repositorys
 
         public async Task Delete(CategoriaModel categoria) 
         {
-            _context.Categoria.Remove(categoria);
+            categoria.Status = false;
+            _context.Categoria.Update(categoria);
             await _context.SaveChangesAsync();
         }
 
         public async Task<CategoriaModel> Get(int id) 
         {
-            return await _context.Categoria.FindAsync(id);
+            return await _context.Categoria
+                .Where(c => c.Codigo == id && c.Status == true)                
+                .SingleOrDefaultAsync();
         }
 
         public async Task<List<CategoriaModel>> GetAll() 
         {
-            return await _context.Categoria.ToListAsync();
+            return await _context.Categoria
+                .Where(c => c.Status == true)
+                .ToListAsync();
         }
 
         public async Task<List<CategoriaModel>> Search(string search) 
@@ -50,6 +55,7 @@ namespace OrderAPI.Data.Repositorys
                 .Where(c => c.Codigo.ToString().Contains(search) ||
                             c.Titulo.Contains(search) || 
                             c.Descricao.Contains(search))
+                .Where(c => c.Status == true)
                 .ToListAsync();
         }
 
