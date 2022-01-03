@@ -18,15 +18,15 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class MetodoPagamentoController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
 
         public MetodoPagamentoController(OrderAPIContext context, IMapper mapper, ModelService model)
         {   
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
         }
         
         [HttpPost("Registrar/")]
@@ -42,21 +42,21 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try 
             {
-                if (this.context.MetodoPagamento.Any((e) => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
+                if (_context.MetodoPagamento.Any((e) => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
                 {
                     http.Message = "Método de Pagamento já cadastrado!";
                     return StatusCode(http.Code, http);
                 }
 
-                MetodoPagamentoModel pagto = this.mapper.Map<MetodoPagamentoModel>(body);
-                this.context.Add(pagto);
-                this.context.SaveChanges();
+                MetodoPagamentoModel pagto = _mapper.Map<MetodoPagamentoModel>(body);
+                _context.Add(pagto);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Método de Pagamento cadastrado com sucesso!";
@@ -84,12 +84,12 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try {
-                MetodoPagamentoModel pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = _context.MetodoPagamento
                     .Where((e) => e.Codigo == body.Codigo)
                     .SingleOrDefault();
 
@@ -100,8 +100,8 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                this.mapper.Map(body, pagto);
-                this.context.SaveChanges();
+                _mapper.Map(body, pagto);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Método Pagto alterado com sucesso";
@@ -138,7 +138,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MetodoPagamentoModel pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = _context.MetodoPagamento
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -149,7 +149,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 pagto.Status = false;
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Método de Pagto deletada com sucesso";
@@ -186,7 +186,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                MetodoPagamentoModel pagto = this.context.MetodoPagamento
+                MetodoPagamentoModel pagto = _context.MetodoPagamento
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -199,7 +199,7 @@ namespace OrderAPI.API.Controllers
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Método de Pagto. encontrado.";
-                http.Response = this.mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
+                http.Response = _mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
                 return StatusCode(http.Code, http);
             }
             catch (Exception E) 
@@ -224,13 +224,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<MetodoPagamentoModel> sql = this.context.MetodoPagamento;
+                IQueryable<MetodoPagamentoModel> sql = _context.MetodoPagamento;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
@@ -246,8 +246,8 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = this.context.MetodoPagamento.Where(e => e.Status == true).Count(),
-                    Dados = this.mapper.Map<List<ConsultarMetodoPagtoResponse>>(result)
+                    NumeroRegistros = _context.MetodoPagamento.Where(e => e.Status == true).Count(),
+                    Dados = _mapper.Map<List<ConsultarMetodoPagtoResponse>>(result)
                 };
 
                 http.Code = StatusCodes.Status200OK;

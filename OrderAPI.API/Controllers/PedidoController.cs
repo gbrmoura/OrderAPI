@@ -20,14 +20,14 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class PedidoController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
         public PedidoController(OrderAPIContext context, IMapper mapper, ModelService model)
         {   
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
         }
 
         [HttpPost("Registrar/")]
@@ -43,7 +43,7 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid)
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
@@ -59,7 +59,7 @@ namespace OrderAPI.API.Controllers
             try
             {
                 var codigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
-                var usuario = this.context.Usuario
+                var usuario = _context.Usuario
                     .Where((x) => x.Codigo == codigo && x.Status == true)
                     .SingleOrDefault();
                 
@@ -70,7 +70,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                var pagto = this.context.MetodoPagamento
+                var pagto = _context.MetodoPagamento
                     .Where((x) => x.Codigo == body.MetodoPagamentoCodigo && x.Status == true)
                     .SingleOrDefault();
                 
@@ -85,7 +85,7 @@ namespace OrderAPI.API.Controllers
                 var items = new List<PedidoItemModel>();
                 foreach (var item in body.Items)
                 {
-                    var produto = this.context.Produto
+                    var produto = _context.Produto
                         .Where((x) => x.Codigo == item.ProdutoCodigo && x.Status == true)
                         .SingleOrDefault();
                     
@@ -135,8 +135,8 @@ namespace OrderAPI.API.Controllers
                     Items = items
                 };
 
-                this.context.Pedido.Add(pedido);
-                this.context.SaveChanges();
+                _context.Pedido.Add(pedido);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido criado com sucesso.";
@@ -164,14 +164,14 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid)
             {
                 response.Message = "Parametros Ausentes.";
-                response.Error = this.model.ErrorConverter(ModelState);
+                response.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(response.Code, response);
             }
             
             try
             {
-                IQueryable<PedidoModel> count = this.context.Pedido;
-                IQueryable<PedidoModel> sql = this.context.Pedido;
+                IQueryable<PedidoModel> count = _context.Pedido;
+                IQueryable<PedidoModel> sql = _context.Pedido;
 
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
@@ -186,7 +186,7 @@ namespace OrderAPI.API.Controllers
                 {
                     var codigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
 
-                    if (!this.context.Usuario.Any((e) => e.Codigo == codigo && e.Status == true)) 
+                    if (!_context.Usuario.Any((e) => e.Codigo == codigo && e.Status == true)) 
                     {
                         response.Code = StatusCodes.Status401Unauthorized;
                         response.Message = "Usuario não encontrado.";
@@ -206,7 +206,7 @@ namespace OrderAPI.API.Controllers
                 ListarResponse list = new ListarResponse 
                 {
                     NumeroRegistros = count.Where((e) => e.Status == query.Status).Count(),
-                    Dados = this.mapper.Map<List<ConsultarPedidoSimplesResponse>>(dados)
+                    Dados = _mapper.Map<List<ConsultarPedidoSimplesResponse>>(dados)
                 };
 
                 response.Code = StatusCodes.Status200OK;
@@ -235,11 +235,11 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                IQueryable<PedidoModel> sql = this.context.Pedido;
+                IQueryable<PedidoModel> sql = _context.Pedido;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
                     var usuarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
-                    if (!this.context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
+                    if (!_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
                     {
                         http.Code = StatusCodes.Status401Unauthorized;
                         http.Message = "Usuario não encontrado.";
@@ -260,15 +260,15 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
                 
-                var response = this.mapper.Map<ConsultarPedidoResponse>(pedido);
+                var response = _mapper.Map<ConsultarPedidoResponse>(pedido);
 
-                var pagto = this.context.MetodoPagamento
+                var pagto = _context.MetodoPagamento
                     .Where((e) => e.Codigo == pedido.MetodoPagamentoCodigo)
                     .SingleOrDefault();
                 
-                response.MetodoPagamento = this.mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
+                response.MetodoPagamento = _mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
 
-                var items = this.context.PedidoItem
+                var items = _context.PedidoItem
                     .Where((e) => e.PedidoCodigo == pedido.Codigo && e.Status == true)
                     .Include((e) => e.Produto)
                     .ToList();
@@ -309,11 +309,11 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                IQueryable<PedidoModel> sql = this.context.Pedido;
+                IQueryable<PedidoModel> sql = _context.Pedido;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
                     var usuarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
-                    if (!this.context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
+                    if (!_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true)) 
                     {
                         http.Code = StatusCodes.Status401Unauthorized;
                         http.Message = "Usuario não encontrado.";
@@ -336,7 +336,7 @@ namespace OrderAPI.API.Controllers
                 }
                 
                 pedido.Status = PedidoStatusEnum.CANCELADO;
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido cancelado.";             
@@ -363,7 +363,7 @@ namespace OrderAPI.API.Controllers
             
             try
             {
-                PedidoModel pedido = this.context.Pedido
+                PedidoModel pedido = _context.Pedido
                     .Where((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO)
                     .SingleOrDefault();
                 
@@ -375,7 +375,7 @@ namespace OrderAPI.API.Controllers
                 }
                 
                 pedido.Status = PedidoStatusEnum.RETIRADO;
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido retirado.";             

@@ -18,19 +18,19 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class ProdutoController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
-        private FileService file;
-        private TokenService token;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
+        private FileService _file;
+        private TokenService _token;
 
         public ProdutoController(OrderAPIContext context, IMapper mapper, ModelService model, FileService file, TokenService token)
         {   
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
-            this.file = file;
-            this.token = token;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
+            _file = file;
+            _token = token;
         }
 
         [HttpPost("Registrar/")]
@@ -46,11 +46,11 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
-            if (!this.file.IsValidBase64(body.Imagem)) 
+            if (!_file.IsValidBase64(body.Imagem)) 
             {   
                 http.Message = "Imagem é invalida.";
                 http.Error = new List<ErrorResponse>()
@@ -62,13 +62,13 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                if (this.context.Produto.Any(x => x.Titulo.Equals(body.Titulo) && x.Status == true)) 
+                if (_context.Produto.Any(x => x.Titulo.Equals(body.Titulo) && x.Status == true)) 
                 {
                     http.Message = "Produto ja cadastrado.";
                     return StatusCode(http.Code, http);
                 }
 
-                var categoria = this.context.Categoria.FirstOrDefault((e) => e.Codigo == body.CategoriaCodigo);
+                var categoria = _context.Categoria.FirstOrDefault((e) => e.Codigo == body.CategoriaCodigo);
                 if (categoria == null) 
                 {
                     http.Message = "Categoria não encontrada.";
@@ -84,7 +84,7 @@ namespace OrderAPI.API.Controllers
                 };
 
                 var name = Guid.NewGuid().ToString();
-                var path = this.file.SaveFile(body.Imagem, name, "png");
+                var path = _file.SaveFile(body.Imagem, name, "png");
                 ImageModel image = new ImageModel() 
                 {
                     Produto = produto,
@@ -93,8 +93,8 @@ namespace OrderAPI.API.Controllers
                     Caminho = path,
                 };
 
-                this.context.Image.Add(image);
-                this.context.SaveChanges();
+                _context.Image.Add(image);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Produto cadastrado com sucesso.";
@@ -122,13 +122,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try
             {
-                var produto = this.context.Produto
+                var produto = _context.Produto
                     .Include(x => x.Imagem)
                     .Where((e) => e.Codigo == body.Codigo)
                     .Where((e) => e.Status == true)
@@ -141,7 +141,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                var categoria = this.context.Categoria
+                var categoria = _context.Categoria
                     .Where((e) => e.Codigo == body.CategoriaCodigo)
                     .SingleOrDefault();
 
@@ -156,16 +156,16 @@ namespace OrderAPI.API.Controllers
                 produto.Valor = body.Valor;
                 produto.Categoria = categoria;
                 
-                if (this.file.IsValidBase64(body.Imagem))
+                if (_file.IsValidBase64(body.Imagem))
                 {   
-                    var imagem = this.context.Image.SingleOrDefault(e => e.Codigo == produto.Imagem.Codigo);
-                    var caminho = this.file.SaveFile(body.Imagem, imagem.Nome, imagem.Extensao);
+                    var imagem = _context.Image.SingleOrDefault(e => e.Codigo == produto.Imagem.Codigo);
+                    var caminho = _file.SaveFile(body.Imagem, imagem.Nome, imagem.Extensao);
 
                     imagem.Caminho = caminho;
                     imagem.Produto = produto;
                 }
 
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Produto alterado com sucesso.";
@@ -202,7 +202,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                var produto = this.context.Produto
+                var produto = _context.Produto
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -213,7 +213,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 produto.Status = false;
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Produto deletado com sucesso.";
@@ -250,7 +250,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                var produto = this.context.Produto
+                var produto = _context.Produto
                     .Include((e) => e.Categoria)
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
@@ -264,7 +264,7 @@ namespace OrderAPI.API.Controllers
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Produto encontrado.";
-                http.Response = this.mapper.Map<ConsultarProdutoResponse>(produto);
+                http.Response = _mapper.Map<ConsultarProdutoResponse>(produto);
                 return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
@@ -289,13 +289,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<ProdutoModel> sql = this.context.Produto;
+                IQueryable<ProdutoModel> sql = _context.Produto;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) =>
@@ -314,8 +314,8 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = this.context.Produto.Where(e => e.Status == true).Count(),
-                    Dados = this.mapper.Map<List<ConsultarProdutoResponse>>(produtos)
+                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
+                    Dados = _mapper.Map<List<ConsultarProdutoResponse>>(produtos)
                 };
 
                 http.Code = StatusCodes.Status200OK;
@@ -345,16 +345,16 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
-            if (!this.token.IsValidRefreshToken(query.RefreshToken, query.Token))
+            if (!_token.IsValidRefreshToken(query.RefreshToken, query.Token))
                 return StatusCode(http.Code);
 
             try
             {
-                var image = this.context.Image
+                var image = _context.Image
                     .Include(e => e.Produto)
                     .Where(e => e.ProductCodigo == query.Codigo)
                     .SingleOrDefault();

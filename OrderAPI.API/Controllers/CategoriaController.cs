@@ -18,15 +18,15 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class CategoriaController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
 
         public CategoriaController(OrderAPIContext context, IMapper mapper, ModelService model)
         {   
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
         }
 
         [HttpPost("Registrar/")]
@@ -42,21 +42,21 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try 
             {
-                if (this.context.Categoria.Any(e => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
+                if (_context.Categoria.Any(e => e.Titulo.Equals(body.Titulo) && e.Status == true)) 
                 {
                     http.Message = "Categoria ja cadastrada";
                     return StatusCode(http.Code, http);
                 }
 
-                CategoriaModel categoria = this.mapper.Map<CategoriaModel>(body);
-                this.context.Categoria.Add(categoria);
-                this.context.SaveChanges();
+                CategoriaModel categoria = _mapper.Map<CategoriaModel>(body);
+                _context.Categoria.Add(categoria);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Categoria cadastrada com sucesso";
@@ -84,13 +84,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }   
 
             try 
             {
-                CategoriaModel categoria = this.context.Categoria
+                CategoriaModel categoria = _context.Categoria
                     .Where(e => e.Codigo == body.Codigo)
                     .SingleOrDefault();
 
@@ -101,8 +101,8 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                this.mapper.Map(body, categoria);
-                this.context.SaveChanges();
+                _mapper.Map(body, categoria);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Categoria alterada com sucesso";
@@ -140,7 +140,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                CategoriaModel categoria = this.context.Categoria
+                CategoriaModel categoria = _context.Categoria
                     .Where(e => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -151,7 +151,7 @@ namespace OrderAPI.API.Controllers
                 }
 
                 categoria.Status = false;
-                this.context.SaveChanges();
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Categoria deletada com sucesso";
@@ -188,7 +188,7 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
-                CategoriaModel categoria = this.context.Categoria
+                CategoriaModel categoria = _context.Categoria
                     .Where(e => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -201,7 +201,7 @@ namespace OrderAPI.API.Controllers
                 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Categoria encontrada.";
-                http.Response = this.mapper.Map<ConsultarCategoriaResponse>(categoria);;
+                http.Response = _mapper.Map<ConsultarCategoriaResponse>(categoria);;
                 return StatusCode(http.Code, http);
             } 
             catch (Exception E) 
@@ -227,13 +227,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try 
             {
-                IQueryable<CategoriaModel> sql = this.context.Categoria;
+                IQueryable<CategoriaModel> sql = _context.Categoria;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 
@@ -250,8 +250,8 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = this.context.Categoria.Where(e => e.Status == true).Count(),
-                    Dados = this.mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
+                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
+                    Dados = _mapper.Map<List<ConsultarCategoriaResponse>>(categorias)
                 };
 
                 http.Code = StatusCodes.Status200OK;

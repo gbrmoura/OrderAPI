@@ -14,17 +14,17 @@ namespace OrderAPI.API.Controllers
     [Route("api/Autenticacao/[controller]/")]
     public class UsuarioController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
-        private PasswordService password;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
+        private PasswordService _password;
 
         public UsuarioController(OrderAPIContext context, IMapper mapper, ModelService model, PasswordService password)
         {
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
-            this.password = password;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
+            _password = password;
         }
 
         [HttpPost("Registrar/")]
@@ -40,13 +40,13 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid)
             {
                 http.Message = "Parametros Ausentes!";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try
             {
-                UsuarioModel usuario = this.context.Usuario
+                UsuarioModel usuario = _context.Usuario
                     .Where(e => e.Email == body.Email)
                     .SingleOrDefault();
 
@@ -56,12 +56,12 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                UsuarioModel usuarioDB = this.mapper.Map<UsuarioModel>(body);
-                usuarioDB.Senha = this.password.EncryptPassword(usuarioDB.Senha);
+                UsuarioModel usuarioDB = _mapper.Map<UsuarioModel>(body);
+                usuarioDB.Senha = _password.EncryptPassword(usuarioDB.Senha);
                 usuarioDB.Token = Guid.NewGuid();
 
-                this.context.Usuario.Add(usuarioDB);
-                this.context.SaveChanges();
+                _context.Usuario.Add(usuarioDB);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Usuario cadastrado com sucesso!";
