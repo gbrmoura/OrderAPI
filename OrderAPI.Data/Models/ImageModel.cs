@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MImage
+    public class ImageModel
     {
         [Key]
         public int Codigo { get; set; }
@@ -23,7 +23,7 @@ namespace OrderAPI.Data.Models
         
         [ForeignKey("Produto")]
         public int ProductCodigo { get; set; }
-        public MProduto Produto { get; set; }
+        public ProdutoModel Produto { get; set; }
         private bool _status = true;
         public bool Status
         {

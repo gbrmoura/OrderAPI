@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 namespace OrderAPI.Data.Models 
 {
 
-    public class MCategoria 
+    public class CategoriaModel 
     {
         [Key]
         public int Codigo { get; set; }
@@ -17,7 +17,7 @@ namespace OrderAPI.Data.Models
 
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
         public string Descricao { get; set; }
-        public List<MProduto> Produtos { get; set; }
+        public List<ProdutoModel> Produtos { get; set; }
 
         private bool _status = true;
         public bool Status

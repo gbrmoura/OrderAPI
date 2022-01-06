@@ -15,17 +15,17 @@ namespace OrderAPI.API.Controllers
     [Route("api/Autenticacao/[controller]/")]
     public class FuncionarioController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
-        private PasswordService password;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
+        private PasswordService _password;
 
         public FuncionarioController(OrderAPIContext context, IMapper mapper, ModelService model, PasswordService password)
         {
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
-            this.password = password;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
+            _password = password;
         }
 
         [HttpPost("Registrar/")]
@@ -41,24 +41,24 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid)
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try
             {
-                if (this.context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
+                if (_context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
                 {
                     http.Message = "Funcionario já cadastrado.";
                     return StatusCode(http.Code, http);
                 }
 
-                var funcionario = this.mapper.Map<MFuncionario>(body);
-                funcionario.Senha = this.password.EncryptPassword(funcionario.Senha);
+                var funcionario = _mapper.Map<FuncionarioModel>(body);
+                funcionario.Senha = _password.EncryptPassword(funcionario.Senha);
                 funcionario.Token = Guid.NewGuid();
 
-                this.context.Funcionario.Add(funcionario);
-                this.context.SaveChanges();
+                _context.Funcionario.Add(funcionario);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status201Created;
                 http.Message = "Funcionario cadastrado com sucesso.";

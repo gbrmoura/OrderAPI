@@ -8,11 +8,11 @@ namespace OrderAPI.API.Profiles {
     public class ProdutoProfile : Profile {
 
         public ProdutoProfile() {
-            CreateMap<CriarProdutoRequest, MProduto>();   
-            CreateMap<AlterarProdutoRequest, MProduto>();
-            CreateMap<MProduto, ConsultarProdutoResponse>();
-            CreateMap<MProduto, ConsultarProdutoSimplesResponse>();
-            CreateMap<MProduto, ConsultarCardapioProdutoResponse>();
+            CreateMap<CriarProdutoRequest, ProdutoModel>();   
+            CreateMap<AlterarProdutoRequest, ProdutoModel>();
+            CreateMap<ProdutoModel, ConsultarProdutoResponse>();
+            CreateMap<ProdutoModel, ConsultarProdutoSimplesResponse>();
+            CreateMap<ProdutoModel, ConsultarCardapioProdutoResponse>();
         }
 
     }

@@ -6,7 +6,7 @@ using OrderAPI.Data.Helpers;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MPedido 
+    public class PedidoModel 
     {
         [Key]
         [Required(ErrorMessage = "Numero deve ser informado")]
@@ -22,14 +22,14 @@ namespace OrderAPI.Data.Models
         [ForeignKey("Usuario")]
         public int UsuarioCodigo { get; set; }
 
-        public MUsuario Usuario { get; set; }
+        public UsuarioModel Usuario { get; set; }
 
         [ForeignKey("MetodoPagamento")]
         public int MetodoPagamentoCodigo { get; set; }
 
-        public MMetodoPagamento MetodoPagamento { get; set; }
+        public MetodoPagamentoModel MetodoPagamento { get; set; }
 
-        public List<MPedidoItem> Items { get; set; }
+        public List<PedidoItemModel> Items { get; set; }
 
         public PedidoStatusEnum Status { get; set; }
     }

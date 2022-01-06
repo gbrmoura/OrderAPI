@@ -11,56 +11,56 @@ namespace OrderAPI.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
-            modelBuilder.Entity<MCategoria>()
+            modelBuilder.Entity<CategoriaModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<MFuncionario>()
+            modelBuilder.Entity<FuncionarioModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<MMetodoPagamento>()
+            modelBuilder.Entity<MetodoPagamentoModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<MPedidoItem>()
+            modelBuilder.Entity<PedidoItemModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
             
-            modelBuilder.Entity<MProduto>()
+            modelBuilder.Entity<ProdutoModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<MUsuario>()
+            modelBuilder.Entity<UsuarioModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
             
-            modelBuilder.Entity<MControleEstoque>()
+            modelBuilder.Entity<ControleEstoqueModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
-            modelBuilder.Entity<MImage>()
+            modelBuilder.Entity<ImageModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
             
-            modelBuilder.Entity<MFavorito>()
+            modelBuilder.Entity<FavoritoModel>()
                 .Property(p => p.Status)
                 .HasDefaultValue(1);
 
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<MUsuario> Usuario { get; set; }
-        public DbSet<MFuncionario> Funcionario { get; set; }
-        public DbSet<MCategoria> Categoria { get; set; }
-        public DbSet<MPedido> Pedido { get; set; }
-        public DbSet<MPedidoItem> PedidoItem { get; set; }
-        public DbSet<MProduto> Produto { get; set; }
-        public DbSet<MMetodoPagamento> MetodoPagamento { get; set; }
-        public DbSet<MControleEstoque> ControleEstoque { get; set; }
-        public DbSet<MImage> Image { get; set; }
-        public DbSet<MToken> Token { get; set; }
-        public DbSet<MFavorito> Favorito { get; set; }
+        public DbSet<UsuarioModel> Usuario { get; set; }
+        public DbSet<FuncionarioModel> Funcionario { get; set; }
+        public DbSet<CategoriaModel> Categoria { get; set; }
+        public DbSet<PedidoModel> Pedido { get; set; }
+        public DbSet<PedidoItemModel> PedidoItem { get; set; }
+        public DbSet<ProdutoModel> Produto { get; set; }
+        public DbSet<MetodoPagamentoModel> MetodoPagamento { get; set; }
+        public DbSet<ControleEstoqueModel> ControleEstoque { get; set; }
+        public DbSet<ImageModel> Image { get; set; }
+        public DbSet<TokenModel> Token { get; set; }
+        public DbSet<FavoritoModel> Favorito { get; set; }
 
     }
 }

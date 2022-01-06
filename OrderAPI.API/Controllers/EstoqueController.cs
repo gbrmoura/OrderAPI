@@ -20,17 +20,17 @@ namespace OrderAPI.API.Controllers
     [Route("api/Produto/")]
     public class EstoqueController : ControllerBase
     {
-        private OrderAPIContext context;
-        private IMapper mapper;
-        private ModelService model;
-        private UtilsService utils;
+        private OrderAPIContext _context;
+        private IMapper _mapper;
+        private ModelService _model;
+        private UtilsService _utils;
 
         public EstoqueController(OrderAPIContext context, IMapper mapper, ModelService model, UtilsService utils)
         {
-            this.context = context;
-            this.mapper = mapper;
-            this.model = model;
-            this.utils = utils;
+            _context = context;
+            _mapper = mapper;
+            _model = model;
+            _utils = utils;
         }
 
         [HttpPost("Controle/")]
@@ -46,11 +46,11 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
-            if (!this.utils.CompareStrings(body.Tipo, new string[]{ "ENTRADA", "SAIDA" }))
+            if (!_utils.CompareStrings(body.Tipo, new string[]{ "ENTRADA", "SAIDA" }))
             {
                 http.Message = "Tipo de operação inválida. ";
                 http.Error = new List<ErrorResponse>() {
@@ -62,7 +62,7 @@ namespace OrderAPI.API.Controllers
             try
             {
                 var funcionarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
-                var funcionario = this.context.Funcionario
+                var funcionario = _context.Funcionario
                     .Where(x => x.Codigo == funcionarioCodigo && x.Status == true)
                     .SingleOrDefault();
                     
@@ -72,7 +72,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                var produto = this.context.Produto
+                var produto = _context.Produto
                     .Where(x => x.Codigo == body.ProdutoCodigo && x.Status == true)
                     .SingleOrDefault();
 
@@ -82,7 +82,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                MControleEstoque controle = new MControleEstoque()
+                ControleEstoqueModel controle = new ControleEstoqueModel()
                 {
                     Produto = produto,
                     Quantidade = body.Quantidade,
@@ -102,8 +102,8 @@ namespace OrderAPI.API.Controllers
                         break;
                 }
 
-                this.context.ControleEstoque.Add(controle);
-                this.context.SaveChanges();
+                _context.ControleEstoque.Add(controle);
+                _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Estoque registrado com sucesso.";
@@ -131,14 +131,14 @@ namespace OrderAPI.API.Controllers
             if (!ModelState.IsValid) 
             {
                 http.Message = "Parametros Ausentes.";
-                http.Error = this.model.ErrorConverter(ModelState);
+                http.Error = _model.ErrorConverter(ModelState);
                 return StatusCode(http.Code, http);
             }
 
             try
             {
 
-                IQueryable<MControleEstoque> sql = this.context.ControleEstoque;
+                IQueryable<ControleEstoqueModel> sql = _context.ControleEstoque;
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
                     sql = sql.Where((e) => 
@@ -179,7 +179,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = this.context.ControleEstoque.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = _context.ControleEstoque.Where(e => e.Status == true).Count(),
                     Dados = dados
                 };
 

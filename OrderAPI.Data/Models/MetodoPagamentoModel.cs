@@ -7,7 +7,7 @@ using System.ComponentModel;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MMetodoPagamento 
+    public class MetodoPagamentoModel 
     {
         [Key]
         public int Codigo { get; set; }

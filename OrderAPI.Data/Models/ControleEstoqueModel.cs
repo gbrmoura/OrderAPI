@@ -5,7 +5,7 @@ using OrderAPI.Data.Helpers;
 
 namespace OrderAPI.Data.Models 
 {
-    public class MControleEstoque 
+    public class ControleEstoqueModel 
     {
         [Key]
         public int Codigo { get; set; }
@@ -20,11 +20,11 @@ namespace OrderAPI.Data.Models
         
         [ForeignKey("Produto")]
         public int ProdutoCodigo { get; set; }
-        public MProduto Produto { get; set; }
+        public ProdutoModel Produto { get; set; }
 
         [ForeignKey("Funcionario")]
         public int FuncionarioCodigo { get; set; }
-        public MFuncionario Funcionario { get; set; }
+        public FuncionarioModel Funcionario { get; set; }
         private bool _status = true;
         public bool Status
         {

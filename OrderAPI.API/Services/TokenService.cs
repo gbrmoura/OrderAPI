@@ -67,7 +67,7 @@ namespace OrderAPI.API.Services
         
         public void SaveRefreshToken(Guid actor, string refreshToken, string token)
         {
-            var dbToken = new MToken() { 
+            var dbToken = new TokenModel() { 
                 Actor = actor, 
                 RefreshToken = refreshToken,
                 Token = token

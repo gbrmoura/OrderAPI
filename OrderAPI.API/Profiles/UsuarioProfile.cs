@@ -8,7 +8,7 @@ namespace OrderAPI.API.Profiles {
     public class UsuarioProfile : Profile {
 
         public UsuarioProfile() {
-            CreateMap<CriarUsuarioRequest, MUsuario>();
+            CreateMap<CriarUsuarioRequest, UsuarioModel>();
         }
     
     }
