@@ -50,8 +50,10 @@ namespace OrderAPI.API.Controllers
 
             try 
             {
+                var codigo = 0;
                 IQueryable<ProdutoModel> sql = _context.Produto;
-                int codigo = 0;
+                IQueryable<ProdutoModel> sqlCount = _context.Produto;
+                
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
                     codigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
@@ -62,9 +64,16 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(http.Code, http);
                     }
 
-                    sql = sql
-                        .Include(e => e.Favoritos)
-                        .Where((e) => e.Favoritos.Any((fav) => fav.UsuarioCodigo == codigo && fav.Status == true));
+                    if (query.Favorito)
+                    {
+                        sql = sql
+                            .Include(e => e.Favoritos)
+                            .Where((e) => e.Favoritos.Any((f) => f.UsuarioCodigo == codigo && f.Status == true));
+
+                        sqlCount = sqlCount
+                            .Include(e => e.Favoritos)
+                            .Where((e) => e.Favoritos.Any((f) => f.UsuarioCodigo == codigo && f.Status == true));
+                    }
                 }
                 
                 List<ProdutoModel> produtos = sql
@@ -73,6 +82,10 @@ namespace OrderAPI.API.Controllers
                     .Where((e) => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
+                    .ToList();
+
+                List<ProdutoModel> count = sqlCount
+                    .Where((e) => e.Status == true)
                     .ToList();
 
                 var dados = produtos.Select(e => new ConsultarCardapioProdutoResponse() {
@@ -91,7 +104,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Produto.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = count.Count,
                     Dados = dados
                 };
 
