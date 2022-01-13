@@ -17,7 +17,7 @@ using OrderAPI.API.EntensionMethods;
 
 namespace OrderAPI.API.Controllers
 {
-    [Route("api/Produto/")]
+    [Route("api/Estoque/")]
     public class EstoqueController : ControllerBase
     {
         private OrderAPIContext _context;
@@ -118,7 +118,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-        [HttpGet("ListarCrontole/")]
+        [HttpGet("Listar/")]
         [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
         public ActionResult<DefaultResponse> ListarControle([FromQuery] ListarRequest query)
         {
