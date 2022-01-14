@@ -148,6 +148,7 @@ namespace OrderAPI.API.Controllers
                         .Where((e) => 
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) || 
                             e.Funcionario.Nome.Contains(query.CampoPesquisa) ||
                             e.Produto.Titulo.Contains(query.CampoPesquisa));
@@ -158,6 +159,7 @@ namespace OrderAPI.API.Controllers
                         .Where((e) => 
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) ||
                             e.Funcionario.Nome.Contains(query.CampoPesquisa) ||
                             e.Produto.Titulo.Contains(query.CampoPesquisa));
