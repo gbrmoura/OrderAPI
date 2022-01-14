@@ -137,15 +137,32 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-
                 IQueryable<ControleEstoqueModel> sql = _context.ControleEstoque;
+                IQueryable<ControleEstoqueModel> sqlCount = _context.ControleEstoque;
+
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
-                    sql = sql.Where((e) => 
-                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
-                        e.Observacao.Contains(query.CampoPesquisa) || 
-                        e.Data.ToString().Contains(query.CampoPesquisa) || 
-                        e.Tipo.ToString().Contains(query.CampoPesquisa));
+                    sql = sql
+                        .Include(e => e.Funcionario)
+                        .Include(e => e.Produto)
+                        .Where((e) => 
+                            e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                            e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa) ||
+                            e.Data.ToString().Contains(query.CampoPesquisa) || 
+                            e.Funcionario.Nome.Contains(query.CampoPesquisa) ||
+                            e.Produto.Titulo.Contains(query.CampoPesquisa));
+
+                    sqlCount = sqlCount
+                        .Include(e => e.Funcionario)
+                        .Include(e => e.Produto)
+                        .Where((e) => 
+                            e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                            e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa) ||
+                            e.Data.ToString().Contains(query.CampoPesquisa) ||
+                            e.Funcionario.Nome.Contains(query.CampoPesquisa) ||
+                            e.Produto.Titulo.Contains(query.CampoPesquisa));
                 }
 
                 var estoque = sql
@@ -155,6 +172,10 @@ namespace OrderAPI.API.Controllers
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
+
+                var count = sqlCount
+                    .Where(e => e.Status == true)
+                    .Count();
 
                 var dados = estoque.Select(e => new ConsultarEstoqueResponse()
                 {
@@ -179,7 +200,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.ControleEstoque.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = count,
                     Dados = dados
                 };
 
