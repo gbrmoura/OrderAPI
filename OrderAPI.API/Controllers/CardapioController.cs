@@ -75,6 +75,25 @@ namespace OrderAPI.API.Controllers
                             .Where((e) => e.Favoritos.Any((f) => f.UsuarioCodigo == codigo && f.Status == true));
                     }
                 }
+
+                if (!String.IsNullOrEmpty(query.CampoPesquisa))
+                {
+                    sql = sql
+                        .Include(e => e.Categoria)
+                        .Where((e) => e.Titulo.Contains(query.CampoPesquisa) || 
+                            e.Descricao.Contains(query.CampoPesquisa) ||
+                            e.Valor.ToString().Contains(query.CampoPesquisa) ||
+                            e.Categoria.Titulo.Contains(query.CampoPesquisa) ||
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa));
+
+                    sqlCount = sqlCount
+                        .Include(e => e.Categoria)
+                        .Where((e) => e.Titulo.Contains(query.CampoPesquisa) || 
+                            e.Descricao.Contains(query.CampoPesquisa) ||
+                            e.Valor.ToString().Contains(query.CampoPesquisa) ||
+                            e.Categoria.Titulo.Contains(query.CampoPesquisa) ||
+                            e.Quantidade.ToString().Contains(query.CampoPesquisa));
+                }
                 
                 List<ProdutoModel> produtos = sql
                     .Include((e) => e.Categoria)
