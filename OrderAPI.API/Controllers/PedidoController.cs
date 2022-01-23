@@ -85,7 +85,7 @@ namespace OrderAPI.API.Controllers
                 var items = new List<PedidoItemModel>();
                 foreach (var item in body.Items)
                 {
-                    var produto = _context.Produto
+                    var produto = _context.Produto.AsNoTracking()
                         .Where((x) => x.Codigo == item.ProdutoCodigo && x.Status == true)
                         .SingleOrDefault();
 
@@ -109,6 +109,8 @@ namespace OrderAPI.API.Controllers
                         break;
                     }
 
+                    
+
                     items.Add(new PedidoItemModel()
                     {
                         Produto = produto,
@@ -116,6 +118,10 @@ namespace OrderAPI.API.Controllers
                         Quantidade = item.Quantidade,
                         Valor = (produto.Valor * item.Quantidade)
                     });
+
+                    produto.Quantidade -= item.Quantidade;
+                    _context.Produto.Update(produto);
+                
                 }
 
                 if (errors.Count > 0)
@@ -384,6 +390,13 @@ namespace OrderAPI.API.Controllers
                 {
                     http.Code = StatusCodes.Status404NotFound;
                     http.Message = "Pedido não encontrado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (pedido.Status == PedidoStatusEnum.CANCELADO)
+                {
+                    http.Code = StatusCodes.Status401Unauthorized;
+                    http.Message = "Pedido foi cancelado.";
                     return StatusCode(http.Code, http);
                 }
 
