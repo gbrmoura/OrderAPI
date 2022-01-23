@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace OrderAPI.API.HTTP {
+namespace OrderAPI.API.HTTP
+{
 
-    public class DefaultResponse {
+    public class DefaultResponse
+    {
         public int Code { get; set; }
         public String Message { get; set; }
         public Object Error { get; set; }

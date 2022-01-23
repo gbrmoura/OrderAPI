@@ -99,20 +99,20 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(http.Code, http);
             }
 
-            try 
+            try
             {
                 UsuarioModel usuario = _context.Usuario
                     .Where((e) => e.Email.Equals(body.Login))
                     .SingleOrDefault();
 
-                if (usuario != null) 
+                if (usuario != null)
                 {
                     if (!_password.VerifyPassword(body.Senha, usuario.Senha))
                     {
                         http.Message = "Senhas não conferem.";
                         return StatusCode(http.Code, http);
                     }
-                    
+
                     var userRefreshToken = _token.GenerateRefreshToken();
                     var userToken = _token.GenerateToken(new List<Claim>()
                     {
@@ -122,14 +122,15 @@ namespace OrderAPI.API.Controllers
                         new Claim("token", usuario.Token.ToString()),
                         new Claim(ClaimTypes.Role, "USUARIO"),
                     });
-                    
+
                     _token.DeleteRefreshToken(usuario.Token);
                     _token.SaveRefreshToken(usuario.Token, userRefreshToken, userToken);
                     _context.SaveChanges();
 
                     http.Code = StatusCodes.Status200OK;
                     http.Message = "Logado com sucesso.";
-                    http.Response = new {
+                    http.Response = new
+                    {
                         Codigo = usuario.Codigo,
                         Nome = usuario.Nome,
                         Sobrenome = usuario.Sobrenome,
@@ -139,12 +140,12 @@ namespace OrderAPI.API.Controllers
                         RefreshToken = userRefreshToken
                     };
                     return StatusCode(http.Code, http);
-                } 
+                }
 
                 FuncionarioModel funcionario = _context.Funcionario
                     .Where((e) => e.Login.Equals(body.Login))
                     .SingleOrDefault();
-            
+
                 if (funcionario != null)
                 {
                     if (!_password.VerifyPassword(body.Senha, funcionario.Senha))
@@ -163,20 +164,21 @@ namespace OrderAPI.API.Controllers
                         new Claim(ClaimTypes.Role, funcionario.Previlegio.ToString())
                     });
 
-                    
+
                     _token.DeleteRefreshToken(funcionario.Token);
                     _token.SaveRefreshToken(funcionario.Token, refreshToken, token);
                     _context.SaveChanges();
 
                     http.Code = StatusCodes.Status200OK;
                     http.Message = "Logado com sucesso.";
-                    http.Response = new {
+                    http.Response = new
+                    {
                         Codigo = funcionario.Codigo,
                         Nome = funcionario.Nome,
                         Login = funcionario.Login,
                         Previlegio = funcionario.Previlegio,
                         Token = token,
-                        RefreshToken = refreshToken 
+                        RefreshToken = refreshToken
                     };
 
                     return StatusCode(http.Code, http);
@@ -212,7 +214,7 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(http.Code, http);
             }
 
-            try 
+            try
             {
                 var claims = _token.GetPrincipalFromExpiredToken(body.Token).Claims;
                 var claim = claims.FirstOrDefault((x) => x.Type == "token");
@@ -234,7 +236,8 @@ namespace OrderAPI.API.Controllers
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Token Atualizado,";
-                http.Response = new {
+                http.Response = new
+                {
                     Token = newJwtToken,
                     RefreshToken = newRefreshToken
                 };
