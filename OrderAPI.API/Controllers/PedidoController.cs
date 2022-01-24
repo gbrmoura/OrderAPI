@@ -184,12 +184,29 @@ namespace OrderAPI.API.Controllers
 
                 if (!String.IsNullOrEmpty(query.CampoPesquisa))
                 {
-                    sql = sql.Where((e) =>
-                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
-                        e.Data.ToString().Contains(query.CampoPesquisa) ||
-                        e.Observacao.Contains(query.CampoPesquisa)
-                    );
+                    sql = sql
+                        .Include(x => x.Usuario)
+                        .Include(x => x.MetodoPagamento)
+                        .Where((e) =>
+                            e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                            e.Data.ToString().Contains(query.CampoPesquisa) ||
+                            e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Usuario.Nome.Contains(query.CampoPesquisa) ||
+                            e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
+                        );
+
+                    count = count
+                        .Include(x => x.Usuario)
+                        .Include(x => x.MetodoPagamento)
+                        .Where((e) =>
+                            e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                            e.Data.ToString().Contains(query.CampoPesquisa) ||
+                            e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Usuario.Nome.Contains(query.CampoPesquisa) ||
+                            e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
+                        );
                 }
+
 
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
@@ -202,20 +219,32 @@ namespace OrderAPI.API.Controllers
                         return StatusCode(response.Code, response);
                     }
 
-                    count = count.Where(e => e.UsuarioCodigo == codigo);
                     sql = sql.Where(e => e.UsuarioCodigo == codigo);
+                    count = count.Where(e => e.UsuarioCodigo == codigo);
                 }
-
+                
                 var dados = sql.Where(e => e.Status == query.Status)
+                    .Include(x => x.MetodoPagamento)
+                    .Include(x => x.Usuario)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .OrderBy(e => e.Codigo)
                     .ToList();
 
+                var result = dados.Select(x => new 
+                {
+                    Codigo = x.Codigo,
+                    Data = x.Data,
+                    Observacao = x.Observacao,
+                    MetodoPagamento = x.MetodoPagamento.Titulo,
+                    Usuario = x.Usuario.Nome,
+                    Status = x.Status.ToString()
+                }).ToList();
+
                 ListarResponse list = new ListarResponse
                 {
                     NumeroRegistros = count.Where((e) => e.Status == query.Status).Count(),
-                    Dados = _mapper.Map<List<ConsultarPedidoSimplesResponse>>(dados)
+                    Dados = result
                 };
 
                 response.Code = StatusCodes.Status200OK;
