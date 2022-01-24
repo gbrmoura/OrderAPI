@@ -234,7 +234,7 @@ namespace OrderAPI.API.Controllers
                 var result = dados.Select(x => new 
                 {
                     Codigo = x.Codigo,
-                    Data = x.Data,
+                    Data = x.Data.ToString("MM/dd/yyyy H:mm:ss"),
                     Observacao = x.Observacao,
                     MetodoPagamento = x.MetodoPagamento.Titulo,
                     Usuario = x.Usuario.Nome,
