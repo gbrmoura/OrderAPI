@@ -191,6 +191,7 @@ namespace OrderAPI.API.Controllers
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) ||
                             e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Status.ToString().Contains(query.CampoPesquisa) ||
                             e.Usuario.Nome.Contains(query.CampoPesquisa) ||
                             e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
                         );
@@ -201,7 +202,8 @@ namespace OrderAPI.API.Controllers
                         .Where((e) =>
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) ||
-                            e.Observacao.Contains(query.CampoPesquisa) || 
+                            e.Observacao.Contains(query.CampoPesquisa) ||
+                            e.Status.ToString().Contains(query.CampoPesquisa) ||
                             e.Usuario.Nome.Contains(query.CampoPesquisa) ||
                             e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
                         );
@@ -223,8 +225,7 @@ namespace OrderAPI.API.Controllers
                     count = count.Where(e => e.UsuarioCodigo == codigo);
                 }
                 
-                var dados = sql.Where(e => e.Status == query.Status)
-                    .Include(x => x.MetodoPagamento)
+                var dados = sql.Include(x => x.MetodoPagamento)
                     .Include(x => x.Usuario)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
