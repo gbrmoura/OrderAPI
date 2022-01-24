@@ -233,7 +233,7 @@ namespace OrderAPI.API.Controllers
                 var result = dados.Select(x => new 
                 {
                     Codigo = x.Codigo,
-                    Data = x.Data.ToString("MM/dd/yyyy H:mm:ss"),
+                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
                     Observacao = x.Observacao,
                     MetodoPagamento = x.MetodoPagamento.Titulo,
                     Usuario = x.Usuario.Nome,
@@ -286,45 +286,47 @@ namespace OrderAPI.API.Controllers
                     sql = sql.Where((e) => e.UsuarioCodigo == usuarioCodigo);
                 }
 
-                var pedido = sql
-                    .Where((e) => e.Codigo == codigo)
-                    .SingleOrDefault();
-
-                if (pedido == null)
+                if (!_context.Pedido.Any(x => x.Codigo == codigo))
                 {
                     http.Code = StatusCodes.Status404NotFound;
                     http.Message = "Pedido não encontrado.";
                     return StatusCode(http.Code, http);
                 }
 
-                var response = _mapper.Map<ConsultarPedidoResponse>(pedido);
 
-                var pagto = _context.MetodoPagamento
-                    .Where((e) => e.Codigo == pedido.MetodoPagamentoCodigo)
-                    .SingleOrDefault();
-
-                response.MetodoPagamento = _mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
-
-                var items = _context.PedidoItem
-                    .Where((e) => e.PedidoCodigo == pedido.Codigo && e.Status == true)
-                    .Include((e) => e.Produto)
+                var initialResult = sql.AsNoTracking()
+                    .Where(x => x.Codigo == codigo)
+                    .Include(x => x.MetodoPagamento)
+                    .Include(x => x.Usuario)
+                    .Include(x => x.Items)
+                        .ThenInclude(x => x.Produto)
                     .ToList();
 
-                items.ForEach((e) =>
+                var result = initialResult.Select(x => new
                 {
-                    response.Items.Add(new ConsultarPedidoItemResponse()
+                    Codigo = x.Codigo,
+                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Observacao = x.Observacao,
+                    Status = x.Status.ToString(),
+                    MetodoPagamento = new
                     {
-                        Codigo = e.Codigo,
-                        Titulo = e.Produto.Titulo,
-                        Descricao = e.Produto.Descricao,
-                        Quantidade = e.Quantidade,
-                        Valor = e.Valor
-                    });
+                        Codigo = x.MetodoPagamento.Codigo,
+                        Titulo = x.MetodoPagamento.Titulo
+                    },
+                    Items = x.Items.Select(y => new
+                    {
+                        Codigo = y.Codigo,
+                        Titulo = y.Produto.Titulo,
+                        Descricao = y.Produto.Descricao,
+                        Quatidade = y.Quantidade,
+                        ValorUnitario = y.Produto.Valor,
+                        ValorTotal = y.Valor
+                    })
                 });
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido encontrado com sucesso.";
-                http.Response = response;
+                http.Response = result;
                 return StatusCode(http.Code, http);
             }
             catch (Exception E)
