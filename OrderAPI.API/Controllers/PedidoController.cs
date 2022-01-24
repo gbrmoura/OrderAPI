@@ -191,7 +191,6 @@ namespace OrderAPI.API.Controllers
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) ||
                             e.Observacao.Contains(query.CampoPesquisa) || 
-                            e.Status.ToString().Contains(query.CampoPesquisa) ||
                             e.Usuario.Nome.Contains(query.CampoPesquisa) ||
                             e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
                         );
@@ -203,7 +202,6 @@ namespace OrderAPI.API.Controllers
                             e.Codigo.ToString().Contains(query.CampoPesquisa) ||
                             e.Data.ToString().Contains(query.CampoPesquisa) ||
                             e.Observacao.Contains(query.CampoPesquisa) ||
-                            e.Status.ToString().Contains(query.CampoPesquisa) ||
                             e.Usuario.Nome.Contains(query.CampoPesquisa) ||
                             e.MetodoPagamento.Titulo.Contains(query.CampoPesquisa)
                         );
