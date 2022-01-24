@@ -349,7 +349,6 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-
                 IQueryable<PedidoModel> sql = _context.Pedido;
                 if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
                 {
@@ -366,7 +365,6 @@ namespace OrderAPI.API.Controllers
 
                 var pedido = sql
                     .Where((e) => e.Codigo == codigo)
-                    .Where((e) => e.Status == PedidoStatusEnum.ABERTO)
                     .SingleOrDefault();
 
                 if (pedido == null)
@@ -380,6 +378,13 @@ namespace OrderAPI.API.Controllers
                 {
                     http.Code = StatusCodes.Status401Unauthorized;
                     http.Message = "Pedido já foi retirado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (pedido.Status == PedidoStatusEnum.CANCELADO)
+                {
+                    http.Code = StatusCodes.Status401Unauthorized;
+                    http.Message = "Pedido já foi cancelado";
                     return StatusCode(http.Code, http);
                 }
 
@@ -411,8 +416,22 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                PedidoModel pedido = _context.Pedido
-                    .Where((e) => e.Codigo == codigo && e.Status == PedidoStatusEnum.ABERTO)
+                IQueryable<PedidoModel> sql = _context.Pedido;
+                if (User.Identity.GetUsuarioPrivilegio() == PrevilegioEnum.USUARIO.ToString())
+                {
+                    var usuarioCodigo = Int32.Parse(User.Identity.GetUsuarioCodigo());
+                    if (!_context.Usuario.Any((e) => e.Codigo == usuarioCodigo && e.Status == true))
+                    {
+                        http.Code = StatusCodes.Status401Unauthorized;
+                        http.Message = "Usuario não encontrado.";
+                        return StatusCode(http.Code, http);
+                    }
+
+                    sql = sql.Where((e) => e.UsuarioCodigo == usuarioCodigo);
+                }
+
+                var pedido = sql
+                    .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
                 if (pedido == null)
@@ -425,7 +444,14 @@ namespace OrderAPI.API.Controllers
                 if (pedido.Status == PedidoStatusEnum.CANCELADO)
                 {
                     http.Code = StatusCodes.Status401Unauthorized;
-                    http.Message = "Pedido foi cancelado.";
+                    http.Message = "Pedido já foi cancelado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (pedido.Status == PedidoStatusEnum.RETIRADO)
+                {
+                    http.Code = StatusCodes.Status401Unauthorized;
+                    http.Message = "Pedido já foi retirado.";
                     return StatusCode(http.Code, http);
                 }
 
