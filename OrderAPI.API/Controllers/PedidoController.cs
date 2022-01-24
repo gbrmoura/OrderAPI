@@ -244,7 +244,7 @@ namespace OrderAPI.API.Controllers
 
                 ListarResponse list = new ListarResponse
                 {
-                    NumeroRegistros = count.Where((e) => e.Status == query.Status).Count(),
+                    NumeroRegistros = count.Count(),
                     Dados = result
                 };
 
