@@ -138,7 +138,7 @@ namespace OrderAPI.API.Controllers
                     MetodoPagamento = pagto,
                     MetodoPagamentoCodigo = pagto.Codigo,
                     Status = Data.Helpers.PedidoStatusEnum.ABERTO,
-                    Observacao = body.Obersavacao,
+                    Observacao = body.Observacao,
                     Usuario = usuario,
                     UsuarioCodigo = usuario.Codigo,
                     Items = items

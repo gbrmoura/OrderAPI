@@ -10,7 +10,7 @@ namespace OrderAPI.API.HTTP.Request
     public class PedidoRequest
     {
         [MaxLength(245, ErrorMessage = "O limite de 245 caractéres foi atingido.")]
-        public string Obersavacao { get; set; }
+        public string Observacao { get; set; }
         
         [ForeignKey("MetodoPagamento")]
         [Required(ErrorMessage = "Metodo de Pagamento Codigo deve ser informado.")]
