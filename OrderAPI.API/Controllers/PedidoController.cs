@@ -318,7 +318,7 @@ namespace OrderAPI.API.Controllers
                         Codigo = y.Codigo,
                         Titulo = y.Produto.Titulo,
                         Descricao = y.Produto.Descricao,
-                        Quatidade = y.Quantidade,
+                        Quantidade = y.Quantidade,
                         ValorUnitario = y.Produto.Valor,
                         ValorTotal = y.Valor
                     })
