@@ -316,6 +316,7 @@ namespace OrderAPI.API.Controllers
                     Items = x.Items.Select(y => new
                     {
                         Codigo = y.Codigo,
+                        ProdutoCodigo = y.ProdutoCodigo,
                         Titulo = y.Produto.Titulo,
                         Descricao = y.Produto.Descricao,
                         Quantidade = y.Quantidade,
