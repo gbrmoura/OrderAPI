@@ -322,7 +322,7 @@ namespace OrderAPI.API.Controllers
                         ValorUnitario = y.Produto.Valor,
                         ValorTotal = y.Valor
                     })
-                });
+                }).SingleOrDefault();
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido encontrado com sucesso.";
