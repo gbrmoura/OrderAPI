@@ -9,6 +9,7 @@ using OrderAPI.API.Services;
 using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
+using OrderAPI.API.HTTP.Response;
 
 namespace OrderAPI.API.Controllers
 {
@@ -72,5 +73,127 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(http.Code, http);
             }
         }
+
+        [HttpPost("Alterar/")]
+        [Authorize(Roles = "MASTER")]
+        public ActionResult<DefaultResponse> Alterar([FromBody] AlterarFuncionarioRequest body)
+        {
+            DefaultResponse http = new DefaultResponse()
+            {
+                Code = StatusCodes.Status403Forbidden,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = _model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
+
+            try
+            {
+                var funcionario = _context.Funcionario.FirstOrDefault(e => e.Codigo == body.Codigo);
+
+                if (funcionario == null)
+                {
+                    http.Message = "Funcionario não encontrado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (funcionario.Login.Equals(body.Login) && funcionario.Status == true)
+                {
+                    http.Message = "Funcionario já cadastrado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                funcionario.Nome = body.Nome;
+                funcionario.Email = body.Email;
+                funcionario.Login = body.Login;
+                funcionario.Previlegio = body.Previlegio;
+                funcionario.Status = true;
+
+                _context.Funcionario.Update(funcionario);
+                _context.SaveChanges();
+
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Funcionario alterado com sucesso.";
+                return StatusCode(http.Code, http);
+            }
+            catch (Exception E)
+            {
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
+            }
+        }
+
+        [HttpGet("Listar/")]
+        [Authorize(Roles = "MASTER, GERENTE, FUNCIONARIO")]
+        public ActionResult<DefaultResponse> Listar([FromQuery] ListarRequest query) 
+        {
+            DefaultResponse http = new DefaultResponse() 
+            {
+                Code = StatusCodes.Status401Unauthorized,
+                Message = "Rota não autorizada"
+            };
+            
+            if (!ModelState.IsValid) 
+            {
+                http.Message = "Parametros Ausentes";
+                http.Error = _model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
+
+            try 
+            {
+                IQueryable<FuncionarioModel> sql = _context.Funcionario;
+                if (!String.IsNullOrEmpty(query.CampoPesquisa))
+                {
+                    sql = sql.Where((e) => 
+                        e.Codigo.ToString().Contains(query.CampoPesquisa) ||
+                        e.Email.Contains(query.CampoPesquisa) || 
+                        e.Login.Contains(query.CampoPesquisa) || 
+                        e.Nome.Contains(query.CampoPesquisa));
+                }
+
+                var funcionarios = sql
+                    .Where(e => e.Status == true)
+                    .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
+                    .Take(query.TamanhoPagina)
+                    .ToList();
+
+                var result = funcionarios.Select(e => new 
+                {
+                    Codigo = e.Codigo,
+                    Nome = e.Nome,
+                    Email = e.Email,
+                    Login = e.Login,
+                    Previlegio = e.Previlegio,
+                    Status = e.Status
+                });
+
+                ListarResponse list = new ListarResponse 
+                {
+                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
+                    Dados = result
+                };
+
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Funcionario(s) encontrado(s).";
+                http.Response = list;
+                return StatusCode(http.Code, http);
+            } 
+            catch (Exception E) 
+            {
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor.";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
+            }
+        }
+
+
     }
 }

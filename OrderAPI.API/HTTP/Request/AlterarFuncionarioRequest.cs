@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using OrderAPI.Data.Helpers;
 
 namespace OrderAPI.API.HTTP.Request 
 {
-    public class CriarFuncionarioRequest 
+    public class AlterarFuncionarioRequest 
     {
+        [Key]
+        public int Codigo { get; set; }
+        
         [Required(ErrorMessage = "Nome deve ser informado.")]
         [MaxLength(115, ErrorMessage = "O limite de 115 caractéres foi atingido.")]
         public string Nome { get; set; }
