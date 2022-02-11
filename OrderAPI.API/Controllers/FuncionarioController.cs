@@ -158,6 +158,7 @@ namespace OrderAPI.API.Controllers
                         e.Nome.Contains(query.CampoPesquisa));
                 }
 
+                var count = sql.Where(e => e.Status == true).Count();
                 var funcionarios = sql
                     .Where(e => e.Status == true)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
@@ -170,13 +171,13 @@ namespace OrderAPI.API.Controllers
                     Nome = e.Nome,
                     Email = e.Email,
                     Login = e.Login,
-                    Previlegio = e.Previlegio,
+                    Previlegio = e.Previlegio.ToString(),
                     Status = e.Status
                 });
 
                 ListarResponse list = new ListarResponse 
                 {
-                    NumeroRegistros = _context.Categoria.Where(e => e.Status == true).Count(),
+                    NumeroRegistros = count, 
                     Dados = result
                 };
 
