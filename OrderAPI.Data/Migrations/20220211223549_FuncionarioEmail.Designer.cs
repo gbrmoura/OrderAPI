@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderAPI.Data;
 
 namespace OrderAPI.Data.Migrations
 {
     [DbContext(typeof(OrderAPIContext))]
-    partial class OrderAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20220211223549_FuncionarioEmail")]
+    partial class FuncionarioEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
