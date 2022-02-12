@@ -10,6 +10,7 @@ using OrderAPI.API.HTTP;
 using OrderAPI.API.HTTP.Request;
 using OrderAPI.Data.Models;
 using OrderAPI.API.HTTP.Response;
+using OrderAPI.API.EntensionMethods;
 
 namespace OrderAPI.API.Controllers
 {
@@ -101,7 +102,7 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                if (funcionario.Login.Equals(body.Login) && funcionario.Status == true)
+                if (!funcionario.Login.Equals(body.Login) && _context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
                 {
                     http.Message = "Funcionario já cadastrado.";
                     return StatusCode(http.Code, http);
@@ -171,7 +172,10 @@ namespace OrderAPI.API.Controllers
                     Nome = e.Nome,
                     Email = e.Email,
                     Login = e.Login,
-                    Previlegio = e.Previlegio.ToString(),
+                    Previlegio = new {
+                        Codigo = e.Previlegio,
+                        Descricao = e.Previlegio.ToString().ToLower().Capitalize()
+                    },
                     Status = e.Status
                 });
 
