@@ -136,6 +136,7 @@ namespace OrderAPI.API.Controllers
                         Sobrenome = usuario.Sobrenome,
                         Prontuario = usuario.Prontuario,
                         Email = usuario.Email,
+                        Previlegio = PrevilegioEnum.USUARIO,
                         Token = userToken,
                         RefreshToken = userRefreshToken
                     };
@@ -174,6 +175,7 @@ namespace OrderAPI.API.Controllers
                     http.Response = new
                     {
                         Codigo = funcionario.Codigo,
+                        Email = funcionario.Email,
                         Nome = funcionario.Nome,
                         Login = funcionario.Login,
                         Previlegio = funcionario.Previlegio,

@@ -10,6 +10,7 @@ namespace OrderAPI.API.Profiles {
         public FuncionarioProfile() {
             CreateMap<CriarFuncionarioMasterRequest, FuncionarioModel>();
             CreateMap<CriarFuncionarioRequest, FuncionarioModel>();
+            CreateMap<AlterarFuncionarioRequest, FuncionarioModel>();
         }
     }
 }
