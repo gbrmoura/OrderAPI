@@ -349,8 +349,11 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(http.Code, http);
             }
 
-            if (!_token.IsValidRefreshToken(query.RefreshToken, query.Token))
-                return StatusCode(http.Code);
+            if (!_token.IsValidCurrentToken(query.Token))
+            {
+                http.Message = "Token inválido.";
+                return StatusCode(http.Code, http);
+            }
 
             try
             {

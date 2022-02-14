@@ -40,6 +40,30 @@ namespace OrderAPI.API.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        public bool IsValidCurrentToken(string token)
+        {
+            var key = Encoding.ASCII.GetBytes(this.configuration.AccessTokenSecret);
+            var mySecurityKey = new SymmetricSecurityKey(key);
+
+            var tokenHandler = new JwtSecurityTokenHandler();
+            try
+            {
+                tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = mySecurityKey,
+                    ValidateIssuer = false,
+                    ValidateAudience = false,
+                    
+                }, out SecurityToken validatedToken);
+            }
+            catch
+            {
+                return false;
+            }
+
+            return true;
+        }
 
         public ClaimsPrincipal GetPrincipalFromExpiredToken(string token) 
         {

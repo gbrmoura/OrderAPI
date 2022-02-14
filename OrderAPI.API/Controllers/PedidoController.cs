@@ -207,15 +207,35 @@ namespace OrderAPI.API.Controllers
                 }
 
                 var dados = sql.Where(e => e.Status == query.Status)
+                    .Include(e => e.MetodoPagamento)
+                    .Include(e => e.Usuario)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .OrderBy(e => e.Codigo)
                     .ToList();
 
+                var result = dados.Select(x => new 
+                {
+                    Codigo = x.Codigo,
+                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Observacao = x.Observacao,
+                    Status = x.Status.ToString().ToLower().Capitalize(),
+                    MetodoPagamento = new 
+                    {
+                        Codigo = x.MetodoPagamento.Codigo,
+                        Titulo = x.MetodoPagamento.Titulo
+                    },
+                    Usuario = new 
+                    {
+                        Codigo = x.Usuario.Codigo,
+                        Nome = x.Usuario.Nome
+                    }
+                });
+
                 ListarResponse list = new ListarResponse
                 {
                     NumeroRegistros = count.Where((e) => e.Status == query.Status).Count(),
-                    Dados = _mapper.Map<List<ConsultarPedidoSimplesResponse>>(dados)
+                    Dados = result
                 };
 
                 response.Code = StatusCodes.Status200OK;
@@ -259,6 +279,10 @@ namespace OrderAPI.API.Controllers
                 }
 
                 var pedido = sql
+                    .Include(e => e.MetodoPagamento)
+                    .Include(e => e.Usuario)
+                    .Include(e => e.Items)
+                        .ThenInclude(e => e.Produto)
                     .Where((e) => e.Codigo == codigo)
                     .SingleOrDefault();
 
@@ -269,34 +293,39 @@ namespace OrderAPI.API.Controllers
                     return StatusCode(http.Code, http);
                 }
 
-                var response = _mapper.Map<ConsultarPedidoResponse>(pedido);
-
-                var pagto = _context.MetodoPagamento
-                    .Where((e) => e.Codigo == pedido.MetodoPagamentoCodigo)
-                    .SingleOrDefault();
-
-                response.MetodoPagamento = _mapper.Map<ConsultarMetodoPagtoResponse>(pagto);
-
-                var items = _context.PedidoItem
-                    .Where((e) => e.PedidoCodigo == pedido.Codigo && e.Status == true)
-                    .Include((e) => e.Produto)
-                    .ToList();
-
-                items.ForEach((e) =>
+                var result = new
                 {
-                    response.Items.Add(new ConsultarPedidoItemResponse()
+                    Codigo = pedido.Codigo,
+                    Data = pedido.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Observacao = pedido.Observacao,
+                    Status = pedido.Status.ToString().ToLower().Capitalize(),
+                    MetodoPagamento = new
+                    {
+                        Codigo = pedido.MetodoPagamento.Codigo,
+                        Titulo = pedido.MetodoPagamento.Titulo
+                    },
+                    Usuario = new
+                    {
+                        Codigo = pedido.Usuario.Codigo,
+                        Nome = pedido.Usuario.Nome
+                    },
+                    Items = pedido.Items.Select(e => new
                     {
                         Codigo = e.Codigo,
-                        Titulo = e.Produto.Titulo,
-                        Descricao = e.Produto.Descricao,
+                        Produto = new
+                        {
+                            Codigo = e.Produto.Codigo,
+                            Titulo = e.Produto.Titulo,
+                            Descricao = e.Produto.Descricao
+                        },
                         Quantidade = e.Quantidade,
                         Valor = e.Valor
-                    });
-                });
+                    })
+                };
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido encontrado com sucesso.";
-                http.Response = response;
+                http.Response = result;
                 return StatusCode(http.Code, http);
             }
             catch (Exception E)
