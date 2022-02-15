@@ -36,7 +36,7 @@ Por padrão, a seção de configuração `Email` esta vazia, para que o proprio 
     "DisplayName": ""
   }
 }
-´´´
+```
 
 ## Banco de Dados
 
