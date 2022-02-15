@@ -34,7 +34,7 @@ Para remover uma migração é necessario executar o comando `dotnet ef --startu
 ```
 Build started...
 Build succeeded.
-Removing migration '20220215002637_RecorverPassword'.
+Removing migration '****'.
 Reverting the model snapshot.
 Done.
 ```	
