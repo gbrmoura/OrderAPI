@@ -222,9 +222,10 @@ namespace OrderAPI.API.Controllers
                     sql = sql.Where(e => e.UsuarioCodigo == codigo);
                     count = count.Where(e => e.UsuarioCodigo == codigo);
                 }
-                
-                var dados = sql.Include(x => x.MetodoPagamento)
-                    .Include(x => x.Usuario)
+
+                var dados = sql.Where(e => e.Status == query.Status)
+                    .Include(e => e.MetodoPagamento)
+                    .Include(e => e.Usuario)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .OrderBy(e => e.Codigo)
@@ -235,14 +236,22 @@ namespace OrderAPI.API.Controllers
                     Codigo = x.Codigo,
                     Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
                     Observacao = x.Observacao,
-                    MetodoPagamento = x.MetodoPagamento.Titulo,
-                    Usuario = x.Usuario.Nome,
-                    Status = x.Status.ToString()
-                }).ToList();
+                    Status = x.Status.ToString().ToLower().Capitalize(),
+                    MetodoPagamento = new 
+                    {
+                        Codigo = x.MetodoPagamento.Codigo,
+                        Titulo = x.MetodoPagamento.Titulo
+                    },
+                    Usuario = new 
+                    {
+                        Codigo = x.Usuario.Codigo,
+                        Nome = x.Usuario.Nome
+                    }
+                });
 
                 ListarResponse list = new ListarResponse
                 {
-                    NumeroRegistros = count.Count(),
+                    NumeroRegistros = count.Where((e) => e.Status == query.Status).Count(),
                     Dados = result
                 };
 
@@ -286,44 +295,50 @@ namespace OrderAPI.API.Controllers
                     sql = sql.Where((e) => e.UsuarioCodigo == usuarioCodigo);
                 }
 
-                if (!_context.Pedido.Any(x => x.Codigo == codigo))
+                var pedido = sql
+                    .Include(e => e.MetodoPagamento)
+                    .Include(e => e.Usuario)
+                    .Include(e => e.Items)
+                        .ThenInclude(e => e.Produto)
+                    .Where((e) => e.Codigo == codigo)
+                    .SingleOrDefault();
+
+                if (pedido == null)
                 {
                     http.Code = StatusCodes.Status404NotFound;
                     http.Message = "Pedido não encontrado.";
                     return StatusCode(http.Code, http);
                 }
 
-
-                var initialResult = sql.AsNoTracking()
-                    .Where(x => x.Codigo == codigo)
-                    .Include(x => x.MetodoPagamento)
-                    .Include(x => x.Usuario)
-                    .Include(x => x.Items)
-                        .ThenInclude(x => x.Produto)
-                    .ToList();
-
-                var result = initialResult.Select(x => new
+                var result = new
                 {
-                    Codigo = x.Codigo,
-                    Data = x.Data.ToString("dd/MM/yyyy HH:mm:ss"),
-                    Observacao = x.Observacao,
-                    Status = x.Status.ToString(),
+                    Codigo = pedido.Codigo,
+                    Data = pedido.Data.ToString("dd/MM/yyyy HH:mm:ss"),
+                    Observacao = pedido.Observacao,
+                    Status = pedido.Status.ToString().ToLower().Capitalize(),
                     MetodoPagamento = new
                     {
-                        Codigo = x.MetodoPagamento.Codigo,
-                        Titulo = x.MetodoPagamento.Titulo
+                        Codigo = pedido.MetodoPagamento.Codigo,
+                        Titulo = pedido.MetodoPagamento.Titulo
                     },
-                    Items = x.Items.Select(y => new
+                    Usuario = new
                     {
-                        Codigo = y.Codigo,
-                        ProdutoCodigo = y.ProdutoCodigo,
-                        Titulo = y.Produto.Titulo,
-                        Descricao = y.Produto.Descricao,
-                        Quantidade = y.Quantidade,
-                        ValorUnitario = y.Produto.Valor,
-                        ValorTotal = y.Valor
+                        Codigo = pedido.Usuario.Codigo,
+                        Nome = pedido.Usuario.Nome
+                    },
+                    Items = pedido.Items.Select(e => new
+                    {
+                        Codigo = e.Codigo,
+                        Produto = new
+                        {
+                            Codigo = e.Produto.Codigo,
+                            Titulo = e.Produto.Titulo,
+                            Descricao = e.Produto.Descricao
+                        },
+                        Quantidade = e.Quantidade,
+                        Valor = e.Valor
                     })
-                }).SingleOrDefault();
+                };
 
                 http.Code = StatusCodes.Status200OK;
                 http.Message = "Pedido encontrado com sucesso.";

@@ -1,4 +1,0 @@
-# Incluir
-
-1. Incluir possibilidade de produtos favoritos por usuario
-2. Incluir possibilidade de produtos tem notas(score)

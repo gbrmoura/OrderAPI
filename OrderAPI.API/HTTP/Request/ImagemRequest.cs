@@ -14,8 +14,5 @@ namespace OrderAPI.API.HTTP.Request
 
         [Required(ErrorMessage = "Token deve ser informado.")]
         public string Token { get; set; }
-
-        [Required(ErrorMessage = "Refresh token deve ser informado.")]
-        public string RefreshToken { get; set; }
     }
 }

@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OrderAPI.Data;
 
 namespace OrderAPI.Data.Migrations
 {
     [DbContext(typeof(OrderAPIContext))]
-    partial class OrderAPIContextModelSnapshot : ModelSnapshot
+    [Migration("20220211223549_FuncionarioEmail")]
+    partial class FuncionarioEmail
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -298,29 +300,6 @@ namespace OrderAPI.Data.Migrations
                     b.HasIndex("CategoriaCodigo");
 
                     b.ToTable("Produto");
-                });
-
-            modelBuilder.Entity("OrderAPI.Data.Models.RecoverPasswordModel", b =>
-                {
-                    b.Property<int>("Codigo")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ExpirationDate")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("Token")
-                        .IsRequired()
-                        .HasMaxLength(8)
-                        .HasColumnType("varchar(8)");
-
-                    b.HasKey("Codigo");
-
-                    b.ToTable("RecoverPassword");
                 });
 
             modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>
