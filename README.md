@@ -43,7 +43,7 @@ Para publicar o projeto é necessario executar o comando `dotnet publish -c Rele
 
 Depois de executado os comandos acima é gerado varios arquivos que vão ser usados para publicar a api em algum servidor.
 
-# Linux
+### Linux
 
 O comandos que serão executados a seguir, são somente para a publicação do serviço no servidor linux. e para que eles  sejam executados, é necessario que o usuario esteja logado como root.
 
