@@ -300,6 +300,26 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Produto");
                 });
 
+            modelBuilder.Entity("OrderAPI.Data.Models.RecoverPasswordModel", b =>
+                {
+                    b.Property<int>("Codigo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("varchar(8)");
+
+                    b.HasKey("Codigo");
+
+                    b.ToTable("Password");
+                });
+
             modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>
                 {
                     b.Property<int>("Codigo")

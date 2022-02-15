@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models
 {
-    public class RecorverPasswordModel
+    public class RecoverPasswordModel
     { 
         [Key]
         public int Codigo { get; set; }

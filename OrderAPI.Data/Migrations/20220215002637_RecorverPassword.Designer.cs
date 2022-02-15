@@ -9,7 +9,7 @@ using OrderAPI.Data;
 namespace OrderAPI.Data.Migrations
 {
     [DbContext(typeof(OrderAPIContext))]
-    [Migration("20220215001712_RecorverPassword")]
+    [Migration("20220215002637_RecorverPassword")]
     partial class RecorverPassword
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -300,6 +300,26 @@ namespace OrderAPI.Data.Migrations
                     b.HasIndex("CategoriaCodigo");
 
                     b.ToTable("Produto");
+                });
+
+            modelBuilder.Entity("OrderAPI.Data.Models.RecoverPasswordModel", b =>
+                {
+                    b.Property<int>("Codigo")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Token")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("varchar(8)");
+
+                    b.HasKey("Codigo");
+
+                    b.ToTable("Password");
                 });
 
             modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>
