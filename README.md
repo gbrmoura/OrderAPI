@@ -29,7 +29,15 @@ Build succeeded.
 Done. To undo this action, use 'ef migrations remove'
 ```
 
-Para remover uma migração é necessario executar o comando `dotnet ef --startup-project ..\OrderAPI.API migrations remove`, para remover uma migration especificar é somente necessario colocar o nome da propria na frente do remove.
+Para remover uma migração é necessario executar o comando `dotnet ef --startup-project ..\OrderAPI.API migrations remove`, para remover uma migration especificar é somente necessario colocar o nome da propria na frente do remove. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos:
+
+```
+Build started...
+Build succeeded.
+Removing migration '20220215002637_RecorverPassword'.
+Reverting the model snapshot.
+Done.
+```	
 
 ### Comandos para Banco
 
