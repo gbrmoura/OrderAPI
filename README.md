@@ -54,7 +54,7 @@ O nome do servico que vai ser usado para a publicação do projeto, e de gosto d
 Os comandos `sudo systemctl stop orderapi.service && sudo dotnet publish -c Release --output /var/www/orderapi/ && sudo systemctl start orderapi.service` são usados em sequencia para parar o serviço, publicar o projeto, e depois voltar ao serviço. Se for necessario ah tambem a possibilidade de usa-los de forma separada.
 
 ```
-    sudo systemctl stop orderapi.service
-    sudo dotnet publish -c Release --output /var/www/orderapi/
+    sudo systemctl stop orderapi.service &&
+    sudo dotnet publish -c Release --output /var/www/orderapi/ &&
     sudo systemctl start orderapi.service
 ```
