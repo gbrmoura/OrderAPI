@@ -19,19 +19,21 @@ namespace OrderAPI.API.Controllers
     [Route("api/[controller]/")]
     public class AutenticacaoController : ControllerBase
     {
-        private OrderAPIContext _context;
-        private IMapper _mapper;
-        private TokenService _token;
-        private ModelService _model;
-        private PasswordService _password;
+        private readonly OrderAPIContext _context;
+        private readonly IMapper _mapper;
+        private readonly TokenService _token;
+        private readonly ModelService _model;
+        private readonly PasswordService _password;
+        private readonly MailService _mail;
 
-        public AutenticacaoController(OrderAPIContext context, IMapper mapper, TokenService token, PasswordService password, ModelService model)
+        public AutenticacaoController(OrderAPIContext context, IMapper mapper, TokenService token, PasswordService password, ModelService model, MailService mail)
         {
             _context = context;
             _mapper = mapper;
             _token = token;
             _model = model;
             _password = password;
+            this._mail = mail;
         }
 
         [HttpPost("PrimeiroRegistro/")]
@@ -243,6 +245,106 @@ namespace OrderAPI.API.Controllers
                     Token = newJwtToken,
                     RefreshToken = newRefreshToken
                 };
+
+                return StatusCode(http.Code, http);
+            }
+            catch (Exception E)
+            {
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
+            }
+        }
+
+   
+        [HttpPost("Recuperar/Senha/")]
+        [AllowAnonymous]
+        public ActionResult<DefaultResponse> RecuperarSenha([FromBody] RecuperarSenhaRequest payload)
+        {
+            DefaultResponse http = new DefaultResponse()
+            {
+                Code = StatusCodes.Status403Forbidden,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = _model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
+
+            try
+            {
+                
+                var usuario = _context.Usuario
+                    .Where((e) => e.Email.Equals(payload.Email))
+                    .SingleOrDefault();
+                
+                if (usuario == null)
+                {
+                    http.Message = "Nenhum usuario encontrados com o email informado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                var token = _password.GenerateRecoverToken(usuario.Email);
+                _mail.SendRecoverPasswordMail(usuario.Email, usuario.Nome, token);
+
+                http.Code = StatusCodes.Status200OK;
+                http.Response = "Token enviado para o email.";
+
+                return StatusCode(http.Code, http);
+            }
+            catch (Exception E)
+            {
+                http.Code = StatusCodes.Status500InternalServerError;
+                http.Message = "Erro interno do servidor!";
+                http.Error = E.Message;
+                return StatusCode(http.Code, http);
+            }
+        }
+
+        [HttpPost("Recuperar/ConfirmarSenha/")]
+        [AllowAnonymous]
+        public ActionResult<DefaultResponse> RecuparSenhaSegundaParte([FromBody] ConfirmarSenhaRequest payload)
+        {
+            DefaultResponse http = new DefaultResponse()
+            {
+                Code = StatusCodes.Status403Forbidden,
+                Message = "Rota não autorizada."
+            };
+
+            if (!ModelState.IsValid)
+            {
+                http.Message = "Parametros Ausentes.";
+                http.Error = _model.ErrorConverter(ModelState);
+                return StatusCode(http.Code, http);
+            }
+
+            try
+            {
+                var usuario = _context.Usuario
+                    .Where((e) => e.Email.Equals(payload.Email))
+                    .SingleOrDefault();
+                
+                if (usuario == null)
+                {
+                    http.Message = "Nenhum usuario encontrados com o email informado.";
+                    return StatusCode(http.Code, http);
+                }
+
+                if (!_password.VerifyRecoverToken(payload.Token, payload.Email))
+                {
+                    http.Message = "Token Invalido.";
+                    return StatusCode(http.Code, http);
+                }
+
+                usuario.Senha = _password.EncryptPassword(payload.NovaSenha);
+                _context.SaveChanges();
+
+                http.Code = StatusCodes.Status200OK;
+                http.Message = "Senha alterada com sucesso."; 
 
                 return StatusCode(http.Code, http);
             }

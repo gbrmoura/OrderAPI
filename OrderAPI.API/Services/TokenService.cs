@@ -40,6 +40,7 @@ namespace OrderAPI.API.Services
             var token = tokenHandler.CreateToken(tokenDescriptor);
             return tokenHandler.WriteToken(token);
         }
+        
         public bool IsValidCurrentToken(string token)
         {
             var key = Encoding.ASCII.GetBytes(this.configuration.AccessTokenSecret);
