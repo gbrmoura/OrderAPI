@@ -21,7 +21,13 @@ Todos os comando que vão ser executados aqui devem primeiro estar no diretorio 
 
 ### Comandos para Migration
 
-Para gerar uma migração nova, é necessario o comando `dotnet ef --startup-project ..\OrderAPI.API migrations add ****`, lembrando que onde se encontra os asteriscos deve ser sempre mudado para o nome da migration. 
+Para gerar uma migração nova, é necessario o comando `dotnet ef --startup-project ..\OrderAPI.API migrations add ****`, lembrando que onde se encontra os asteriscos deve ser sempre mudado para o nome da migration. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos: 
+
+```	
+Build started...
+Build succeeded.
+Done. To undo this action, use 'ef migrations remove'
+```
 
 Para remover uma migração é necessario executar o comando `dotnet ef --startup-project ..\OrderAPI.API migrations remove`, para remover uma migration especificar é somente necessario colocar o nome da propria na frente do remove.
 
