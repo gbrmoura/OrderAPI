@@ -310,6 +310,9 @@ namespace OrderAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(8)
@@ -317,7 +320,7 @@ namespace OrderAPI.Data.Migrations
 
                     b.HasKey("Codigo");
 
-                    b.ToTable("Password");
+                    b.ToTable("RecoverPassword");
                 });
 
             modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>

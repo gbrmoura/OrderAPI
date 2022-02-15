@@ -1,3 +1,4 @@
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace OrderAPI.Data.Models
@@ -15,5 +16,9 @@ namespace OrderAPI.Data.Models
         [Required(ErrorMessage = "Token de validação deve ser informado.")]
         [MaxLength(8, ErrorMessage = "O limite de 8 caractéres foi atingido.")]
         public string Token { get; set; }
+
+        [Required(ErrorMessage = "Data de expiração deve ser informada.")]
+        public DateTime ExpirationDate { get; set; }
+        
     }
 }

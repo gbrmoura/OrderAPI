@@ -9,7 +9,7 @@ using OrderAPI.Data;
 namespace OrderAPI.Data.Migrations
 {
     [DbContext(typeof(OrderAPIContext))]
-    [Migration("20220215002637_RecorverPassword")]
+    [Migration("20220215004000_RecorverPassword")]
     partial class RecorverPassword
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -312,6 +312,9 @@ namespace OrderAPI.Data.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("Token")
                         .IsRequired()
                         .HasMaxLength(8)
@@ -319,7 +322,7 @@ namespace OrderAPI.Data.Migrations
 
                     b.HasKey("Codigo");
 
-                    b.ToTable("Password");
+                    b.ToTable("RecoverPassword");
                 });
 
             modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>

@@ -61,7 +61,7 @@ namespace OrderAPI.Data
         public DbSet<ImageModel> Image { get; set; }
         public DbSet<TokenModel> Token { get; set; }
         public DbSet<FavoritoModel> Favorito { get; set; }
-        public DbSet<RecoverPasswordModel> Password { get; set; }
+        public DbSet<RecoverPasswordModel> RecoverPassword { get; set; }
 
     }
 }
