@@ -13,6 +13,7 @@ using OrderAPI.Data.Models;
 using OrderAPI.Data.Helpers;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace OrderAPI.API.Controllers
 {
@@ -257,7 +258,7 @@ namespace OrderAPI.API.Controllers
             }
         }
 
-   
+
         [HttpPost("Recuperar/Senha/")]
         [AllowAnonymous]
         public ActionResult<DefaultResponse> RecuperarSenha([FromBody] RecuperarSenhaRequest payload)
@@ -277,11 +278,11 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                
-                var usuario = _context.Usuario
+
+                var usuario = _context.Usuario.AsNoTracking()
                     .Where((e) => e.Email.Equals(payload.Email))
-                    .SingleOrDefault();
-                
+                    .FirstOrDefault();
+
                 if (usuario == null)
                 {
                     http.Message = "Nenhum usuario encontrados com o email informado.";
@@ -292,7 +293,7 @@ namespace OrderAPI.API.Controllers
                 _mail.SendRecoverPasswordMail(usuario.Email, usuario.Nome, token);
 
                 http.Code = StatusCodes.Status200OK;
-                http.Response = "Token enviado para o email.";
+                http.Message = "Token enviado para o email.";
 
                 return StatusCode(http.Code, http);
             }
@@ -327,7 +328,7 @@ namespace OrderAPI.API.Controllers
                 var usuario = _context.Usuario
                     .Where((e) => e.Email.Equals(payload.Email))
                     .SingleOrDefault();
-                
+
                 if (usuario == null)
                 {
                     http.Message = "Nenhum usuario encontrados com o email informado.";
@@ -344,7 +345,7 @@ namespace OrderAPI.API.Controllers
                 _context.SaveChanges();
 
                 http.Code = StatusCodes.Status200OK;
-                http.Message = "Senha alterada com sucesso."; 
+                http.Message = "Senha alterada com sucesso.";
 
                 return StatusCode(http.Code, http);
             }

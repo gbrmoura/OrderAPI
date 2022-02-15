@@ -45,6 +45,7 @@ namespace OrderAPI.API
             services.AddScoped<ModelService>();
             services.AddScoped<PasswordService>();
             services.AddScoped<UtilsService>();
+            services.AddScoped<MailService>();
 
             /** Singleton Services **/
             

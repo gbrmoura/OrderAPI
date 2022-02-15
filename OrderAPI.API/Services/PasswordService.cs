@@ -86,11 +86,18 @@ namespace OrderAPI.API.Services
 
             if (recoverToken.ExpirationDate < date.AddMinutes(-5) && recoverToken.ExpirationDate > date.AddMinutes(5))
             {
+                _context.RecoverPassword.Remove(recoverToken);
+                _context.SaveChanges();
+
                 return false;
             }
+
+            _context.RecoverPassword.Remove(recoverToken);
+            _context.SaveChanges();
 
             return true;
         }
 
+        
     }
 }
