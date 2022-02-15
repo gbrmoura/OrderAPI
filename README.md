@@ -15,6 +15,29 @@ A partir da criação do projeto, foi criado um documento de API, que é um arqu
   <img src="Docs/Swagger.png" style="border-radius: 5px;">
 </p>
 
+## Configuração do  Projeto
+
+Antes de publicar ou até mesmo utilizar localmente o projeto OrderAPI, é necessario que seja feito a configuração do projeto no arquivo `appsettings.json`, onde vai conter os dados de conexao com o banco, os dados de configuração de envio de email e entre outros.
+
+### Envio de Email
+Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
+
+Por padrão, a seção de configuração `Email` esta vazia, para que o proprio usuario configure com seus proprios dados.
+```
+{
+  "MailSettings": {
+    "Host": "",
+    "Port": "",
+    "EnableSsl": "",
+    "Timeout": "",
+    "UserName": "",
+    "Password": "",
+    "From": "",
+    "DisplayName": ""
+  }
+}
+´´´
+
 ## Banco de Dados
 
 Todos os comando que vão ser executados aqui devem primeiro estar no diretorio `..\OrderAPI\OrderAPI.Data`, e para chergamos a este diretorio, tendo como base o diretorio pai do projeto, deve-se executar o comando `cd OrderAPI.Data`.
