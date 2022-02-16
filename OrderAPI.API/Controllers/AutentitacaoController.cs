@@ -283,18 +283,31 @@ namespace OrderAPI.API.Controllers
                     .Where((e) => e.Email.Equals(payload.Email))
                     .FirstOrDefault();
 
-                if (usuario == null)
+                if (usuario != null)
                 {
-                    http.Message = "Nenhum usuario encontrados com o email informado.";
+                    var token = _password.GenerateRecoverToken(usuario.Email);
+                    _mail.SendRecoverPasswordMail(usuario.Email, usuario.Nome, token);
+
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Token enviado para o email.";
                     return StatusCode(http.Code, http);
                 }
 
-                var token = _password.GenerateRecoverToken(usuario.Email);
-                _mail.SendRecoverPasswordMail(usuario.Email, usuario.Nome, token);
+                var funcionario = _context.Funcionario.AsNoTracking()
+                    .Where((e) => e.Email.Equals(payload.Email))
+                    .FirstOrDefault();
+                
+                if (funcionario != null)
+                {
+                    var token = _password.GenerateRecoverToken(funcionario.Email);
+                    _mail.SendRecoverPasswordMail(funcionario.Email, funcionario.Nome, token);
 
-                http.Code = StatusCodes.Status200OK;
-                http.Message = "Token enviado para o email.";
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Token enviado para o email.";
+                    return StatusCode(http.Code, http);
+                }   
 
+                http.Message = "Nenhum usuario encontrados com o email informado.";
                 return StatusCode(http.Code, http);
             }
             catch (Exception E)
@@ -329,24 +342,46 @@ namespace OrderAPI.API.Controllers
                     .Where((e) => e.Email.Equals(payload.Email))
                     .SingleOrDefault();
 
-                if (usuario == null)
+                if (usuario != null)
                 {
-                    http.Message = "Nenhum usuario encontrados com o email informado.";
-                    return StatusCode(http.Code, http);
+                    if (!_password.VerifyRecoverToken(payload.Token, payload.Email))
+                    {
+                        http.Message = "Token Invalido.";
+                        return StatusCode(http.Code, http);
+                    }
+
+                    usuario.Senha = _password.EncryptPassword(payload.NovaSenha);
+                    _context.SaveChanges();
+
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Senha alterada com sucesso.";
+
+                    return StatusCode(http.Code, http); 
                 }
 
-                if (!_password.VerifyRecoverToken(payload.Token, payload.Email))
+                var funcionario = _context.Funcionario
+                    .Where((e) => e.Email.Equals(payload.Email))
+                    .SingleOrDefault();
+
+                if (funcionario != null) 
                 {
-                    http.Message = "Token Invalido.";
-                    return StatusCode(http.Code, http);
+                    if (!_password.VerifyRecoverToken(payload.Token, payload.Email))
+                    {
+                        http.Message = "Token Invalido.";
+                        return StatusCode(http.Code, http);
+                    }
+
+                    funcionario.Senha = _password.EncryptPassword(payload.NovaSenha);
+                    _context.SaveChanges();
+
+                    http.Code = StatusCodes.Status200OK;
+                    http.Message = "Senha alterada com sucesso.";
+
+                    return StatusCode(http.Code, http); 
                 }
+                
 
-                usuario.Senha = _password.EncryptPassword(payload.NovaSenha);
-                _context.SaveChanges();
-
-                http.Code = StatusCodes.Status200OK;
-                http.Message = "Senha alterada com sucesso.";
-
+                http.Message = "Nenhum usuario encontrados com o email informado.";
                 return StatusCode(http.Code, http);
             }
             catch (Exception E)
