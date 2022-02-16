@@ -49,6 +49,21 @@ namespace OrderAPI.API.Controllers
 
             try
             {
+
+                var IsValidFuncionario = _context.Funcionario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+
+                var IsValidUsuario = _context.Usuario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+                
+                if (IsValidFuncionario != null || IsValidUsuario != null)
+                {
+                    http.Message = "Email ja cadastrado.";
+                    return StatusCode(http.Code, http);
+                }
+
                 if (_context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
                 {
                     http.Message = "Funcionario já cadastrado.";
@@ -104,8 +119,26 @@ namespace OrderAPI.API.Controllers
 
                 if (!funcionario.Login.Equals(body.Login) && _context.Funcionario.Any(e => e.Login.Equals(body.Login) && e.Status == true))
                 {
-                    http.Message = "Funcionario já cadastrado.";
+                    http.Message = "Nome de usuario já cadastrado.";
                     return StatusCode(http.Code, http);
+                }
+
+                
+                if (funcionario.Email.Equals(body.Email))
+                {
+                    var IsValidFuncionario = _context.Funcionario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+
+                    var IsValidUsuario = _context.Usuario
+                        .Where(e => e.Email == body.Email)
+                        .SingleOrDefault();
+                    
+                    if (IsValidFuncionario != null || IsValidUsuario != null)
+                    {
+                        http.Message = "Email ja cadastrado.";
+                        return StatusCode(http.Code, http);
+                    }
                 }
 
                 funcionario.Nome = body.Nome;

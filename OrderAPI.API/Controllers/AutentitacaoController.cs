@@ -56,6 +56,21 @@ namespace OrderAPI.API.Controllers
 
             try
             {
+
+                var IsValidFuncionario = _context.Funcionario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+
+                var IsValidUsuario = _context.Usuario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+                
+                if (IsValidFuncionario != null || IsValidUsuario != null)
+                {
+                    http.Message = "Email ja cadastrado.";
+                    return StatusCode(http.Code, http);
+                }
+
                 if (_context.Funcionario.Count() > 0)
                 {
                     http.Message = "Já existe usuario cadastrado.";

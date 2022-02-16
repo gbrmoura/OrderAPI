@@ -46,11 +46,15 @@ namespace OrderAPI.API.Controllers
 
             try
             {
-                UsuarioModel usuario = _context.Usuario
+                var usuario = _context.Usuario
                     .Where(e => e.Email == body.Email)
                     .SingleOrDefault();
 
-                if (usuario != null)
+                var funcionario = _context.Funcionario
+                    .Where(e => e.Email == body.Email)
+                    .SingleOrDefault();
+
+                if (usuario != null || funcionario != null)
                 {
                     http.Message = "Email ja cadastrado!";
                     return StatusCode(http.Code, http);
