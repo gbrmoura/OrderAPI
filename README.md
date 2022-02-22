@@ -17,7 +17,11 @@ E para ter acesso a esta pagina de documentação da API, e necessario que a apl
 
 ## Configuração do  Projeto
 
-No projeto foi utilizado o framework [Dotnet Core](https://dotnet.microsoft.com/), que é um framework de desenvolvimento de aplicações web, e utilizado o framework [Swagger](https://swagger.io/), que é um framework para documentação de APIs.
+No projeto foi utilizado:
+  - [C#](https://docs.microsoft.com/pt-br/dotnet/csharp/), como principal linguagem de programação. versão 9.0
+  - [DotNet Core](https://docs.microsoft.com/pt-br/dotnet/) como framework para o desenvolvimento do projeto. versão: 5.0
+  - [Entity Framework](https://docs.microsoft.com/pt-br/ef/) como framework para o desenvolvimento do projeto. versão: 5.0.0
+  - [MySQL](https://www.mysql.com/) como banco de dados. versão: 8.0.18
 
 ### Envio de Email
 Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
