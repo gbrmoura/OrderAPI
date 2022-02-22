@@ -76,8 +76,7 @@ Algums diretorios e arquivos devem estar preparados para a publicação. como no
 
 O nome do servico que vai ser usado para a publicação do projeto, e de gosto de quem for publicar entretanto como o projeto é chamado de orderapi, nada mais justo dar o proprio nome para os seriviço criado do linux.
 
-Os comandos `sudo systemctl stop orderapi.service && sudo dotnet publish -c Release --output /var/www/orderapi/ && sudo systemctl start orderapi.service` são usados em sequencia para parar o serviço, publicar o projeto, e depois voltar ao serviço. Se for necessario ah tambem a possibilidade de usa-los de forma separada.
-
+Os comandos que devem ser executados são:
 ```
     sudo systemctl stop orderapi.service &&
     sudo dotnet publish -c Release --output /var/www/orderapi/ &&
