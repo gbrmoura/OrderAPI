@@ -11,7 +11,7 @@ Onde o principal ideia é que os alunos possam apenas pedir o seu pedido, e apen
 
 Swagger é um framework para documentação de APIs, que nos permite criar um ambiente de facil utilização para requisiçoes HTTP.
 
-<p align="center"> <img src="Docs/Swagger.png" style="border-radius: 5px; width> 80%;"> </p>
+<p align="center"> <img src="Docs/Swagger.png" style="border-radius: 5px; width: 80%;"> </p>
 
 E para ter acesso a esta pagina de documentação da API, e necessario que a aplicação esteja rodando em um servidor, tendo como base a utilização local da API, a URL para acessar a documentação seria: `http://localhost:5000/swagger`, é usada a porta 5000 pois é a padrão utilizada pelo .NET.
 
