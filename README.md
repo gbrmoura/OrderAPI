@@ -15,7 +15,7 @@ Swagger é um framework para documentação de APIs, que nos permite criar um am
 
 E para ter acesso a esta pagina de documentação da API, e necessario que a aplicação esteja rodando em um servidor, tendo como base a utilização local da API, a URL para acessar a documentação seria: `http://localhost:5000/swagger`, é usada a porta 5000 pois é a padrão utilizada pelo .NET.
 
-## Configuração do  Projeto
+## Sobre o Projeto
 
 No projeto foi utilizado:
   - [C#](https://docs.microsoft.com/pt-br/dotnet/csharp/), como principal linguagem de programação. versão 9.0
@@ -23,54 +23,44 @@ No projeto foi utilizado:
   - [Entity Framework](https://docs.microsoft.com/pt-br/ef/) como framework para o desenvolvimento do projeto. versão: 5.0.0
   - [MySQL](https://www.mysql.com/) como banco de dados. versão: 8.0.18
 
-### Envio de Email
-Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
 
-Por padrão, a seção de configuração `Email` esta vazia, para que o proprio usuario configure com seus proprios dados.
-```json
-{
-  "MailSettings": {
-    "Host": "",
-    "Port": "",
-    "EnableSsl": "",
-    "Timeout": "",
-    "UserName": "",
-    "Password": "",
-    "From": "",
-    "DisplayName": ""
-  }
-}
-```
+## Configuração do Projeto
+
+Para uso do projeto algumas credenciais devem ser informadas, como:
+  - Dados para gerenciamento do banco de dados.
+  - Dados para gerenciamento de Envio de Emails.
+
+E todos esses dados dever ser informados no arquivo `appsettings.json`, ou se esta usando em ambiente de desenvolvimento, no arquivo `appsettings.Development.json`.
+
 
 ## Banco de Dados
 
-Todos os comando que vão ser executados aqui devem primeiro estar no diretorio `..\OrderAPI\OrderAPI.Data`, e para chergamos a este diretorio, tendo como base o diretorio pai do projeto, deve-se executar o comando `cd OrderAPI.Data`.
+Todos os comandos que vão ser executados para configurar o banco de dados, devem ser executados no diretorio do projeto Data.
+`..\OrderAPI\OrderAPI.Data\`,
 
 ### Comandos para Migration
 
-Para gerar uma migração nova, é necessario o comando `dotnet ef --startup-project ..\OrderAPI.API migrations add ****`, lembrando que onde se encontra os asteriscos deve ser sempre mudado para o nome da migration. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos: 
-
-```	
-Build started...
-Build succeeded.
-Done. To undo this action, use 'ef migrations remove'
+Para gerar uma nova migration, basta executar o comando:
 ```
-
-Para remover uma migração é necessario executar o comando `dotnet ef --startup-project ..\OrderAPI.API migrations remove`, para remover uma migration especificar é somente necessario colocar o nome da propria na frente do remove. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos:
-
+dotnet ef --startup-project ..\OrderAPI.API migrations add ****
 ```
-Build started...
-Build succeeded.
-Removing migration '****'.
-Reverting the model snapshot.
-Done.
-```	
+Lembrando que é necessario alterar o nome da migration para que ela seja gerada corretamente.
+
+Para remover uma migration, basta executar o comando:
+```
+dotnet ef --startup-project ..OrderAPI.API migrations remove
+```
+E se for necessario excluir uma migration especifica, basta executar o comando abaixo, trocar os asteristicos por o nome da migration:
+```
+dotnet ef --startup-project ..\OrderAPI.API migrations remove ****
+```
 
 ### Comandos para Banco
 
-Para atualizar o banco de dados por meio de comandos, usando o entity framework, é necessario somente rodar `dotnet ef --startup-project ..\OrderAPI.API database update`.
-
-E caso seja necesserario, é possivel dar drop do banco de dados por comando, `dotnet ef --startup-project ..\OrderAPI.API database drop`.
+Para atualizar o banco de dados utilizando as migrations e tambem o framework `EntityFramework`, basta executar o comando:
+```
+dotnet ef --startup-project ..\OrderAPI.API  database update
+```
 
 ## Publicação do Projeto
 
