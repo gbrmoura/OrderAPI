@@ -17,7 +17,7 @@ E para ter acesso a esta pagina de documentação da API, e necessario que a apl
 
 ## Configuração do  Projeto
 
-Antes de publicar ou até mesmo utilizar localmente o projeto OrderAPI, é necessario que seja feito a configuração do projeto no arquivo `appsettings.json`, onde vai conter os dados de conexao com o banco, os dados de configuração de envio de email e entre outros.
+No projeto foi utilizado o framework [Dotnet Core](https://dotnet.microsoft.com/), que é um framework de desenvolvimento de aplicações web, e utilizado o framework [Swagger](https://swagger.io/), que é um framework para documentação de APIs.
 
 ### Envio de Email
 Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
