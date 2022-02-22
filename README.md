@@ -23,7 +23,7 @@ Antes de publicar ou até mesmo utilizar localmente o projeto OrderAPI, é neces
 Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
 
 Por padrão, a seção de configuração `Email` esta vazia, para que o proprio usuario configure com seus proprios dados.
-```
+```json
 {
   "MailSettings": {
     "Host": "",
