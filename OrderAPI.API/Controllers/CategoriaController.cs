@@ -91,7 +91,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 CategoriaModel categoria = _context.Categoria
-                    .Where(e => e.Codigo == body.Codigo)
+                    .Where(e => e.Codigo == body.Codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (categoria == null) 
@@ -141,7 +141,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 CategoriaModel categoria = _context.Categoria
-                    .Where(e => e.Codigo == codigo)
+                    .Where(e => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (categoria == null) 
@@ -189,7 +189,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 CategoriaModel categoria = _context.Categoria
-                    .Where(e => e.Codigo == codigo)
+                    .Where(e => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (categoria == null) 
