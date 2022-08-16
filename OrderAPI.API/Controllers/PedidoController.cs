@@ -223,8 +223,12 @@ namespace OrderAPI.API.Controllers
                     count = count.Where(e => e.UsuarioCodigo == codigo);
                 }
 
-                var dados = sql.Where(e => e.Status == query.Status)
-                    .Include(e => e.MetodoPagamento)
+                if (query.Status != PedidoStatusEnum.UNDEFINED)
+                {
+                    sql = sql.Where(e => e.Status == query.Status);
+                }
+
+                var dados = sql.Include(e => e.MetodoPagamento)
                     .Include(e => e.Usuario)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
