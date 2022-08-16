@@ -130,8 +130,7 @@ namespace OrderAPI.API.Controllers
             {
                 var produto = _context.Produto
                     .Include(x => x.Imagem)
-                    .Where((e) => e.Codigo == body.Codigo)
-                    .Where((e) => e.Status == true)
+                    .Where((e) => e.Codigo == body.Codigo && e.Status == true)
                     .SingleOrDefault();
                 
                 if (produto == null) 
@@ -203,7 +202,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 var produto = _context.Produto
-                    .Where((e) => e.Codigo == codigo)
+                    .Where((e) => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (produto == null) 
@@ -252,7 +251,7 @@ namespace OrderAPI.API.Controllers
             {
                 var produto = _context.Produto
                     .Include((e) => e.Categoria)
-                    .Where((e) => e.Codigo == codigo)
+                    .Where((e) => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (produto == null) 
