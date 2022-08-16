@@ -10,6 +10,7 @@
 
     public enum PedidoStatusEnum 
     {
+        UNDEFINED,
         ABERTO,
         RETIRADO,
         CANCELADO
