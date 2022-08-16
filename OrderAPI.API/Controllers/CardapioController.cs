@@ -98,13 +98,13 @@ namespace OrderAPI.API.Controllers
                 List<ProdutoModel> produtos = sql
                     .Include((e) => e.Categoria)
                     .Include((e) => e.Favoritos)
-                    .Where((e) => e.Status == true)
+                    .Where((e) => e.Status == true && e.Quantidade > 0)
                     .Skip((query.NumeroPagina - 1) * query.TamanhoPagina)
                     .Take(query.TamanhoPagina)
                     .ToList();
 
                 List<ProdutoModel> count = sqlCount
-                    .Where((e) => e.Status == true)
+                    .Where((e) => e.Status == true && e.Quantidade > 0)
                     .ToList();
 
                 var dados = produtos.Select(e => new ConsultarCardapioProdutoResponse()

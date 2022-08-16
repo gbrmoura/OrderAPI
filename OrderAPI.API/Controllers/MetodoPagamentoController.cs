@@ -88,9 +88,10 @@ namespace OrderAPI.API.Controllers
                 return StatusCode(http.Code, http);
             }
 
-            try {
+            try 
+            {
                 MetodoPagamentoModel pagto = _context.MetodoPagamento
-                    .Where((e) => e.Codigo == body.Codigo)
+                    .Where((e) => e.Codigo == body.Codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (pagto == null) 
@@ -139,7 +140,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 MetodoPagamentoModel pagto = _context.MetodoPagamento
-                    .Where((e) => e.Codigo == codigo)
+                    .Where((e) => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (pagto == null) 
@@ -187,7 +188,7 @@ namespace OrderAPI.API.Controllers
             try 
             {
                 MetodoPagamentoModel pagto = _context.MetodoPagamento
-                    .Where((e) => e.Codigo == codigo)
+                    .Where((e) => e.Codigo == codigo && e.Status == true)
                     .SingleOrDefault();
 
                 if (pagto == null) 

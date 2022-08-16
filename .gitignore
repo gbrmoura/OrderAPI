@@ -370,3 +370,8 @@ FodyWeavers.xsd
 # Images - Generate by system
 OrderAPI.API/Imagens
 OrderAPI.API/Files
+.idea/.idea.OrderAPI/.idea/.gitignore
+.idea/.idea.OrderAPI/.idea/encodings.xml
+.idea/.idea.OrderAPI/.idea/indexLayout.xml
+.idea/.idea.OrderAPI/.idea/vcs.xml
+.idea/config/applicationhost.config
