@@ -368,8 +368,11 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # Images - Generate by system
-OrderAPI.API/Imagens
-OrderAPI.API/Files
+src/OrderAPI.API/Imagens
+src/OrderAPI.API/Files
+
+src/OrderAPI.API/.config
+
 .idea/.idea.OrderAPI/.idea/.gitignore
 .idea/.idea.OrderAPI/.idea/encodings.xml
 .idea/.idea.OrderAPI/.idea/indexLayout.xml
