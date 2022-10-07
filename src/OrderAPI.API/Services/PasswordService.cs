@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 using OrderAPI.Data;
-using OrderAPI.Data.Models;
+using OrderAPI.Domain.Models;
 
 namespace OrderAPI.API.Services
 {

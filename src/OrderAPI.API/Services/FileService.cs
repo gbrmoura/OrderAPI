@@ -1,15 +1,17 @@
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 
 namespace OrderAPI.API.Services
 {
     public class FileService
     {
-        private string path = Environment.CurrentDirectory + "/files/";
+        private string path;
+        
+        public FileService(IConfiguration config) 
+        {
+            this.path = config["FilePath"]; 
+        }
 
         public bool IsValidBase64(string base64)
         {

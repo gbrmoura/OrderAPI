@@ -6,14 +6,14 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using OrderAPI.Data;
 using AutoMapper;
-using OrderAPI.API.HTTP;
-using OrderAPI.API.HTTP.Request;
-using OrderAPI.Data.Models;
-using OrderAPI.Data.Helpers;
+using OrderAPI.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using OrderAPI.API.Services;
 using OrderAPI.API.EntensionMethods;
-using OrderAPI.API.HTTP.Response;
+using OrderAPI.Domain.Http;
+using OrderAPI.Domain.Http.Request;
+using OrderAPI.Domain.Enums;
+using OrderAPI.Domain.Http.Response;
 
 namespace OrderAPI.API.Controllers
 {

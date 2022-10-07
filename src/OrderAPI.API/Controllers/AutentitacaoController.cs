@@ -7,13 +7,12 @@ using Microsoft.AspNetCore.Authorization;
 using OrderAPI.Data;
 using AutoMapper;
 using OrderAPI.API.Services;
-using OrderAPI.API.HTTP;
-using OrderAPI.API.HTTP.Request;
-using OrderAPI.Data.Models;
-using OrderAPI.Data.Helpers;
-using Microsoft.Extensions.Logging;
+using OrderAPI.Domain.Models;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using OrderAPI.Domain.Http;
+using OrderAPI.Domain.Http.Request;
+using OrderAPI.Domain.Enums;
 
 namespace OrderAPI.API.Controllers
 {

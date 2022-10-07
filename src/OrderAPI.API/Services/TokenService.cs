@@ -5,10 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
 using System.Security.Claims;
-using OrderAPI.Data.Models;
+using OrderAPI.Domain.Models;
 using OrderAPI.API.Configurations;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using OrderAPI.Data;
 
 namespace OrderAPI.API.Services

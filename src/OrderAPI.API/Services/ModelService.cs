@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
-using OrderAPI.API.HTTP;
+using OrderAPI.Domain.Http;
 using System;
 using System.Collections.Generic;
 

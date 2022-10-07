@@ -9,13 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="Enums\**" />
-    <Content Remove="Enums\**" />
-    <EmbeddedResource Remove="Enums\**" />
-    <None Remove="Enums\**" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.2" />
     <PackageReference Include="EntityFramework" Version="5.0.0" />
@@ -46,6 +39,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\OrderAPI.Data\OrderAPI.Data.csproj" />
+    <ProjectReference Include="..\OrderAPI.Domain\OrderAPI.Domain.csproj" />
   </ItemGroup>
 
 </Project>

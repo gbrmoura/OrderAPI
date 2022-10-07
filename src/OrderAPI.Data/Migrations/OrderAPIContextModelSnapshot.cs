@@ -17,7 +17,7 @@ namespace OrderAPI.Data.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 64)
                 .HasAnnotation("ProductVersion", "5.0.11");
 
-            modelBuilder.Entity("OrderAPI.Data.Models.CategoriaModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.CategoriaModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Categoria");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ControleEstoqueModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ControleEstoqueModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -79,7 +79,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("ControleEstoque");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.FavoritoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.FavoritoModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Favorito");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.FuncionarioModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.FuncionarioModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -145,7 +145,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Funcionario");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ImageModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ImageModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -180,7 +180,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Image");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.MetodoPagamentoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.MetodoPagamentoModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -200,7 +200,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("MetodoPagamento");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.PedidoItemModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.PedidoItemModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -231,7 +231,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("PedidoItem");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.PedidoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.PedidoModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -262,7 +262,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Pedido");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ProdutoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ProdutoModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -300,7 +300,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Produto");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.RecoverPasswordModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.RecoverPasswordModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -323,7 +323,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("RecoverPassword");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.TokenModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.TokenModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -344,7 +344,7 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Token");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.UsuarioModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.UsuarioModel", b =>
                 {
                     b.Property<int>("Codigo")
                         .ValueGeneratedOnAdd()
@@ -386,15 +386,15 @@ namespace OrderAPI.Data.Migrations
                     b.ToTable("Usuario");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ControleEstoqueModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ControleEstoqueModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.FuncionarioModel", "Funcionario")
+                    b.HasOne("OrderAPI.Domain.Models.FuncionarioModel", "Funcionario")
                         .WithMany()
                         .HasForeignKey("FuncionarioCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderAPI.Data.Models.ProdutoModel", "Produto")
+                    b.HasOne("OrderAPI.Domain.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -405,15 +405,15 @@ namespace OrderAPI.Data.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.FavoritoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.FavoritoModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.ProdutoModel", "Produto")
+                    b.HasOne("OrderAPI.Domain.Models.ProdutoModel", "Produto")
                         .WithMany("Favoritos")
                         .HasForeignKey("ProdutoCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderAPI.Data.Models.UsuarioModel", "Usuario")
+                    b.HasOne("OrderAPI.Domain.Models.UsuarioModel", "Usuario")
                         .WithMany("Favoritos")
                         .HasForeignKey("UsuarioCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -424,26 +424,26 @@ namespace OrderAPI.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ImageModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ImageModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.ProdutoModel", "Produto")
+                    b.HasOne("OrderAPI.Domain.Models.ProdutoModel", "Produto")
                         .WithOne("Imagem")
-                        .HasForeignKey("OrderAPI.Data.Models.ImageModel", "ProductCodigo")
+                        .HasForeignKey("OrderAPI.Domain.Models.ImageModel", "ProductCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.PedidoItemModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.PedidoItemModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.PedidoModel", "Pedido")
+                    b.HasOne("OrderAPI.Domain.Models.PedidoModel", "Pedido")
                         .WithMany("Items")
                         .HasForeignKey("PedidoCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderAPI.Data.Models.ProdutoModel", "Produto")
+                    b.HasOne("OrderAPI.Domain.Models.ProdutoModel", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -454,15 +454,15 @@ namespace OrderAPI.Data.Migrations
                     b.Navigation("Produto");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.PedidoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.PedidoModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.MetodoPagamentoModel", "MetodoPagamento")
+                    b.HasOne("OrderAPI.Domain.Models.MetodoPagamentoModel", "MetodoPagamento")
                         .WithMany()
                         .HasForeignKey("MetodoPagamentoCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("OrderAPI.Data.Models.UsuarioModel", "Usuario")
+                    b.HasOne("OrderAPI.Domain.Models.UsuarioModel", "Usuario")
                         .WithMany()
                         .HasForeignKey("UsuarioCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -473,9 +473,9 @@ namespace OrderAPI.Data.Migrations
                     b.Navigation("Usuario");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ProdutoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ProdutoModel", b =>
                 {
-                    b.HasOne("OrderAPI.Data.Models.CategoriaModel", "Categoria")
+                    b.HasOne("OrderAPI.Domain.Models.CategoriaModel", "Categoria")
                         .WithMany("Produtos")
                         .HasForeignKey("CategoriaCodigo")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -484,24 +484,24 @@ namespace OrderAPI.Data.Migrations
                     b.Navigation("Categoria");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.CategoriaModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.CategoriaModel", b =>
                 {
                     b.Navigation("Produtos");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.PedidoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.PedidoModel", b =>
                 {
                     b.Navigation("Items");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.ProdutoModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.ProdutoModel", b =>
                 {
                     b.Navigation("Favoritos");
 
                     b.Navigation("Imagem");
                 });
 
-            modelBuilder.Entity("OrderAPI.Data.Models.UsuarioModel", b =>
+            modelBuilder.Entity("OrderAPI.Domain.Models.UsuarioModel", b =>
                 {
                     b.Navigation("Favoritos");
                 });

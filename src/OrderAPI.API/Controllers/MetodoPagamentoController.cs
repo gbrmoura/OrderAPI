@@ -6,12 +6,12 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using OrderAPI.API.HTTP;
-using OrderAPI.API.HTTP.Request;
-using OrderAPI.API.HTTP.Response;
+using OrderAPI.Domain.Http;
+using OrderAPI.Domain.Http.Request;
+using OrderAPI.Domain.Http.Response;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
-using OrderAPI.Data.Models;
+using OrderAPI.Domain.Models;
 
 namespace OrderAPI.API.Controllers
 {

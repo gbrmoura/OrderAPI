@@ -7,13 +7,13 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using OrderAPI.API.EntensionMethods;
-using OrderAPI.API.HTTP;
-using OrderAPI.API.HTTP.Request;
-using OrderAPI.API.HTTP.Response;
+using OrderAPI.Domain.Http;
+using OrderAPI.Domain.Http.Request;
+using OrderAPI.Domain.Http.Response;
 using OrderAPI.API.Services;
 using OrderAPI.Data;
-using OrderAPI.Data.Helpers;
-using OrderAPI.Data.Models;
+using OrderAPI.Domain.Enums;
+using OrderAPI.Domain.Models;
 
 namespace OrderAPI.API.Controllers
 {
@@ -137,7 +137,7 @@ namespace OrderAPI.API.Controllers
                     Data = DateTime.Now,
                     MetodoPagamento = pagto,
                     MetodoPagamentoCodigo = pagto.Codigo,
-                    Status = Data.Helpers.PedidoStatusEnum.ABERTO,
+                    Status = PedidoStatusEnum.ABERTO,
                     Observacao = body.Observacao,
                     Usuario = usuario,
                     UsuarioCodigo = usuario.Codigo,

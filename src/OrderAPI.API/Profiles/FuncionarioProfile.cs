@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
-using OrderAPI.API.HTTP.Request;
-using OrderAPI.API.HTTP.Response;
-using OrderAPI.Data.Models;
+using OrderAPI.Domain.Http.Request;
+using OrderAPI.Domain.Models;
 
 namespace OrderAPI.API.Profiles {
 
