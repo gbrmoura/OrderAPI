@@ -2,6 +2,7 @@
 {
     public enum PrevilegioEnum 
     {
+        UNDEFINED,
         MASTER, 
         GERENTE,
         FUNCIONARIO,

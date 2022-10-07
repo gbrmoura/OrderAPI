@@ -24,7 +24,7 @@ namespace OrderAPI.Domain.Http.Request
         public string Senha { get; set; }
 
         [Required(ErrorMessage = "Previlégio deve ser informado.")]
-        [Range(0, 2, ErrorMessage = "Privilegio deve estar entre MASTER, GERENTE, FUNCIONARIO.")]
+        [Range(1, 3, ErrorMessage = "Privilegio deve estar entre MASTER, GERENTE, FUNCIONARIO.")]
         public PrevilegioEnum Previlegio { get; set; }
     }
 }
