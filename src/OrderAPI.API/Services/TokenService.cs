@@ -103,7 +103,8 @@ namespace OrderAPI.API.Services
 
         public string GetRefreshToken(Guid actor)
         {
-            return this.context.Token.FirstOrDefault((x) => x.Actor == actor).RefreshToken;
+            var token = this.context.Token.FirstOrDefault((token) => token.Actor == actor);
+            return (token != null ? token.RefreshToken : string.Empty);
         }
 
         public void DeleteRefreshToken(Guid actor) 
