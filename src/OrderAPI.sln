@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OrderAPI.API", "OrderAPI.API\OrderAPI.API.csproj", "{235329F2-0EF9-4A46-9C50-33FCDC8A6A88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrderAPI.Data", "OrderAPI.Data\OrderAPI.Data.csproj", "{7BAAB427-3270-4AF8-B864-A66AA37ABB9F}"
+EndProject
+Project("{4A6A1581-84CA-41C7-87D9-DD1B54A65C27}") = "OrderAPI.Domain", "OrderAPI.Domain\OrderAPI.Domain.csproj", "{bd92155e-0fff-425d-9292-b0086bb4ded8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{235329F2-0EF9-4A46-9C50-33FCDC8A6A88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{235329F2-0EF9-4A46-9C50-33FCDC8A6A88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{235329F2-0EF9-4A46-9C50-33FCDC8A6A88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{235329F2-0EF9-4A46-9C50-33FCDC8A6A88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7BAAB427-3270-4AF8-B864-A66AA37ABB9F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7BAAB427-3270-4AF8-B864-A66AA37ABB9F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7BAAB427-3270-4AF8-B864-A66AA37ABB9F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7BAAB427-3270-4AF8-B864-A66AA37ABB9F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3E3438F8-9443-4939-93CD-0D86447E6B2B}
+	EndGlobalSection
+EndGlobal
