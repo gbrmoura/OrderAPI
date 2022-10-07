@@ -9,64 +9,58 @@ Onde o principal ideia é que os alunos possam apenas pedir o seu pedido, e apen
 
 ## Swagger
 
-A partir da criação do projeto, foi criado um documento de API, que é um arquivo JSON, que contém todas as informações necessárias para a utilização da API.
+Swagger é um framework para documentação de APIs, que nos permite criar um ambiente de facil utilização para requisiçoes HTTP.
 
-<p align="center">
-  <img src="Docs/Swagger.png" style="border-radius: 5px;">
-</p>
+<p align="center"> <img src="Docs/Swagger.png" style="border-radius: 5px; width: 80%;"> </p>
 
-## Configuração do  Projeto
+E para ter acesso a esta pagina de documentação da API, e necessario que a aplicação esteja rodando em um servidor, tendo como base a utilização local da API, a URL para acessar a documentação seria: `http://localhost:5000/swagger`, é usada a porta 5000 pois é a padrão utilizada pelo .NET.
 
-Antes de publicar ou até mesmo utilizar localmente o projeto OrderAPI, é necessario que seja feito a configuração do projeto no arquivo `appsettings.json`, onde vai conter os dados de conexao com o banco, os dados de configuração de envio de email e entre outros.
+## Sobre o Projeto
 
-### Envio de Email
-Dentro do bloco de configuração `Email`, é necessário que seja informado o todos os dados necessario para os servidor smtp, como o servidor, porta, usuario e senha.
+No projeto foi utilizado:
+  - [C#](https://docs.microsoft.com/pt-br/dotnet/csharp/), como principal linguagem de programação. versão 9.0
+  - [DotNet Core](https://docs.microsoft.com/pt-br/dotnet/) como framework para o desenvolvimento do projeto. versão: 5.0
+  - [Entity Framework](https://docs.microsoft.com/pt-br/ef/) como framework para o desenvolvimento do projeto. versão: 5.0.0
+  - [MySQL](https://www.mysql.com/) como banco de dados. versão: 8.0.18
 
-Por padrão, a seção de configuração `Email` esta vazia, para que o proprio usuario configure com seus proprios dados.
-```
-{
-  "MailSettings": {
-    "Host": "",
-    "Port": "",
-    "EnableSsl": "",
-    "Timeout": "",
-    "UserName": "",
-    "Password": "",
-    "From": "",
-    "DisplayName": ""
-  }
-}
-```
+
+## Configuração do Projeto
+
+Para uso do projeto algumas credenciais devem ser informadas, como:
+  - Dados para gerenciamento do banco de dados.
+  - Dados para gerenciamento de Envio de Emails.
+
+E todos esses dados dever ser informados no arquivo `appsettings.json`, ou se esta usando em ambiente de desenvolvimento, no arquivo `appsettings.Development.json`.
+
 
 ## Banco de Dados
 
-Todos os comando que vão ser executados aqui devem primeiro estar no diretorio `..\OrderAPI\OrderAPI.Data`, e para chergamos a este diretorio, tendo como base o diretorio pai do projeto, deve-se executar o comando `cd OrderAPI.Data`.
+Todos os comandos que vão ser executados para configurar o banco de dados, devem ser executados no diretorio do projeto Data.
+`..\OrderAPI\OrderAPI.Data\`,
 
 ### Comandos para Migration
 
-Para gerar uma migração nova, é necessario o comando `dotnet ef --startup-project ..\OrderAPI.API migrations add ****`, lembrando que onde se encontra os asteriscos deve ser sempre mudado para o nome da migration. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos: 
-
-```	
-Build started...
-Build succeeded.
-Done. To undo this action, use 'ef migrations remove'
+Para gerar uma nova migration, basta executar o comando:
 ```
-
-Para remover uma migração é necessario executar o comando `dotnet ef --startup-project ..\OrderAPI.API migrations remove`, para remover uma migration especificar é somente necessario colocar o nome da propria na frente do remove. Se tudo ocorrer de acordo com o esperado, deve ser escrito no console os seguintes retornos:
-
+dotnet ef --startup-project ..\OrderAPI.API migrations add ****
 ```
-Build started...
-Build succeeded.
-Removing migration '****'.
-Reverting the model snapshot.
-Done.
-```	
+Lembrando que é necessario alterar o nome da migration para que ela seja gerada corretamente.
+
+Para remover uma migration, basta executar o comando:
+```
+dotnet ef --startup-project ..OrderAPI.API migrations remove
+```
+E se for necessario excluir uma migration especifica, basta executar o comando abaixo, trocar os asteristicos por o nome da migration:
+```
+dotnet ef --startup-project ..\OrderAPI.API migrations remove ****
+```
 
 ### Comandos para Banco
 
-Para atualizar o banco de dados por meio de comandos, usando o entity framework, é necessario somente rodar `dotnet ef --startup-project ..\OrderAPI.API database update`.
-
-E caso seja necesserario, é possivel dar drop do banco de dados por comando, `dotnet ef --startup-project ..\OrderAPI.API database drop`.
+Para atualizar o banco de dados utilizando as migrations e tambem o framework `EntityFramework`, basta executar o comando:
+```
+dotnet ef --startup-project ..\OrderAPI.API  database update
+```
 
 ## Publicação do Projeto
 
@@ -82,8 +76,7 @@ Algums diretorios e arquivos devem estar preparados para a publicação. como no
 
 O nome do servico que vai ser usado para a publicação do projeto, e de gosto de quem for publicar entretanto como o projeto é chamado de orderapi, nada mais justo dar o proprio nome para os seriviço criado do linux.
 
-Os comandos `sudo systemctl stop orderapi.service && sudo dotnet publish -c Release --output /var/www/orderapi/ && sudo systemctl start orderapi.service` são usados em sequencia para parar o serviço, publicar o projeto, e depois voltar ao serviço. Se for necessario ah tambem a possibilidade de usa-los de forma separada.
-
+Os comandos que devem ser executados são:
 ```
     sudo systemctl stop orderapi.service &&
     sudo dotnet publish -c Release --output /var/www/orderapi/ &&
