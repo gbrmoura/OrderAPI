@@ -1,0 +1,2155 @@
+{
+    "openapi": "3.0.1",
+    "info": {
+      "title": "Documentação OrderAPI",
+      "description": "Documentação da api para uso do Instituto Federeal de São Paulo - Campus Boituva",
+      "contact": {
+        "name": "Gabriel Alves de Moura",
+        "url": "https://github.com/gbrextreme",
+        "email": "gbr@gabrielalves.net"
+      },
+      "version": "v0.0.5"
+    },
+    "paths": {
+      "/api/Autenticacao/PrimeiroRegistro": {
+        "post": {
+          "tags": [
+            "Autenticacao"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioMasterRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioMasterRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioMasterRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Login": {
+        "post": {
+          "tags": [
+            "Autenticacao"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginUsuarioRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginUsuarioRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LoginUsuarioRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/AtualizarToken": {
+        "post": {
+          "tags": [
+            "Autenticacao"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Recuperar/Senha": {
+        "post": {
+          "tags": [
+            "Autenticacao"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecuperarSenhaRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecuperarSenhaRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecuperarSenhaRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Recuperar/ConfirmarSenha": {
+        "post": {
+          "tags": [
+            "Autenticacao"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmarSenhaRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmarSenhaRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConfirmarSenhaRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Cardapio": {
+        "get": {
+          "tags": [
+            "Cardapio"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "Favorito",
+              "in": "query",
+              "schema": {
+                "type": "boolean"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Cardapio/Favorito": {
+        "post": {
+          "tags": [
+            "Cardapio"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FavoritoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Categoria/Registrar": {
+        "post": {
+          "tags": [
+            "Categoria"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarCategoriaRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarCategoriaRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarCategoriaRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Categoria/Alterar": {
+        "post": {
+          "tags": [
+            "Categoria"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarCategoriaRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarCategoriaRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarCategoriaRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Categoria/Deletar": {
+        "get": {
+          "tags": [
+            "Categoria"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Categoria/Consultar": {
+        "get": {
+          "tags": [
+            "Categoria"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Categoria/Listar": {
+        "get": {
+          "tags": [
+            "Categoria"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Estoque/Controle": {
+        "post": {
+          "tags": [
+            "Estoque"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstoqueRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstoqueRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EstoqueRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Estoque/Listar": {
+        "get": {
+          "tags": [
+            "Estoque"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Funcionario/Registrar": {
+        "post": {
+          "tags": [
+            "Funcionario"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarFuncionarioRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Funcionario/Alterar": {
+        "post": {
+          "tags": [
+            "Funcionario"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarFuncionarioRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarFuncionarioRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarFuncionarioRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Funcionario/Listar": {
+        "get": {
+          "tags": [
+            "Funcionario"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/MetodoPagamento/Registrar": {
+        "post": {
+          "tags": [
+            "MetodoPagamento"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarMetodoPagtoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarMetodoPagtoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarMetodoPagtoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/MetodoPagamento/Alterar": {
+        "post": {
+          "tags": [
+            "MetodoPagamento"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarMetodoPagtoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarMetodoPagtoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarMetodoPagtoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/MetodoPagamento/Deletar": {
+        "get": {
+          "tags": [
+            "MetodoPagamento"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/MetodoPagamento/Consultar": {
+        "get": {
+          "tags": [
+            "MetodoPagamento"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/MetodoPagamento/Listar": {
+        "get": {
+          "tags": [
+            "MetodoPagamento"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Pedido/Registrar": {
+        "post": {
+          "tags": [
+            "Pedido"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PedidoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PedidoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PedidoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Pedido/Listar": {
+        "get": {
+          "tags": [
+            "Pedido"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "Status",
+              "in": "query",
+              "schema": {
+                "$ref": "#/components/schemas/PedidoStatusEnum"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Pedido/Consultar": {
+        "get": {
+          "tags": [
+            "Pedido"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Pedido/Cancelar": {
+        "get": {
+          "tags": [
+            "Pedido"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Pedido/Retirar": {
+        "get": {
+          "tags": [
+            "Pedido"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Registrar": {
+        "post": {
+          "tags": [
+            "Produto"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarProdutoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarProdutoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarProdutoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Alterar": {
+        "post": {
+          "tags": [
+            "Produto"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarProdutoRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarProdutoRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AlterarProdutoRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Deletar": {
+        "get": {
+          "tags": [
+            "Produto"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Consultar": {
+        "get": {
+          "tags": [
+            "Produto"
+          ],
+          "parameters": [
+            {
+              "name": "codigo",
+              "in": "query",
+              "schema": {
+                "type": "integer",
+                "format": "int32"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Listar": {
+        "get": {
+          "tags": [
+            "Produto"
+          ],
+          "parameters": [
+            {
+              "name": "TamanhoPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "NumeroPagina",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "CampoPesquisa",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "/api/Produto/Imagem": {
+        "get": {
+          "tags": [
+            "Produto"
+          ],
+          "parameters": [
+            {
+              "name": "Codigo",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "maximum": 2147483647,
+                "minimum": 1,
+                "type": "integer",
+                "format": "int32"
+              }
+            },
+            {
+              "name": "Token",
+              "in": "query",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Success"
+            }
+          }
+        }
+      },
+      "/api/Autenticacao/Usuario/Registrar": {
+        "post": {
+          "tags": [
+            "Usuario"
+          ],
+          "requestBody": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarUsuarioRequest"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarUsuarioRequest"
+                }
+              },
+              "application/*+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CriarUsuarioRequest"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Success",
+              "content": {
+                "text/plain": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                },
+                "text/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/DefaultResponse"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "AlterarCategoriaRequest": {
+          "required": [
+            "codigo",
+            "titulo"
+          ],
+          "type": "object",
+          "properties": {
+            "codigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            },
+            "descricao": {
+              "maxLength": 245,
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "AlterarFuncionarioRequest": {
+          "required": [
+            "email",
+            "login",
+            "nome",
+            "previlegio"
+          ],
+          "type": "object",
+          "properties": {
+            "codigo": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "nome": {
+              "maxLength": 115,
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            },
+            "login": {
+              "maxLength": 50,
+              "type": "string"
+            },
+            "previlegio": {
+              "$ref": "#/components/schemas/PrevilegioEnum"
+            }
+          },
+          "additionalProperties": false
+        },
+        "AlterarMetodoPagtoRequest": {
+          "required": [
+            "codigo",
+            "titulo"
+          ],
+          "type": "object",
+          "properties": {
+            "codigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "AlterarProdutoRequest": {
+          "required": [
+            "categoriaCodigo",
+            "codigo",
+            "titulo",
+            "valor"
+          ],
+          "type": "object",
+          "properties": {
+            "codigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            },
+            "descricao": {
+              "maxLength": 245,
+              "type": "string",
+              "nullable": true
+            },
+            "valor": {
+              "type": "number",
+              "format": "float"
+            },
+            "categoriaCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "imagem": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "ConfirmarSenhaRequest": {
+          "required": [
+            "email",
+            "novaSenha",
+            "token"
+          ],
+          "type": "object",
+          "properties": {
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            },
+            "token": {
+              "type": "string"
+            },
+            "novaSenha": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarCategoriaRequest": {
+          "required": [
+            "titulo"
+          ],
+          "type": "object",
+          "properties": {
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            },
+            "descricao": {
+              "maxLength": 245,
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarFuncionarioMasterRequest": {
+          "required": [
+            "email",
+            "login",
+            "nome",
+            "senha"
+          ],
+          "type": "object",
+          "properties": {
+            "nome": {
+              "maxLength": 115,
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            },
+            "login": {
+              "maxLength": 50,
+              "type": "string"
+            },
+            "senha": {
+              "maxLength": 40,
+              "minLength": 5,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarFuncionarioRequest": {
+          "required": [
+            "email",
+            "login",
+            "nome",
+            "previlegio",
+            "senha"
+          ],
+          "type": "object",
+          "properties": {
+            "nome": {
+              "maxLength": 115,
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            },
+            "login": {
+              "maxLength": 50,
+              "type": "string"
+            },
+            "senha": {
+              "maxLength": 40,
+              "minLength": 5,
+              "type": "string"
+            },
+            "previlegio": {
+              "$ref": "#/components/schemas/PrevilegioEnum"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarMetodoPagtoRequest": {
+          "required": [
+            "titulo"
+          ],
+          "type": "object",
+          "properties": {
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarProdutoRequest": {
+          "required": [
+            "categoriaCodigo",
+            "imagem",
+            "titulo",
+            "valor"
+          ],
+          "type": "object",
+          "properties": {
+            "titulo": {
+              "maxLength": 45,
+              "type": "string"
+            },
+            "descricao": {
+              "maxLength": 245,
+              "type": "string",
+              "nullable": true
+            },
+            "valor": {
+              "minimum": 0,
+              "type": "number",
+              "format": "float"
+            },
+            "categoriaCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "imagem": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "CriarUsuarioRequest": {
+          "required": [
+            "email",
+            "nome",
+            "senha",
+            "sobrenome"
+          ],
+          "type": "object",
+          "properties": {
+            "nome": {
+              "maxLength": 115,
+              "type": "string"
+            },
+            "sobrenome": {
+              "maxLength": 145,
+              "type": "string"
+            },
+            "prontuario": {
+              "maxLength": 14,
+              "type": "string",
+              "nullable": true
+            },
+            "senha": {
+              "minLength": 5,
+              "type": "string"
+            },
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "additionalProperties": false
+        },
+        "DefaultResponse": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "message": {
+              "type": "string",
+              "nullable": true
+            },
+            "error": {
+              "nullable": true
+            },
+            "response": {
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "EstoqueRequest": {
+          "required": [
+            "produtoCodigo",
+            "quantidade",
+            "tipo"
+          ],
+          "type": "object",
+          "properties": {
+            "produtoCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "quantidade": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "tipo": {
+              "type": "string"
+            },
+            "observacao": {
+              "type": "string",
+              "nullable": true
+            }
+          },
+          "additionalProperties": false
+        },
+        "FavoritoRequest": {
+          "required": [
+            "produtoCodigo"
+          ],
+          "type": "object",
+          "properties": {
+            "produtoCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "estado": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        "LoginUsuarioRequest": {
+          "required": [
+            "login",
+            "senha"
+          ],
+          "type": "object",
+          "properties": {
+            "login": {
+              "maxLength": 245,
+              "type": "string"
+            },
+            "senha": {
+              "minLength": 5,
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        },
+        "PedidoItemRequest": {
+          "required": [
+            "produtoCodigo",
+            "quantidade"
+          ],
+          "type": "object",
+          "properties": {
+            "produtoCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "quantidade": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "additionalProperties": false
+        },
+        "PedidoRequest": {
+          "required": [
+            "items",
+            "metodoPagamentoCodigo"
+          ],
+          "type": "object",
+          "properties": {
+            "observacao": {
+              "maxLength": 245,
+              "type": "string",
+              "nullable": true
+            },
+            "metodoPagamentoCodigo": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            },
+            "items": {
+              "type": "array",
+              "items": {
+                "$ref": "#/components/schemas/PedidoItemRequest"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "PedidoStatusEnum": {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "type": "integer",
+          "format": "int32"
+        },
+        "PrevilegioEnum": {
+          "enum": [
+            0,
+            1,
+            2,
+            3
+          ],
+          "type": "integer",
+          "format": "int32"
+        },
+        "RecuperarSenhaRequest": {
+          "required": [
+            "email"
+          ],
+          "type": "object",
+          "properties": {
+            "email": {
+              "maxLength": 245,
+              "type": "string",
+              "format": "email"
+            }
+          },
+          "additionalProperties": false
+        },
+        "RefreshTokenRequest": {
+          "required": [
+            "refreshToken",
+            "token"
+          ],
+          "type": "object",
+          "properties": {
+            "token": {
+              "type": "string"
+            },
+            "refreshToken": {
+              "type": "string"
+            }
+          },
+          "additionalProperties": false
+        }
+      },
+      "securitySchemes": {
+        "Bearer": {
+          "type": "apiKey",
+          "description": "Autenticação baseada em Json Web Token (JWT)",
+          "name": "Authorization",
+          "in": "header"
+        }
+      }
+    },
+    "security": [
+      {
+        "Bearer": [ ]
+      }
+    ]
+  }
